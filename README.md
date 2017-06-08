@@ -1,2 +1,2 @@
-# Local_Bionformatics
-This repo contains organized lab scripts that for local computation
+# Local_50HGI
+This private repo contains organized lab scripts for local 50HGI pipelines
