@@ -1,0 +1,36 @@
+NemChRs: 19 gene families (3 superfamilies + Others)
+
+Sra (sra, srab, srb and sre)
+	 7TM_GPCR_Sra (PF02117)
+	 7TM_GPCR_Srab (PF10292)
+	 7TM_GPCR_Srb (PF02175)
+	 sre (PF03125)
+Str (srd, srh, sri, srj and str)
+	 7TM_GPCR_Srd (PF10317)
+	 7TM_GPCR_Srh (PF10318)
+	 7TM_GPCR_Sri (PF10327)
+	 7TM_GPCR_Srj (PF10319)
+	 7TM_GPCR_Str (PF10326)
+Srg (srg, srt, sru, srv, srx and srxa)
+	 7TM_GPCR_Srt (PF10321)
+	 7TM_GPCR_Sru (PF10322)
+	 7TM_GPCR_Srv (PF10323)
+	 7TM_GPCR_Srx (PF10328)
+	 srg (PF02118)
+	 srxa (Serpentine_r_xa; PF03383)
+Others (srbc, srsx, srw and srz)
+	7TM_GPCR_Srbc (PF10316)
+	7TM_GPCR_Srsx (PF10320)
+	7TM_GPCR_Srw (PF10324)
+	7TM_GPCR_Srz (PF10325)
+
+---
+
+Primary GPCR families: 
+7tm_1.hmm (PF00001) Rhodopsin (class A)
+7tm_2.hmm (PF00002) Secretin/Adhesion (Class B)
+7tm_3.hmm (PF00003) Glutamate (class C)
+7tm_4.hmm (PF00004) Olfactory 
+7tm_6.hmm (PF02949) Odorant
+7tm_7.hmm (PF08395) Insect Gustatory/Odorant
+Frizzled.hmm
