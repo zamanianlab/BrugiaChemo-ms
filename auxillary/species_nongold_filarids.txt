@@ -1,0 +1,5 @@
+onchocerca_ochengi
+wuchereria_bancrofti
+brugia_timori
+brugia_pahangi
+dirofilaria_immitis
