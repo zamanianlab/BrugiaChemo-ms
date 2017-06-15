@@ -22,25 +22,28 @@ mkdir "${local_dir}/ngf_genomes"
 mkdir "${local_dir}/ngo_genomes"
 
 # Download gold genomes -> g_genomes folder
+# Added -N to only download newer versions
 while IFS= read -r line
 do
 	species_dl="${wbp_prefix}/$line/"
 	printf ${species_dl}"\n"
-	wget -r -nH --cut-dirs=7 --no-parent --reject="index.html*" -A 'canonical_geneset.gtf.gz','genomic.fa.gz','protein.fa.gz','CDS_transcripts.fa.gz' $species_dl -P "${local_dir}/g_genomes"
+	wget -nc -r -nH --cut-dirs=7 --no-parent --reject="index.html*" -A 'canonical_geneset.gtf.gz','genomic.fa.gz','protein.fa.gz','CDS_transcripts.fa.gz' $species_dl -P "${local_dir}/g_genomes"
 done <"$species_gold"
 
 ## Download remaining non-gold filarids -> ngf_genomes folder
+# Added -N to only download newer versions
 while IFS= read -r line
 do
 	species_dl="${wbp_prefix}/$line/"
 	printf ${species_dl}"\n"
-	wget -r -nH --cut-dirs=7 --no-parent --reject="index.html*" -A 'canonical_geneset.gtf.gz','genomic.fa.gz','protein.fa.gz','CDS_transcripts.fa.gz' $species_dl -P "${local_dir}/ngf_genomes"
+	wget -nc -r -nH --cut-dirs=7 --no-parent --reject="index.html*" -A 'canonical_geneset.gtf.gz','genomic.fa.gz','protein.fa.gz','CDS_transcripts.fa.gz' $species_dl -P "${local_dir}/ngf_genomes"
 done <"$species_ngf"
 
 # Download remaining non-gold other -> ngo_genomes folder
+# Added -N to only download newer versions
 while IFS= read -r line
 do
 	species_dl="${wbp_prefix}/$line/"
 	printf ${species_dl}"\n"
-	wget -r -nH --cut-dirs=7 --no-parent --reject="index.html*" -A 'canonical_geneset.gtf.gz','genomic.fa.gz','protein.fa.gz','CDS_transcripts.fa.gz' $species_dl -P "${local_dir}/ngo_genomes"
+	wget -nc -r -nH --cut-dirs=7 --no-parent --reject="index.html*" -A 'canonical_geneset.gtf.gz','genomic.fa.gz','protein.fa.gz','CDS_transcripts.fa.gz' $species_dl -P "${local_dir}/ngo_genomes"
 done <"$species_ngo"
