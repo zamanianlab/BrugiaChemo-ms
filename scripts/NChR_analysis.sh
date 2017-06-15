@@ -7,77 +7,103 @@ proj="Local_50HGI"
 gh_dir="${boxdr}/GitHub/${proj}"
 local_dir="${boxdr}/GHdata/${proj}"
 
-# ### Build HMM for NChRs
+# Species lists based on genome quality
+species_gold="${gh_dir}/auxillary/species_gold.txt"
+species_ngf="${gh_dir}/auxillary/species_nongold_filarids.txt"
+species_ngo="${gh_dir}/auxillary/species_nongold_other.txt"
+
+gold_dir="${local_dir}/g_genomes"
+ngf_dir="${local_dir}/ngf_genomes"
+ngo_dir="${local_dir}/ngo_genomes"
+
+### Define script output directories
+mkdir "${local_dir}/NChR/"
+mkdir "${local_dir}/NChR/g_genomes"
+gold_out="${local_dir}/NChR/g_genomes"
+mkdir "${local_dir}/NChR/ngf_genomes"
+ngf_out="${local_dir}/NChR/ngf_genomes"
+mkdir "${local_dir}/NChR/ngo_genomes"
+ngo_out="${local_dir}/NChR/ngo_genomes"
+
+##Auxillary Scripts
+# Extracting sequences provided list of sequence names and fasta file
+seqextract_py="${gh_dir}"/scripts/auxillary/seq_extract.py
+# HMMTOP parsing script (filter based on TM range and produce sequences based on TM domains)
+HMMTOP_py="${gh_dir}"/scripts/auxillary/HMMTOP_extract.py
+
+### Build HMMs
+
+## NChR
 # cat "${gh_dir}"/auxillary/pfam_HMMs/GPCR/NChR/*hmm > "${gh_dir}"/auxillary/pfam_HMMs/GPCR/NChR/NChR.hmm
 # hmmpress "${gh_dir}"/auxillary/pfam_HMMs/GPCR/NChR/NChR.hmm
+NemChR_HMM="${gh_dir}"/auxillary/pfam_HMMs/GPCR/NChR/NChR.hmm
 
-# ### Build HMM for primary GPCR families
+## GRAFS+
 # cat "${gh_dir}"/auxillary/pfam_HMMs/GPCR/Primary/*hmm > "${gh_dir}"/auxillary/pfam_HMMs/GPCR/Primary/GPCRfams.hmm
 # hmmpress "${gh_dir}"/auxillary/pfam_HMMs/GPCR/Primary/GPCRfams.hmm
+GRAFS_HMM="${gh_dir}"/auxillary/pfam_HMMs/GPCR/Primary/GPCRfams.hmm
 
-### Mine gold genomes for NChRs
+## Combined (GRAFS+ / NChR)
+# cat "${gh_dir}"/auxillary/pfam_HMMs/GPCR/Primary/GPCRfams.hmm "${gh_dir}"/auxillary/pfam_HMMs/GPCR/NChR/NChR.hmm > "${gh_dir}"/auxillary/pfam_HMMs/GPCR/GRAFS_NemChR.hmm
+# hmmpress "${gh_dir}"/auxillary/pfam_HMMs/GPCR/GRAFS_NemChR.hmm
+GRAFS_NemChR_HMM="${gh_dir}"/auxillary/pfam_HMMs/GPCR/GRAFS_NemChR.hmm
 
-# nemchr_hmm="/Users/mzamanian/GitHub/ChemoR-sh/HMMs/GRAFS_NemChR.hmm"
-# pfam_hmm="/Users/mzamanian/GitHub/ChemoR-sh/HMMs/Pfam-A/Pfam-A.hmm"
-# seqextract_py="/Users/mzamanian/GitHub/ChemoR-sh/scripts/seq_extract.py"
-
-
-# species_gold="/Users/mzamanian/GitHub/ChemoR-sh/wbp_data/species_gold.txt"
-# genome_dir="/Users/mzamanian/GitHub/ChemoR-sh/wbp_data/g_genomes"
-
-#### Mine Gold Genomes for nematode chemo Rs
+### Mine Gold Genomes for nematode chemo Rs
 #line = species name, iterate through gold genome species names
-# while IFS= read -r line; do
-# 	search_dir="${genome_dir}/${line}/**/*.protein.fa.gz"
-# 	for f in $search_dir ; do
-# 	  	curr_dir=$(dirname "${f}")
-# 		gzcat $f > ${curr_dir}/protein.tmp.fa
-# 		mkdir ${curr_dir}/NChR
-# 		out_dir="${curr_dir}/NChR"
+while IFS= read -r line; do
+	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
+	  	curr_dir=$(dirname "${f}")
+	  	echo "${curr_dir}"
+		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
 
-# 		#HMMSCAN all proteomes against db of GPCR hmms
-# 		hmmscan --tblout ${out_dir}/${line}_hits.out --noali ${nemchr_hmm} ${curr_dir}/protein.tmp.fa 
+		#HMMSCAN all proteomes against db of All GPCR hmms
+		hmmscan --tblout "${gold_out}"/${line}_hits.out --noali "${GRAFS_NemChR_HMM}" "${curr_dir}"/protein.tmp.fa 
 
-# 		#Parse hmm outputs for each species to get list of unique seq ids for NemChRs (NC)
-# 		cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '!/Frizzled|7tm_1|7tm_2|7tm_3|7tm_4|7tm_6|7tm_7/' | sort -k4 -g > ${out_dir}/${line}_NChits.txt
-# 		cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '!/Frizzled|7tm_1|7tm_2|7tm_3|7tm_4|7tm_6|7tm_7/' | sort -k4 -g  | awk '{print $3}' > ${out_dir}/${line}_NChits_ids.txt
-# 		#Extract these sequences
-# 		python ${seqextract_py} ${out_dir}/${line}_NChits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_NC.fa
+		rm "${curr_dir}"/protein.tmp.fa
+	done;
+done <"$species_gold"
 
-# 		#Reciprocal HMMSCAN of extracted sequences against pfam-a
-# 		hmmscan --tblout ${out_dir}/${line}_rHMM.out --noali ${pfam_hmm} ${out_dir}/${line}_NC.fa
 
-# 		#Parse hmm outputs for each species to get list of unique seq ids + extract sequences + TM >=5 filter
-# 		cat ${out_dir}/${line}_rHMM.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g > ${out_dir}/${line}_NChitsf.txt
-# 		cat ${out_dir}/${line}_rHMM.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g  | awk '{print $3}' > ${out_dir}/${line}_NChitsf_ids.txt
-# 		python ${seqextract_py} ${out_dir}/${line}_NChitsf_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_NCf.fa
 
-# 		#Parse hmm outputs for each species to get list of unique seq ids for R-A, R-P, G, F, A/S (can also use  if ($4 <= 1e-50) in awk)
-# 		cd /Users/mzamanian/Bioinformatics/hmmtop_2.1/
-# 		#Rhodopsin
-# 		cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_1/' | sort -k4 -g > ${out_dir}/${line}_Rhits.txt
-# 		cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_1/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $3}' > ${out_dir}/${line}_Rhits_ids.txt
-# 		python ${seqextract_py} ${out_dir}/${line}_Rhits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_R.fa
-# 		# Glutamate
-# 		cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_3/' | sort -k4 -g > ${out_dir}/${line}_Ghits.txt
-# 		cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_3/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $3}' > ${out_dir}/${line}_Ghits_ids.txt
-# 		python ${seqextract_py} ${out_dir}/${line}_Ghits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_G.fa
-# 		# Adhesion/Secretin
-# 		cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_2/' | sort -k4 -g > ${out_dir}/${line}_AShits.txt
-# 		cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_2/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $3}' > ${out_dir}/${line}_AShits_ids.txt
-# 		python ${seqextract_py} ${out_dir}/${line}_AShits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_AS.fa
-# 		# Frizzled
-# 		cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/Frizzled/' | sort -k4 -g > ${out_dir}/${line}_Fhits.txt
-# 		cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/Frizzled/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $3}' > ${out_dir}/${line}_Fhits_ids.txt
-# 		python ${seqextract_py} ${out_dir}/${line}_Fhits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_F.fa
-# 		# Insect Odorant/ChemoR
-# 		cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/Frizzled/' | sort -k4 -g > ${out_dir}/${line}_IOChits.txt
-# 		cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/Frizzled/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $3}' > ${out_dir}/${line}_IOChits_ids.txt
-# 		python ${seqextract_py} ${out_dir}/${line}_IOChits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_IOC.fa
 
-# 		rm ${curr_dir}/protein.tmp.fa
-# 	done;
-# done <"$species_gold"
+		# #Parse hmm outputs for each species to get list of unique seq ids for NemChRs (NC)
+		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '!/Frizzled|7tm_1|7tm_2|7tm_3|7tm_4|7tm_6|7tm_7/' | sort -k4 -g > ${out_dir}/${line}_NChits.txt
+		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '!/Frizzled|7tm_1|7tm_2|7tm_3|7tm_4|7tm_6|7tm_7/' | sort -k4 -g  | awk '{print $3}' > ${out_dir}/${line}_NChits_ids.txt
+		# #Extract these sequences
+		# python ${seqextract_py} ${out_dir}/${line}_NChits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_NC.fa
+
+		# #Reciprocal HMMSCAN of extracted sequences against pfam-a
+		# hmmscan --tblout ${out_dir}/${line}_rHMM.out --noali ${pfam_hmm} ${out_dir}/${line}_NC.fa
+
+		# #Parse hmm outputs for each species to get list of unique seq ids + extract sequences + TM >=5 filter
+		# cat ${out_dir}/${line}_rHMM.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g > ${out_dir}/${line}_NChitsf.txt
+		# cat ${out_dir}/${line}_rHMM.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g  | awk '{print $3}' > ${out_dir}/${line}_NChitsf_ids.txt
+		# python ${seqextract_py} ${out_dir}/${line}_NChitsf_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_NCf.fa
+
+		# #Parse hmm outputs for each species to get list of unique seq ids for R-A, R-P, G, F, A/S (can also use  if ($4 <= 1e-50) in awk)
+		# cd /Users/mzamanian/Bioinformatics/hmmtop_2.1/
+		# #Rhodopsin
+		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_1/' | sort -k4 -g > ${out_dir}/${line}_Rhits.txt
+		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_1/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $3}' > ${out_dir}/${line}_Rhits_ids.txt
+		# python ${seqextract_py} ${out_dir}/${line}_Rhits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_R.fa
+		# # Glutamate
+		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_3/' | sort -k4 -g > ${out_dir}/${line}_Ghits.txt
+		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_3/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $3}' > ${out_dir}/${line}_Ghits_ids.txt
+		# python ${seqextract_py} ${out_dir}/${line}_Ghits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_G.fa
+		# # Adhesion/Secretin
+		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_2/' | sort -k4 -g > ${out_dir}/${line}_AShits.txt
+		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_2/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $3}' > ${out_dir}/${line}_AShits_ids.txt
+		# python ${seqextract_py} ${out_dir}/${line}_AShits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_AS.fa
+		# # Frizzled
+		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/Frizzled/' | sort -k4 -g > ${out_dir}/${line}_Fhits.txt
+		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/Frizzled/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $3}' > ${out_dir}/${line}_Fhits_ids.txt
+		# python ${seqextract_py} ${out_dir}/${line}_Fhits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_F.fa
+		# # Insect Odorant/ChemoR
+		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/Frizzled/' | sort -k4 -g > ${out_dir}/${line}_IOChits.txt
+		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/Frizzled/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $3}' > ${out_dir}/${line}_IOChits_ids.txt
+		# python ${seqextract_py} ${out_dir}/${line}_IOChits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_IOC.fa
+
+
 
 ######
 ###### PHYLOGENETIC ANALYSIS
