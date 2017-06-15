@@ -33,7 +33,7 @@ HMMTOP_py="${gh_dir}"/scripts/auxillary/HMMTOP_extract.py
 
 ### Build HMMs
 
-## NChR
+## NChR s
 # cat "${gh_dir}"/auxillary/pfam_HMMs/GPCR/NChR/*hmm > "${gh_dir}"/auxillary/pfam_HMMs/GPCR/NChR/NChR.hmm
 # hmmpress "${gh_dir}"/auxillary/pfam_HMMs/GPCR/NChR/NChR.hmm
 NemChR_HMM="${gh_dir}"/auxillary/pfam_HMMs/GPCR/NChR/NChR.hmm
