@@ -19,7 +19,6 @@ rhabditophanes_kr3021
 romanomermis_culicivorax
 strongyloides_ratti
 syphacia_muris
-taenia_solium
 thelazia_callipaeda
 toxocara_canis
 trichinella_spiralis

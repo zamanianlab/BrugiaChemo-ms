@@ -98,28 +98,28 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 		
 
 # ###Parse hmm outputs for each species to get list of unique seq ids + extract sequences + ???TM >=5 filter???
-while IFS= read -r line; do
-	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
-		cat "${gold_out}"/${line}_rHMM.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g > "${gold_out}"/${line}_NChitsf.txt
-		cat "${gold_out}"/${line}_rHMM.out | awk '{print $1 " " $3  " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g  | awk '{print $1}' > "${gold_out}"/${line}_NChitsf_ids.txt
-		curr_dir=$(dirname "${f}")
- 		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
-		python "${seqextract_py}" "${gold_out}"/${line}_NChitsf_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_NCf.fa
-		rm "${curr_dir}"/protein.tmp.fa
-	done;
-done <"$species_gold"
-
-###Parse hmm outputs for each species to get list of unique seq ids for R-A, R-P, G, F, A/S (can also use  if ($4 <= 1e-50) in awk)
 # while IFS= read -r line; do
 # 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
-# 		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_1/' | sort -k4 -g > ${out_dir}/${line}_Rhits.txt
-# 		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_1/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $3}' > ${out_dir}/${line}_Rhits_ids.txt
+# 		cat "${gold_out}"/${line}_rHMM.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g > "${gold_out}"/${line}_NChitsf.txt
+# 		cat "${gold_out}"/${line}_rHMM.out | awk '{print $1 " " $3  " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g  | awk '{print $1}' > "${gold_out}"/${line}_NChitsf_ids.txt
 # 		curr_dir=$(dirname "${f}")
 #  		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
-# 		python ${seqextract_py} ${out_dir}/${line}_Rhits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_R.fa
+# 		python "${seqextract_py}" "${gold_out}"/${line}_NChitsf_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_NCf.fa
 # 		rm "${curr_dir}"/protein.tmp.fa
 # 	done;
 # done <"$species_gold"
+
+###Parse hmm outputs for each species to get list of unique seq ids for R-A, R-P, G, F, A/S (can also use  if ($4 <= 1e-50) in awk)
+while IFS= read -r line; do
+	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
+		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_1/' | sort -k4 -g > ${out_dir}/${line}_Rhits.txt
+		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_1/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $3}' > ${out_dir}/${line}_Rhits_ids.txt
+		curr_dir=$(dirname "${f}")
+ 		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
+		python ${seqextract_py} ${out_dir}/${line}_Rhits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_R.fa
+		rm "${curr_dir}"/protein.tmp.fa
+	done;
+done <"$species_gold"
 
 
 
