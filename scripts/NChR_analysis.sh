@@ -88,27 +88,35 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # 	done;
 # done <"$species_gold"
 
-###Reciprocal HMMSCAN of extracted sequences against pfam-a
-
-# HMMSCAN
-while IFS= read -r line; do
-	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
-		#HMMSCAN all proteomes against db of PFAM hmms
-		hmmscan --tblout "${gold_out}"/${line}_rHMM.out --noali "${pfam_HMM}" "${gold_out}"/${line}_NC.fa
-	done;
-done <"$species_gold"
-		
-
-###HERE
-
-# ###Parse hmm outputs for each species to get list of unique seq ids + extract sequences + TM >=5 filter
+###Reciprocal HMMSEARCH of extracted sequences against pfam-a
 # while IFS= read -r line; do
 # 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
-# 		cat "${gold_out}"/${line}_rHMM.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g > "${gold_out}"/${line}_NChitsf.txt
-# 		cat "${gold_out}"/${line}_rHMM.out | awk '{print $1 " " $2  " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g  | awk '{print $3}' > "${gold_out}"/${line}_NChitsf_ids.txt
+# 		#HMMSEARCH all putative chemosensory genes against db of PFAM hmms
+# 		hmmsearch --tblout "${gold_out}"/${line}_rHMM.out --noali "${pfam_HMM}" "${gold_out}"/${line}_NC.fa
+# 	done;
+# done <"$species_gold"
+		
+
+# ###Parse hmm outputs for each species to get list of unique seq ids + extract sequences + ???TM >=5 filter???
+while IFS= read -r line; do
+	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
+		cat "${gold_out}"/${line}_rHMM.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g > "${gold_out}"/${line}_NChitsf.txt
+		cat "${gold_out}"/${line}_rHMM.out | awk '{print $1 " " $3  " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g  | awk '{print $1}' > "${gold_out}"/${line}_NChitsf_ids.txt
+		curr_dir=$(dirname "${f}")
+ 		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
+		python "${seqextract_py}" "${gold_out}"/${line}_NChitsf_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_NCf.fa
+		rm "${curr_dir}"/protein.tmp.fa
+	done;
+done <"$species_gold"
+
+###Parse hmm outputs for each species to get list of unique seq ids for R-A, R-P, G, F, A/S (can also use  if ($4 <= 1e-50) in awk)
+# while IFS= read -r line; do
+# 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
+# 		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_1/' | sort -k4 -g > ${out_dir}/${line}_Rhits.txt
+# 		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_1/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $3}' > ${out_dir}/${line}_Rhits_ids.txt
 # 		curr_dir=$(dirname "${f}")
 #  		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
-# 		python "${seqextract_py}" "${gold_out}"/${line}_NChitsf_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_NCf.fa
+# 		python ${seqextract_py} ${out_dir}/${line}_Rhits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_R.fa
 # 		rm "${curr_dir}"/protein.tmp.fa
 # 	done;
 # done <"$species_gold"
@@ -120,10 +128,7 @@ done <"$species_gold"
 
 
 
-
-
-
-		# #Parse hmm outputs for each species to get list of unique seq ids for R-A, R-P, G, F, A/S (can also use  if ($4 <= 1e-50) in awk)
+		
 		# cd /Users/mzamanian/Bioinformatics/hmmtop_2.1/
 		# #Rhodopsin
 		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_1/' | sort -k4 -g > ${out_dir}/${line}_Rhits.txt
