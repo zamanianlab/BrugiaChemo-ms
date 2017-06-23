@@ -75,65 +75,65 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 
 
 ##Parse hmm outputs for each species to get list of unique seq ids for NemChRs (NC)
-while IFS= read -r line; do
-	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
-		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '!/Frizzled|7tm_1|7tm_2|7tm_3|7tm_6|7tm_7/' | sort -k4 -g > "${gold_out}"/${line}_NChits.txt
-		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '!/Frizzled|7tm_1|7tm_2|7tm_3|7tm_6|7tm_7/' | sort -k4 -g | awk '{print $1}' > "${gold_out}"/${line}_NChits_ids.txt
-		#Extract these sequences
-		curr_dir=$(dirname "${f}")
-		#echo ${curr_dir}
-		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
-		python "${seqextract_py}" "${gold_out}"/${line}_NChits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_NC.fa
-		rm "${curr_dir}"/protein.tmp.fa
-	done;
-done <"$species_gold"
+# while IFS= read -r line; do
+# 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
+# 		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '!/Frizzled|7tm_1|7tm_2|7tm_3|7tm_6|7tm_7/' | sort -k4 -g > "${gold_out}"/${line}_NChits.txt
+# 		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '!/Frizzled|7tm_1|7tm_2|7tm_3|7tm_6|7tm_7/' | sort -k4 -g | awk '{print $1}' > "${gold_out}"/${line}_NChits_ids.txt
+# 		#Extract these sequences
+# 		curr_dir=$(dirname "${f}")
+# 		#echo ${curr_dir}
+# 		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
+# 		python "${seqextract_py}" "${gold_out}"/${line}_NChits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_NC.fa
+# 		rm "${curr_dir}"/protein.tmp.fa
+# 	done;
+# done <"$species_gold"
 
-##Reciprocal HMMSEARCH of extracted sequences against pfam-a
-while IFS= read -r line; do
-	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
-		#HMMSEARCH all putative chemosensory genes against db of PFAM hmms
-		hmmsearch --tblout "${gold_out}"/${line}_rHMM.out --noali "${pfam_HMM}" "${gold_out}"/${line}_NC.fa
-	done;
-done <"$species_gold"
+# ##Reciprocal HMMSEARCH of extracted sequences against pfam-a
+# while IFS= read -r line; do
+# 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
+# 		#HMMSEARCH all putative chemosensory genes against db of PFAM hmms
+# 		hmmsearch --tblout "${gold_out}"/${line}_rHMM.out --noali "${pfam_HMM}" "${gold_out}"/${line}_NC.fa
+# 	done;
+# done <"$species_gold"
 		
 
-###Parse hmm outputs for each species to get list of unique seq ids + extract sequences + ???TM >=5 filter???
-while IFS= read -r line; do
-	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
-		cat "${gold_out}"/${line}_rHMM.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_4|7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g > "${gold_out}"/${line}_NChitsf.txt
-		cat "${gold_out}"/${line}_rHMM.out | awk '{print $1 " " $3  " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_4|7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g  | awk '{print $1}' > "${gold_out}"/${line}_NChitsf_ids.txt
-		curr_dir=$(dirname "${f}")
- 		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
-		python "${seqextract_py}" "${gold_out}"/${line}_NChitsf_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_NCf.fa
-		rm "${curr_dir}"/protein.tmp.fa
-	done;
-done <"$species_gold"
+# ###Parse hmm outputs for each species to get list of unique seq ids + extract sequences + ???TM >=5 filter???
+# while IFS= read -r line; do
+# 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
+# 		cat "${gold_out}"/${line}_rHMM.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_4|7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g > "${gold_out}"/${line}_NChitsf.txt
+# 		cat "${gold_out}"/${line}_rHMM.out | awk '{print $1 " " $3  " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_4|7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g  | awk '{print $1}' > "${gold_out}"/${line}_NChitsf_ids.txt
+# 		curr_dir=$(dirname "${f}")
+#  		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
+# 		python "${seqextract_py}" "${gold_out}"/${line}_NChitsf_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_NCf.fa
+# 		rm "${curr_dir}"/protein.tmp.fa
+# 	done;
+# done <"$species_gold"
 
-###Parse hmm outputs for each species to get list of unique seq ids for R-A, R-P, G, F, A/S (can also use  if ($4 <= 1e-50) in awk)
+###Parse hmm outputs for each species to get list of unique seq ids for R-A, R-P, G, F, A/S (can also use  if ($4 <= 1e-20) in awk)
 while IFS= read -r line; do
 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
 		#Rhodopsin
 		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_1/' | sort -k4 -g > "${gold_out}"/${line}_Rhits.txt
-		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_1/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $1}' > "${gold_out}"/${line}_Rhits_ids.txt
+		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_1/' | sort -k4 -g  | awk '{if ($4 <= 1e-20) print $1}' > "${gold_out}"/${line}_Rhits_ids.txt
 		curr_dir=$(dirname "${f}")
  		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
-		python ${seqextract_py} "${gold_out}"/${line}_Rhits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_R.fa
+		python "${seqextract_py}" "${gold_out}"/${line}_Rhits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_R.fa
 		#Glutamate
 		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_3/' | sort -k4 -g > "${gold_out}"/${line}_Ghits.txt
-		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_3/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $1}' > "${gold_out}"/${line}_Ghits_ids.txt
-		python ${seqextract_py} "${gold_out}"/${line}_Ghits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_G.fa
+		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_3/' | sort -k4 -g  | awk '{if ($4 <= 1e-20) print $1}' > "${gold_out}"/${line}_Ghits_ids.txt
+		python "${seqextract_py}" "${gold_out}"/${line}_Ghits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_G.fa
 		#Adhesion/Secretin
 		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_2/' | sort -k4 -g > "${gold_out}"/${line}_AShits.txt
-		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_2/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $1}' > "${gold_out}"/${line}_AShits_ids.txt
-		python ${seqextract_py} "${gold_out}"/${line}_AShits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_AS.fa
+		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_2/' | sort -k4 -g  | awk '{if ($4 <= 1e-20) print $1}' > "${gold_out}"/${line}_AShits_ids.txt
+		python "${seqextract_py}" "${gold_out}"/${line}_AShits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_AS.fa
 		#Frizzled
 		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/Frizzled/' | sort -k4 -g > "${gold_out}"/${line}_Fhits.txt
-		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/Frizzled/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $1}' > "${gold_out}"/${line}_Fhits_ids.txt
-		python ${seqextract_py} "${gold_out}"/${line}_Fhits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_F.fa
+		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/Frizzled/' | sort -k4 -g  | awk '{if ($4 <= 1e-20) print $1}' > "${gold_out}"/${line}_Fhits_ids.txt
+		python "${seqextract_py}" "${gold_out}"/${line}_Fhits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_F.fa
 		#Insect Odorant/ChemoR
 		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_6|7tm_7/' | sort -k4 -g > "${gold_out}"/${line}_IOChits.txt
-		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_6|7tm_7/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $1}' > "${gold_out}"/${line}_IOChits_ids.txt
-		python ${seqextract_py} "${gold_out}"/${line}_AShits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_IOC.fa
+		cat "${gold_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_6|7tm_7/' | sort -k4 -g  | awk '{if ($4 <= 1e-20) print $1}' > "${gold_out}"/${line}_IOChits_ids.txt
+		python "${seqextract_py}" "${gold_out}"/${line}_AShits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_IOC.fa
 		rm "${curr_dir}"/protein.tmp.fa
 	done;
 done <"$species_gold"
@@ -141,33 +141,12 @@ done <"$species_gold"
 
 
 
-
+###HERE###
 
 
 
 		
 		# cd /Users/mzamanian/Bioinformatics/hmmtop_2.1/
-		# #Rhodopsin
-		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_1/' | sort -k4 -g > ${out_dir}/${line}_Rhits.txt
-		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_1/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $3}' > ${out_dir}/${line}_Rhits_ids.txt
-		# python ${seqextract_py} ${out_dir}/${line}_Rhits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_R.fa
-		# # Glutamate
-		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_3/' | sort -k4 -g > ${out_dir}/${line}_Ghits.txt
-		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_3/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $3}' > ${out_dir}/${line}_Ghits_ids.txt
-		# python ${seqextract_py} ${out_dir}/${line}_Ghits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_G.fa
-		# # Adhesion/Secretin
-		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_2/' | sort -k4 -g > ${out_dir}/${line}_AShits.txt
-		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/7tm_2/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $3}' > ${out_dir}/${line}_AShits_ids.txt
-		# python ${seqextract_py} ${out_dir}/${line}_AShits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_AS.fa
-		# # Frizzled
-		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/Frizzled/' | sort -k4 -g > ${out_dir}/${line}_Fhits.txt
-		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/Frizzled/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $3}' > ${out_dir}/${line}_Fhits_ids.txt
-		# python ${seqextract_py} ${out_dir}/${line}_Fhits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_F.fa
-		# # Insect Odorant/ChemoR
-		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/Frizzled/' | sort -k4 -g > ${out_dir}/${line}_IOChits.txt
-		# cat ${out_dir}/${line}_hits.out | awk '{print $1 " " $2 " " $3 " " $5}' | awk '!/#/' | sort -uk3,3 | awk '/Frizzled/' | sort -k4 -g  | awk '{if ($4 <= 1e-50) print $3}' > ${out_dir}/${line}_IOChits_ids.txt
-		# python ${seqextract_py} ${out_dir}/${line}_IOChits_ids.txt ${curr_dir}/protein.tmp.fa ${out_dir}/${line}_IOC.fa
-
 
 
 ######
