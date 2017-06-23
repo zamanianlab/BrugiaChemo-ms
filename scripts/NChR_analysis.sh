@@ -144,14 +144,14 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 
 phylo_dir="${local_dir}/phylo/NChR"
 
-# # # Copy sequence files to ../phylo/NemChR directory
+### Copy sequence files to ../phylo/NemChR directory
 # while IFS= read -r line; do
 # 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
 # 		cp "${gold_out}"/${line}_*.fa "${phylo_dir}"
 # 	done;
 # done <"$species_gold"
 
-# # # Cat and label files for alignment/phylo
+### Cat and label files for alignment/phylo
 # cat "${phylo_dir}"/*_NCf.fa > "${phylo_dir}"/All_NCf.fa
 # cat "${phylo_dir}"/*_R.fa > "${phylo_dir}"/All_R.fa
 # cat "${phylo_dir}"/*_G.fa > "${phylo_dir}"/All_G.fa
@@ -159,7 +159,7 @@ phylo_dir="${local_dir}/phylo/NChR"
 # cat "${phylo_dir}"/*_AS.fa > "${phylo_dir}"/All_AS.fa
 # cat "${phylo_dir}"/*_IOC.fa > "${phylo_dir}"/All_IOC.fa
 
-# # # Label each sequence with its predicted family
+### Label each sequence with its predicted family
 # sed 's/>/>NC:/' "${phylo_dir}"/All_NCf.fa > "${phylo_dir}"/All_NCf_lab.fa
 # sed 's/>/>R:/' "${phylo_dir}"/All_R.fa > "${phylo_dir}"/All_Rf_lab.fa
 # sed 's/>/>G:/' "${phylo_dir}"/All_G.fa > "${phylo_dir}"/All_Gf_lab.fa
@@ -169,17 +169,17 @@ phylo_dir="${local_dir}/phylo/NChR"
 # cat "${phylo_dir}"/All*_lab.fa > "${phylo_dir}"/All.fa
 
 hmmtop="${gh_dir}"/scripts/auxillary/hmmtop2.1/./hmmtop
+
 cp "${gh_dir}"/scripts/auxillary/hmmtop_2.1/hmmtop.arch .
 cp "${gh_dir}"/scripts/auxillary/hmmtop_2.1/hmmtop.psv .
 
-# # # HMMTOP 
-#cd /Users/mzamanian/Bioinformatics/hmmtop_2.1/
-hmmtop -if="${phylo_dir}"/All.fa -of="${phylo_dir}"/hmm_output.txt -sf=FAS
-#Parse HHMTOP output to get list of seq ids with >= 5 TM domains <= 10 TM domains
-python "${HMMextract_py}" "${phylo_dir}"/hmm_output.txt "${phylo_dir}"/All.fa "${phylo_dir}"/All_TMfiltered.fa
+### HMMTOP 
+# hmmtop -if="${phylo_dir}"/All.fa -of="${phylo_dir}"/hmm_output.txt -sf=FAS
+## Parse HHMTOP output to get list of seq ids with >= 5 TM domains <= 10 TM domains
+# python "${HMMTOP_py}" "${phylo_dir}"/hmm_output.txt "${phylo_dir}"/All.fa "${phylo_dir}"/All_TMfiltered.fa
 
-# # #Align files
-# #mafft --op 2 --ep 1 --thread 2 --maxiterate 1 ${phylo_dir}/All_TMfiltered.fa > ${phylo_dir}/All_TMfiltered_align.fa
+### Align files
+mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_dir}"/All_TMfiltered.fa > "${phylo_dir}"/All_TMfiltered_align.fa
 
 
 # #Trim the alignment

@@ -41,7 +41,7 @@ def TMseqextract(file):
 			match_coords = re.findall('(\d+)\s+(\d+)',TM_coords)
 			TM_seq = str('')
 			for i in range(1, len(match_coords)):
-				print match_coords
+				#print match_coords
 				coord1 = int(match_coords[i][0]) - 6
 				coord2 = int(match_coords[i][1]) + 6
 				TM_segment = current_seq[coord1:coord2] + '-'
@@ -50,7 +50,7 @@ def TMseqextract(file):
 			else:
 				pass
 			output_seq = ">" + current_id + "\n" + TM_seq + "\n"
-			print output_seq
+			#print output_seq
 			outfile.write(output_seq)
 
 		else: 
