@@ -17,7 +17,7 @@ def seqextract(file):
 		ids = []
 		line = line.strip()
 		ids.append(line)
-		print ids
+		#print ids
 		for entry in ids:
 			current = record_dict[entry]
 			SeqIO.write(current, output_handle, "fasta")
