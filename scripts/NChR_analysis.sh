@@ -174,16 +174,16 @@ cp "${gh_dir}"/scripts/auxillary/hmmtop_2.1/hmmtop.arch .
 cp "${gh_dir}"/scripts/auxillary/hmmtop_2.1/hmmtop.psv .
 
 ### HMMTOP 
-# hmmtop -if="${phylo_dir}"/All.fa -of="${phylo_dir}"/hmm_output.txt -sf=FAS
-## Parse HHMTOP output to get list of seq ids with >= 5 TM domains <= 10 TM domains
-# python "${HMMTOP_py}" "${phylo_dir}"/hmm_output.txt "${phylo_dir}"/All.fa "${phylo_dir}"/All_TMfiltered.fa
+hmmtop -if="${phylo_dir}"/All_NCf.fa -of="${phylo_dir}"/All_NCf_hmmtop_output.txt -sf=FAS
+# Parse HHMTOP output to get list of seq ids with >= 5 TM domains <= 10 TM domains
+python "${HMMTOP_py}" "${phylo_dir}"/All_NCf_hmmtop_output.txt "${phylo_dir}"/All_NCf.fa "${phylo_dir}"/All_NCf_TMfiltered.fa
 
 ### Align files
-mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_dir}"/All_TMfiltered.fa > "${phylo_dir}"/All_TMfiltered_align.fa
+# mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_dir}"/All_TMfiltered.fa > "${phylo_dir}"/All_TMfiltered_align.fa
 
 
 # #Trim the alignment
-# sed 's/:/_/' ${phylo_dir}/All_TMfiltered_align.fas > ${phylo_dir}/All_TMfiltered_align_rename.fas
+# sed 's/:/_/' ${phylo_dir}/All_TMfiltered_align.fa > ${phylo_dir}/All_TMfiltered_align_rename.fa
 # cd /Users/mzamanian/Bioinformatics/Noisy-1.5.12 
 # noisy  -v ${phylo_dir}/All_TMfiltered_align_rename.fas
 
