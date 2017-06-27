@@ -56,6 +56,32 @@ def TMseqextract(file):
 		else: 
 			pass
 
+#cuts from beginning of first TM to end of last TM (+10 aa on each end)
+def TMDextract(file):
+	for line in file:
+		ids = []
+		line = line.strip()
+		#print line
+		match = re.search('>HP:\s+\d+\s+(.*?)\s.*?[IN|OUT]\s+(\d+)\s+(\d+)\s+.*\s+(\d+)', line)
+		if match and int(match.group(2)) > 3 and int(match.group(2)) < 10:
+			protein_id = match.group(1)
+			TM_count = match.group(2)
+			TM_coords_start = match.group(3)
+			TM_coords_end = match.group(4)
+			current = record_dict[protein_id]
+			current_id = str(current.id)
+			current_seq = str(current.seq)
+			coord1 = int(TM_coords_start) - 1
+			coord2 = int(TM_coords_end) + 1
+			TMD = current_seq[coord1:coord2]
+			output_seq = ">" + current_id + "\n" + TMD + "\n"
+			#print output_seq
+			outfile.write(output_seq)
+
+		else: 
+			pass
+
 #run = seqextract(p)
-run = TMseqextract(p)
+#run = TMseqextract(p)
+run = TMDextract(p)
 outfile.close()
