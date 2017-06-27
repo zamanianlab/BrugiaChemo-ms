@@ -3,7 +3,6 @@ angiostrongylus_cantonensis
 ascaris_suum
 brugia_malayi
 caenorhabditis_elegans
-caenorhabditis_sinica
 dictyocaulus_viviparus
 dracunculus_medinensis
 haemonchus_contortus
