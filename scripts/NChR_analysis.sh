@@ -174,7 +174,7 @@ outgroup_fa="${gh_dir}/auxillary/outgroup.fa"
 
 # ### HMMTOP
 # cat "${phylo_dir}"/All_NCf.fa "${outgroup_fa}" > "${phylo_dir}"/All_NCf_outgroup.fa
-# hmmtop -if="${phylo_dir}"/All_NCf_outgroup.fa -of="${phylo_dir}"/All_NCf_outgroup_hmmtop_output.txt -sf=FAS
+# "${hmmtop}" -if="${phylo_dir}"/All_NCf_outgroup.fa -of="${phylo_dir}"/All_NCf_outgroup_hmmtop_output.txt -sf=FAS
 # # Parse HHMTOP output to get list of seq ids with >= 5 TM domains <= 10 TM domains
 # python "${HMMTOP_py}" "${phylo_dir}"/All_NCf_outgroup_hmmtop_output.txt "${phylo_dir}"/All_NCf_outgroup.fa "${phylo_dir}"/All_NCf_outgroup_TMfiltered.fa
 
@@ -187,7 +187,34 @@ outgroup_fa="${gh_dir}/auxillary/outgroup.fa"
 # cd /Users/mzamanian/Bioinformatics/Noisy-1.5.12 
 # noisy  -v ${phylo_dir}/All_TMfiltered_align_rename.fas
 
-trimal="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
+# trimal="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 
-trimal -in "${phylo_dir}"/All_NCf_outgroup_TMfiltered_align.fa -out "${phylo_dir}"/All_NCf_outgroup_TMfiltered_align_trim.fa -gt 0.7
+# "${trimal}" -in "${phylo_dir}"/All_NCf_outgroup_TMfiltered_align.fa -out "${phylo_dir}"/All_NCf_outgroup_TMfiltered_align_trim.fa -gt 0.7
+
+raxml="${gh_dir}"/scripts/auxillary/raxmlHPC-PTHREADS-SSE3
+
+"${raxml}" -T 2 -f a -x 12345 -p 12345 -# 100 -m PROTCATAUTO -s "${phylo_dir}"/All_NCf_outgroup_TMfiltered_align_trim.fa -n All_NCf_outgroup.ml.tre
+mv All_NCf_outgroup.ml.tre "${phylo_dir}"/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
