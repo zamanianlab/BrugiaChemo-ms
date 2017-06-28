@@ -227,24 +227,24 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 ###### PHYLOGENETIC ANALYSIS
 ######
 
-# ## GOLD GENOMES - Copy sequence files to ../phylo/NemChR directory
+### GOLD GENOMES - Copy sequence files to ../phylo/NemChR directory
 # while IFS= read -r line; do
 # 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
 # 		cp "${gold_out}"/${line}_*.fa "${phylo_out}"
 # 	done;
 # done <"$species_gold"
 
-# ## NON-GOLD FILARID GENOMES - Copy sequence files to ../phylo/NemChR directory
+### NON-GOLD FILARID GENOMES - Copy sequence files to ../phylo/NemChR directory
 # while IFS= read -r line; do
 # 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
 # 		cp "${ngf_out}"/${line}_*.fa "${phylo_out}"
 # 	done;
 # done <"$species_ngf"
 
-# ## Remove the unfiltered NC files
+### Remove the unfiltered NC files
 # rm "${phylo_out}"/*_NC.fa
 
-# ## Label each sequence with its species name
+### Label each sequence with its species name
 # for f in "${phylo_out}"/*.fa ; do
 # 	python "${change_ID_py}" "$f" "$f".fa;
 # done
@@ -252,14 +252,14 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # 	mv "$f" "${f/.fa.fa/_label.fa}";
 # done
 
-# ## Cat and label files for alignment/phylo
-# cat "${phylo_out}"/*_NCf.fa > "${phylo_out}"/All_NCf.fa
-# cat "${phylo_out}"/*_R.fa > "${phylo_out}"/All_R.fa
-# cat "${phylo_out}"/*_G.fa > "${phylo_out}"/All_G.fa
-# cat "${phylo_out}"/*_F.fa > "${phylo_out}"/All_F.fa
-# cat "${phylo_out}"/*_AS.fa > "${phylo_out}"/All_AS.fa
+### Cat and label files for alignment/phylo
+# cat "${phylo_out}"/*_NCf_label.fa > "${phylo_out}"/All_NCf.fa
+# cat "${phylo_out}"/*_R_label.fa > "${phylo_out}"/All_R.fa
+# cat "${phylo_out}"/*_G_label.fa > "${phylo_out}"/All_G.fa
+# cat "${phylo_out}"/*_F_label.fa > "${phylo_out}"/All_F.fa
+# cat "${phylo_out}"/*_AS_label.fa > "${phylo_out}"/All_AS.fa
 
-# ## Label each sequence with its predicted family
+### Label each sequence with its predicted family
 # sed 's/>/>NC:/' "${phylo_out}"/All_NCf.fa > "${phylo_out}"/All_NCf_lab.fa
 # sed 's/>/>R:/' "${phylo_out}"/All_R.fa > "${phylo_out}"/All_Rf_lab.fa
 # sed 's/>/>G:/' "${phylo_out}"/All_G.fa > "${phylo_out}"/All_Gf_lab.fa
@@ -267,17 +267,17 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # sed 's/>/>AS:/' "${phylo_out}"/All_AS.fa > "${phylo_out}"/All_ASf_lab.fa
 # cat "${phylo_out}"/All*_lab.fa > "${phylo_out}"/All.fa
 
-# ## Pull in manually curated outgroup
+### Pull in manually curated outgroup
 # outgroup_fa="${gh_dir}/auxillary/NChR/outgroup.fa"
 # cat "${phylo_out}"/All_NCf.fa "${outgroup_fa}" > "${phylo_out}"/All_NCf_outgroup.fa
 
 
 # ## HMMTOP
-# cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
-# ./hmmtop -if="${phylo_out}"/All_NCf_outgroup.fa -of="${phylo_out}"/All_NCf_outgroup_hmmtop_output.txt -sf=FAS
+cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
+./hmmtop -if="${phylo_out}"/All_NCf_outgroup.fa -of="${phylo_out}"/All_NCf_outgroup_hmmtop_output.txt -sf=FAS
 
 # ## Parse HHMTOP output to get list of seq ids with >= 5 TM domains <= 10 TM domains
-# python "${HMMTOP_py}" "${phylo_out}"/All_NCf_outgroup_hmmtop_output.txt "${phylo_out}"/All_NCf_outgroup.fa "${phylo_out}"/All_NCf_outgroup_TMfiltered.fa
+python "${HMMTOP_py}" "${phylo_out}"/All_NCf_outgroup_hmmtop_output.txt "${phylo_out}"/All_NCf_outgroup.fa "${phylo_out}"/All_NCf_outgroup_TMfiltered.fa
 
 # ### Align files
 #mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_out}"/All_NCf_outgroup_TMfiltered.fa > "${phylo_out}"/All_NCf_outgroup_TMfiltered_align.fa
