@@ -76,7 +76,7 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # 	done;
 # done <"$species_gold"
 
-### NON-GOLD FILARID GENOMES - mine for nematode chemo Rs
+# ## NON-GOLD FILARID GENOMES - mine for nematode chemo Rs
 # line = species name, iterate through gold genome species names
 # while IFS= read -r line; do
 # 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
@@ -106,7 +106,7 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # 	done;
 # done <"$species_gold"
 
-### NON-GOLD FILARID GENOMES - Parse hmm outputs to filter out those where first hit is not NChR hmm, extract sequences of surviving hits
+# ## NON-GOLD FILARID GENOMES - Parse hmm outputs to filter out those where first hit is not NChR hmm, extract sequences of surviving hits
 # while IFS= read -r line; do
 # 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
 # 		cat "${ngf_out}"/${line}_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '!/Frizzled|7tm_1|7tm_2|7tm_3|7tm_4|7tm_6|7tm_7/' | sort -k4 -g > "${ngf_out}"/${line}_NChits.txt
@@ -128,7 +128,7 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # 	done;
 # done <"$species_gold"
 
-### NON-GOLD FILARID GENOMES - Reciprocal HMMSEARCH of extracted sequences against pfam-a
+# ## NON-GOLD FILARID GENOMES - Reciprocal HMMSEARCH of extracted sequences against pfam-a
 # while IFS= read -r line; do
 # 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
 # 		#HMMSEARCH all putative chemosensory genes against db of PFAM hmms
@@ -149,7 +149,7 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # 	done;
 # done <"$species_gold"
 
-### NON-GOLD FILARID GENOMES - Parse hmm outputs to remove sequences where first hit is not NChR, get list of surviving unique seq ids, extract sequences 
+# ## NON-GOLD FILARID GENOMES - Parse hmm outputs to remove sequences where first hit is not NChR, get list of surviving unique seq ids, extract sequences 
 # while IFS= read -r line; do
 # 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
 # 		cat "${ngf_out}"/${line}_rHMM.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g > "${ngf_out}"/${line}_NChitsf.txt
@@ -227,39 +227,39 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 ###### PHYLOGENETIC ANALYSIS
 ######
 
-### GOLD GENOMES - Copy sequence files to ../phylo/NemChR directory
-while IFS= read -r line; do
-	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
-		cp "${gold_out}"/${line}_*.fa "${phylo_out}"
-	done;
-done <"$species_gold"
+# ## GOLD GENOMES - Copy sequence files to ../phylo/NemChR directory
+# while IFS= read -r line; do
+# 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
+# 		cp "${gold_out}"/${line}_*.fa "${phylo_out}"
+# 	done;
+# done <"$species_gold"
 
-### NON-GOLD FILARID GENOMES - Copy sequence files to ../phylo/NemChR directory
-while IFS= read -r line; do
-	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
-		cp "${ngf_out}"/${line}_*.fa "${phylo_out}"
-	done;
-done <"$species_ngf"
+# ## NON-GOLD FILARID GENOMES - Copy sequence files to ../phylo/NemChR directory
+# while IFS= read -r line; do
+# 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
+# 		cp "${ngf_out}"/${line}_*.fa "${phylo_out}"
+# 	done;
+# done <"$species_ngf"
 
-### Remove the unfiltered NC files
-rm "${phylo_out}"/*_NC.fa
+# ## Remove the unfiltered NC files
+# rm "${phylo_out}"/*_NC.fa
 
-### Label each sequence with its species name
-for f in "${phylo_out}"/*.fa ; do
-	python "${change_ID_py}" "$f" "$f".fa;
-done
-for f in "${phylo_out}"/*.fa.fa ; do
-	mv "$f" "${f/.fa.fa/_label.fa}";
-done
+# ## Label each sequence with its species name
+# for f in "${phylo_out}"/*.fa ; do
+# 	python "${change_ID_py}" "$f" "$f".fa;
+# done
+# for f in "${phylo_out}"/*.fa.fa ; do
+# 	mv "$f" "${f/.fa.fa/_label.fa}";
+# done
 
-### Cat and label files for alignment/phylo
+# ## Cat and label files for alignment/phylo
 # cat "${phylo_out}"/*_NCf.fa > "${phylo_out}"/All_NCf.fa
 # cat "${phylo_out}"/*_R.fa > "${phylo_out}"/All_R.fa
 # cat "${phylo_out}"/*_G.fa > "${phylo_out}"/All_G.fa
 # cat "${phylo_out}"/*_F.fa > "${phylo_out}"/All_F.fa
 # cat "${phylo_out}"/*_AS.fa > "${phylo_out}"/All_AS.fa
 
-### Label each sequence with its predicted family
+# ## Label each sequence with its predicted family
 # sed 's/>/>NC:/' "${phylo_out}"/All_NCf.fa > "${phylo_out}"/All_NCf_lab.fa
 # sed 's/>/>R:/' "${phylo_out}"/All_R.fa > "${phylo_out}"/All_Rf_lab.fa
 # sed 's/>/>G:/' "${phylo_out}"/All_G.fa > "${phylo_out}"/All_Gf_lab.fa
@@ -267,21 +267,21 @@ done
 # sed 's/>/>AS:/' "${phylo_out}"/All_AS.fa > "${phylo_out}"/All_ASf_lab.fa
 # cat "${phylo_out}"/All*_lab.fa > "${phylo_out}"/All.fa
 
-### Pull in manually curated outgroup
+# ## Pull in manually curated outgroup
 # outgroup_fa="${gh_dir}/auxillary/NChR/outgroup.fa"
 # cat "${phylo_out}"/All_NCf.fa "${outgroup_fa}" > "${phylo_out}"/All_NCf_outgroup.fa
 
 
-# # # # ### HMMTOP
+# ## HMMTOP
 # cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
 # ./hmmtop -if="${phylo_out}"/All_NCf_outgroup.fa -of="${phylo_out}"/All_NCf_outgroup_hmmtop_output.txt -sf=FAS
 
-# Parse HHMTOP output to get list of seq ids with >= 5 TM domains <= 10 TM domains
+# ## Parse HHMTOP output to get list of seq ids with >= 5 TM domains <= 10 TM domains
 # python "${HMMTOP_py}" "${phylo_out}"/All_NCf_outgroup_hmmtop_output.txt "${phylo_out}"/All_NCf_outgroup.fa "${phylo_out}"/All_NCf_outgroup_TMfiltered.fa
 
 # ### Align files
 #mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_out}"/All_NCf_outgroup_TMfiltered.fa > "${phylo_out}"/All_NCf_outgroup_TMfiltered_align.fa
-# mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_out}"/All_NCf_outgroup.fa > "${phylo_out}"/All_NCf_outgroup_align.fa
+#mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_out}"/All_NCf_outgroup.fa > "${phylo_out}"/All_NCf_outgroup_align.fa
 
 
 # trimal="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
