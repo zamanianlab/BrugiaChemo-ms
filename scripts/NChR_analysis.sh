@@ -241,6 +241,9 @@ while IFS= read -r line; do
 	done;
 done <"$species_ngf"
 
+### Remove the unfiltered NC files
+rm "${phylo_out}"/*_NC.fa
+
 ### Label each sequence with its species name
 for f in "${phylo_out}"/*.fa ; do
 	python "${change_ID_py}" "$f" "$f".fa;
