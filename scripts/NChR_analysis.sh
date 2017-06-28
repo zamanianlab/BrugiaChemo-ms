@@ -196,24 +196,18 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # python "${HMMTOP_py}" "${phylo_out}"/All_NCf_outgroup_hmmtop_output.txt "${phylo_out}"/All_NCf_outgroup.fa "${phylo_out}"/All_NCf_outgroup_TMfiltered.fa
 
 # ### Align files
-mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_out}"/All_NCf_outgroup_TMfiltered.fa > "${phylo_out}"/All_NCf_outgroup_TMfiltered_align.fa
-# mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_dir}"/All_NCf_outgroup.fa > "${phylo_dir}"/All_NCf_outgroup_align.fa
+#mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_out}"/All_NCf_outgroup_TMfiltered.fa > "${phylo_out}"/All_NCf_outgroup_TMfiltered_align.fa
+# mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_out}"/All_NCf_outgroup.fa > "${phylo_out}"/All_NCf_outgroup_align.fa
 
-# #Trim the alignment
-# sed 's/:/_/' ${phylo_dir}/All_TMfiltered_align.fa > ${phylo_dir}/All_TMfiltered_align_rename.fa
-# cd /Users/mzamanian/Bioinformatics/Noisy-1.5.12 
-# noisy  -v ${phylo_dir}/All_TMfiltered_align_rename.fas
 
 # trimal="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 
-# "${trimal}" -in "${phylo_dir}"/All_NCf_outgroup_TMfiltered_align.fa -out "${phylo_dir}"/All_NCf_outgroup_TMfiltered_align_trim.fa -gt 0.7
+# "${trimal}" -in "${phylo_out}"/All_NCf_outgroup_TMfiltered_align.fa -out "${phylo_out}"/All_NCf_outgroup_TMfiltered_align_trim.fa -gt 0.7
 
-# raxml="${gh_dir}"/scripts/auxillary/raxmlHPC-PTHREADS-SSE3
+raxml="${gh_dir}"/scripts/auxillary/raxmlHPC-PTHREADS-SSE3
 
-# "${raxml}" -T 2 -f a -x 12345 -p 12345 -# 100 -m PROTCATAUTO -s "${phylo_dir}"/All_NCf_outgroup_TMfiltered_align_trim.fa -n All_NCf_outgroup.ml.tre
-# mv All_NCf_outgroup.ml.tre "${phylo_dir}"/
-
-
+"${raxml}" -T 2 -f a -x 12345 -p 12345 -# 100 -m PROTCATAUTO -s "${phylo_out}"/All_NCf_outgroup_TMfiltered_align_trim.fa -n All_NCf_outgroup.ml.tre
+mv All_NCf_outgroup.ml.tre "${phylo_out}"/
 
 
 
@@ -223,6 +217,11 @@ mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_out}"/All_NCf_outgroup_TM
 
 
 
+
+# #Trim the alignment
+# sed 's/:/_/' ${phylo_out}/All_TMfiltered_align.fa > ${phylo_out}/All_TMfiltered_align_rename.fa
+# cd /Users/mzamanian/Bioinformatics/Noisy-1.5.12 
+# noisy  -v ${phylo_dir}/All_TMfiltered_align_rename.fas
 
 
 
