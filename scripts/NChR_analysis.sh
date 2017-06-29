@@ -274,7 +274,7 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # cat "${phylo_out}"/All*_lab.fa > "${phylo_out}"/All.fa
 
 ### Pull in manually curated outgroup
-# outgroup_fa="${gh_dir}/auxillary/NChR/outgroup.fa"
+outgroup_fa="${gh_dir}/auxillary/NChR/outgroup.fa"
 # cat "${phylo_out}"/All_NCf.fa "${outgroup_fa}" > "${phylo_out}"/All_NCf_outgroup.fa
 
 
@@ -299,12 +299,18 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 ###### MCL CLUSTERING ANALYSIS
 ######
 
-cp "${phylo_out}"/All_NCf_outgroup.fa "${mcl_out}"
+### Re-Add Pristionchus and Panagrellus
+# for f in "${phylo_out}"/panagrellus*; do mv "$f" "${f/.fa.bkp/.fa}"; done
+# for f in "${phylo_out}"/pristionchus*; do mv "$f" "${f/.fa.bkp/.fa}"; done
+
+# cat "${phylo_out}"/*_NCf_label.fa "${outgroup_fa}" > "${mcl_out}"/All_NCf_outgroup.fa
+
 make_db="${gh_dir}"/scripts/auxillary/makeblastdb
 blast="${gh_dir}/"scripts/auxillary/blastp
 load="${gh_dir}/"scripts/auxillary/mcxload
 mcl="${gh_dir}/"scripts/auxillary/mcl
 mcxdump="${gh_dir}/"scripts/auxillary/mcxdump
+prepCSV_py="${gh_dir}/"scripts/auxillary/format_csv.py
 
 ## blast all vs all
 cd "${mcl_out}"
@@ -314,15 +320,19 @@ cd "${mcl_out}"
 # cut -f 1,2,11 blastall.out > blastall.abc
 # "${load}" -abc blastall.abc --stream-mirror --stream-neg-log10 -stream-tf 'ceil(200)' -o blastall.mci -write-tab blastall.tab
 ## MCL analysis
-"${mcl}" blastall.mci -I 1.4
-"${mcl}" blastall.mci -I 2
-"${mcl}" blastall.mci -I 4
-"${mcl}" blastall.mci -I 6
+# "${mcl}" blastall.mci -I 1.4
+# "${mcl}" blastall.mci -I 2
+# "${mcl}" blastall.mci -I 4
+# "${mcl}" blastall.mci -I 6
+# "${mcl}" blastall.mci -I 1.2
 
-"${mcxdump}" -icl out.blastall.mci.I14 -tabr blastall.tab -o dump.blastall.mci.I14
-"${mcxdump}" -icl out.blastall.mci.I20 -tabr blastall.tab -o dump.blastall.mci.I20
-"${mcxdump}" -icl out.blastall.mci.I40 -tabr blastall.tab -o dump.blastall.mci.I40
-"${mcxdump}" -icl out.blastall.mci.I60 -tabr blastall.tab -o dump.blastall.mci.I60
+# "${mcxdump}" -icl out.blastall.mci.I14 -tabr blastall.tab -o dump.blastall.mci.I14
+# "${mcxdump}" -icl out.blastall.mci.I20 -tabr blastall.tab -o dump.blastall.mci.I20
+# "${mcxdump}" -icl out.blastall.mci.I40 -tabr blastall.tab -o dump.blastall.mci.I40
+# "${mcxdump}" -icl out.blastall.mci.I60 -tabr blastall.tab -o dump.blastall.mci.I60
+# "${mcxdump}" -icl out.blastall.mci.I12 -tabr blastall.tab -o dump.blastall.mci.I12
+
+python "${prepCSV_py}" "${mcl_out}"/dump.blastall.mci.I12 "${mcl_out}"/clusters.csv
 
 
 
