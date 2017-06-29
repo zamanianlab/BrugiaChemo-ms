@@ -254,6 +254,10 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # 	mv "$f" "${f/.fa.fa/_label.fa}";
 # done
 
+### Remove Pristionchus and Panagrellus
+# for f in "${phylo_out}"/panagrellus*; do mv "$f" "${f/.fa/.fa.bkp}"; done
+# for f in "${phylo_out}"/pristionchus*; do mv "$f" "${f/.fa/.fa.bkp}"; done
+
 ### Cat and label files for alignment/phylo
 # cat "${phylo_out}"/*_NCf_label.fa > "${phylo_out}"/All_NCf.fa
 # cat "${phylo_out}"/*_R_label.fa > "${phylo_out}"/All_R.fa
@@ -278,7 +282,7 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
 # ./hmmtop -if="${phylo_out}"/All_NCf_outgroup.fa -of="${phylo_out}"/All_NCf_outgroup_hmmtop_output.txt -sf=FAS
 
-# ## Parse HHMTOP output to get list of seq ids with >= 5 TM domains <= 10 TM domains
+## Parse HHMTOP output to get list of seq ids with >= 5 TM domains <= 10 TM domains
 # python "${HMMTOP_py}" "${phylo_out}"/All_NCf_outgroup_hmmtop_output.txt "${phylo_out}"/All_NCf_outgroup.fa "${phylo_out}"/All_NCf_outgroup_TMfiltered.fa
 
 ### Align files
@@ -286,14 +290,9 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 #mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_out}"/All_NCf_outgroup.fa > "${phylo_out}"/All_NCf_outgroup_align.fa
 
 ### Trim alignments
-trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
-# "${trimal_cmd}" -in "${phylo_out}"/All_NCf_outgroup_TMfiltered.aln -out "${phylo_out}"/All_NCf_outgroup_TMfiltered_trim.aln -gt 0.85 -cons 2
-# "${trimal_cmd}" -in "${phylo_out}"/All_NCf_outgroup.aln -out "${phylo_out}"/All_NCf_outgroup_trim.aln -gt 0.85 -cons 2
-
-# raxml="${gh_dir}"/scripts/auxillary/raxmlHPC-PTHREADS-SSE3
-
-# "${raxml}" -T 2 -f a -x 12345 -p 12345 -# 100 -m PROTCATAUTO -s "${phylo_out}"/All_NCf_outgroup_TMfiltered_align_trim.fa -n All_NCf_outgroup.ml.tre
-# mv All_NCf_outgroup.ml.tre "${phylo_out}"/
+# trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
+# "${trimal_cmd}" -in "${phylo_out}"/All_NCf_outgroup_TMfiltered.aln -out "${phylo_out}"/All_NCf_outgroup_TMfiltered_trim.aln -gt 0.8 -cons 2
+# "${trimal_cmd}" -in "${phylo_out}"/All_NCf_outgroup.aln -out "${phylo_out}"/All_NCf_outgroup_trim.aln -gt 0.8 -cons 2
 
 
 ######
@@ -309,23 +308,21 @@ mcxdump="${gh_dir}/"scripts/auxillary/mcxdump
 
 ## blast all vs all
 cd "${mcl_out}"
-## "${make_db}" -dbtype prot -in All_NCf_outgroup.fa -out All_NCf_outgroup  
+# "${make_db}" -dbtype prot -in All_NCf_outgroup.fa -out All_NCf_outgroup  
 # "${blast}" -db All_NCf_outgroup -query All_NCf_outgroup.fa -out blastall.out -evalue 0.01 -outfmt 6
 ## prepare for MCL
 # cut -f 1,2,11 blastall.out > blastall.abc
 # "${load}" -abc blastall.abc --stream-mirror --stream-neg-log10 -stream-tf 'ceil(200)' -o blastall.mci -write-tab blastall.tab
 ## MCL analysis
-"${mcl}" blastall.mci -I 0.8
-# "${mcl}" blastall.mci -I 1.4
-# "${mcl}" blastall.mci -I 2
-# "${mcl}" blastall.mci -I 4
-# "${mcl}" blastall.mci -I 6
+"${mcl}" blastall.mci -I 1.4
+"${mcl}" blastall.mci -I 2
+"${mcl}" blastall.mci -I 4
+"${mcl}" blastall.mci -I 6
 
-"${mcxdump}" -icl out.blastall.mci.I08 -tabr blastall.tab -o dump.blastall.mci.I08
-# "${mcxdump}" -icl out.blastall.mci.I14 -tabr blastall.tab -o dump.blastall.mci.I14
-# "${mcxdump}" -icl out.blastall.mci.I20 -tabr blastall.tab -o dump.blastall.mci.I20
-# "${mcxdump}" -icl out.blastall.mci.I40 -tabr blastall.tab -o dump.blastall.mci.I40
-# "${mcxdump}" -icl out.blastall.mci.I60 -tabr blastall.tab -o dump.blastall.mci.I60
+"${mcxdump}" -icl out.blastall.mci.I14 -tabr blastall.tab -o dump.blastall.mci.I14
+"${mcxdump}" -icl out.blastall.mci.I20 -tabr blastall.tab -o dump.blastall.mci.I20
+"${mcxdump}" -icl out.blastall.mci.I40 -tabr blastall.tab -o dump.blastall.mci.I40
+"${mcxdump}" -icl out.blastall.mci.I60 -tabr blastall.tab -o dump.blastall.mci.I60
 
 
 
