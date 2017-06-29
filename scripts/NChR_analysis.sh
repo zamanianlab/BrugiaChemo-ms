@@ -26,6 +26,8 @@ mkdir "${local_dir}/NChR/ngo_genomes"
 ngo_out="${local_dir}/NChR/ngo_genomes"
 mkdir "${local_dir}/NChR/phylo"
 phylo_out="${local_dir}/NChR/phylo"
+mkdir "${local_dir}/NChR/mcl"
+mcl_out="${local_dir}/NChR/mcl"
 
 ##Auxillary Scripts
 # Extracting sequences provided list of sequence names and fasta file
@@ -272,21 +274,21 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # cat "${phylo_out}"/All_NCf.fa "${outgroup_fa}" > "${phylo_out}"/All_NCf_outgroup.fa
 
 
-# ## HMMTOP
-cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
-./hmmtop -if="${phylo_out}"/All_NCf_outgroup.fa -of="${phylo_out}"/All_NCf_outgroup_hmmtop_output.txt -sf=FAS
+### HMMTOP
+# cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
+# ./hmmtop -if="${phylo_out}"/All_NCf_outgroup.fa -of="${phylo_out}"/All_NCf_outgroup_hmmtop_output.txt -sf=FAS
 
 # ## Parse HHMTOP output to get list of seq ids with >= 5 TM domains <= 10 TM domains
-python "${HMMTOP_py}" "${phylo_out}"/All_NCf_outgroup_hmmtop_output.txt "${phylo_out}"/All_NCf_outgroup.fa "${phylo_out}"/All_NCf_outgroup_TMfiltered.fa
+# python "${HMMTOP_py}" "${phylo_out}"/All_NCf_outgroup_hmmtop_output.txt "${phylo_out}"/All_NCf_outgroup.fa "${phylo_out}"/All_NCf_outgroup_TMfiltered.fa
 
-# ### Align files
+### Align files
 #mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_out}"/All_NCf_outgroup_TMfiltered.fa > "${phylo_out}"/All_NCf_outgroup_TMfiltered_align.fa
 #mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_out}"/All_NCf_outgroup.fa > "${phylo_out}"/All_NCf_outgroup_align.fa
 
-
-# trimal="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
-
-# "${trimal}" -in "${phylo_out}"/All_NCf_outgroup_TMfiltered_align.fa -out "${phylo_out}"/All_NCf_outgroup_TMfiltered_align_trim.fa -gt 0.7
+### Trim alignments
+trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
+# "${trimal_cmd}" -in "${phylo_out}"/All_NCf_outgroup_TMfiltered.aln -out "${phylo_out}"/All_NCf_outgroup_TMfiltered_trim.aln -gt 0.85 -cons 2
+# "${trimal_cmd}" -in "${phylo_out}"/All_NCf_outgroup.aln -out "${phylo_out}"/All_NCf_outgroup_trim.aln -gt 0.85 -cons 2
 
 # raxml="${gh_dir}"/scripts/auxillary/raxmlHPC-PTHREADS-SSE3
 
@@ -294,8 +296,36 @@ python "${HMMTOP_py}" "${phylo_out}"/All_NCf_outgroup_hmmtop_output.txt "${phylo
 # mv All_NCf_outgroup.ml.tre "${phylo_out}"/
 
 
+######
+###### MCL CLUSTERING ANALYSIS
+######
 
+cp "${phylo_out}"/All_NCf_outgroup.fa "${mcl_out}"
+make_db="${gh_dir}"/scripts/auxillary/makeblastdb
+blast="${gh_dir}/"scripts/auxillary/blastp
+load="${gh_dir}/"scripts/auxillary/mcxload
+mcl="${gh_dir}/"scripts/auxillary/mcl
+mcxdump="${gh_dir}/"scripts/auxillary/mcxdump
 
+## blast all vs all
+cd "${mcl_out}"
+## "${make_db}" -dbtype prot -in All_NCf_outgroup.fa -out All_NCf_outgroup  
+# "${blast}" -db All_NCf_outgroup -query All_NCf_outgroup.fa -out blastall.out -evalue 0.01 -outfmt 6
+## prepare for MCL
+# cut -f 1,2,11 blastall.out > blastall.abc
+# "${load}" -abc blastall.abc --stream-mirror --stream-neg-log10 -stream-tf 'ceil(200)' -o blastall.mci -write-tab blastall.tab
+## MCL analysis
+"${mcl}" blastall.mci -I 0.8
+# "${mcl}" blastall.mci -I 1.4
+# "${mcl}" blastall.mci -I 2
+# "${mcl}" blastall.mci -I 4
+# "${mcl}" blastall.mci -I 6
+
+"${mcxdump}" -icl out.blastall.mci.I08 -tabr blastall.tab -o dump.blastall.mci.I08
+# "${mcxdump}" -icl out.blastall.mci.I14 -tabr blastall.tab -o dump.blastall.mci.I14
+# "${mcxdump}" -icl out.blastall.mci.I20 -tabr blastall.tab -o dump.blastall.mci.I20
+# "${mcxdump}" -icl out.blastall.mci.I40 -tabr blastall.tab -o dump.blastall.mci.I40
+# "${mcxdump}" -icl out.blastall.mci.I60 -tabr blastall.tab -o dump.blastall.mci.I60
 
 
 
