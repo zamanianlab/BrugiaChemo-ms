@@ -245,7 +245,7 @@ trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 "${trimal_cmd}" -in "${phylo_out}"/All_rblast_TRPf_outgroup.aln -out "${phylo_out}"/All_rblast_TRPf_outgroup_trim.aln -gt 0.75 -cons 2
 
 # on server
-~/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -f a -x 12345 -p 12345 -# 100 -m PROTCATAUTO -s ~/data/TRP/All_rblast_TRPf_outgroup_trim.aln -n TRP
+ssh zamanian@brc6.secure.biotech.wisc.edu 'nohup ~/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -f a -x 12345 -p 12345 -# 100 -m PROTCATAUTO -s ~/data/TRP/All_rblast_TRPf_outgroup_trim.aln -n TRP &'
 
 ### NON-GOLD FILARID GENOMES - remove hits that aren't most similar to a TRP, extract sequences of surviving hits
 # while IFS= read -r line; do
