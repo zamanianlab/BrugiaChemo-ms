@@ -224,24 +224,28 @@ TRP_HMM="${gh_dir}"/auxillary/TRP/TRP.hmm
 # cat "${phylo_out}"/*_rblast_TRP_label.fa > "${phylo_out}"/All_rblast_TRP_label.fa
 
 ### Pull in manually curated outgroup (seeds)
-# cat "${phylo_out}"/All_rblast_TRP_label.fa "${seeds}" > "${phylo_out}"/All_TRPrblast_outgroup.fa
+# cat "${phylo_out}"/All_rblast_TRP_label.fa "${seeds}" > "${phylo_out}"/All_rblast_TRP_outgroup.fa
 
 
 ### HMMTOP
 # cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
-# ./hmmtop -if="${phylo_out}"/All_TRPf_outgroup.fa -of="${phylo_out}"/All_TRPf_outgroup_hmmtop_output.txt -sf=FAS
-
+# ./hmmtop -if="${phylo_out}"/All_rblast_TRP_outgroup.fa -of="${phylo_out}"/All_rblast_TRP_outgroup_hmmtop_output.txt -sf=FAS
 ## Parse HHMTOP output to get list of seq ids with >= 5 TM domains <= 10 TM domains
 # python "${HMMTOP_py}" "${phylo_out}"/All_NCf_outgroup_hmmtop_output.txt "${phylo_out}"/All_NCf_outgroup.fa "${phylo_out}"/All_NCf_outgroup_TMfiltered.fa
+## Remove sequences without any predicted TMs
+# cat "${phylo_out}"/All_rblast_TRP_outgroup_hmmtop_output.txt | awk '{print $3 " " $5}' | awk '$2!=0' | awk '{print $1}' > "${phylo_out}"/All_rblast_TRP_outgroup.key
+# python "${seqextract_py}" "${phylo_out}"/All_rblast_TRP_outgroup.key "${phylo_out}"/All_rblast_TRP_outgroup.fa "${phylo_out}"/All_rblast_TRPf_outgroup.fa
+
 
 ### Align files
-# mafft --thread 4 --auto "${phylo_out}"/All_TRPrblast_outgroup.fa > "${phylo_out}"/All_TRPrblast_outgroup.aln
+mafft --thread 4 --auto "${phylo_out}"/All_rblast_TRPf_outgroup.fa > "${phylo_out}"/All_rblast_TRPf_outgroup.aln
 
 ### Trim alignments
-# trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
-# "${trimal_cmd}" -in "${phylo_out}"/All_TRPrblast_outgroup.aln -out "${phylo_out}"/All_TRPrblast_outgroup_trim.aln -gt 0.75 -cons 2
+trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
+"${trimal_cmd}" -in "${phylo_out}"/All_rblast_TRPf_outgroup.aln -out "${phylo_out}"/All_rblast_TRPf_outgroup_trim.aln -gt 0.75 -cons 2
 
-
+# on server
+~/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -f a -x 12345 -p 12345 -# 100 -m PROTCATAUTO -s ~/data/TRP/All_rblast_TRPf_outgroup_trim.aln -n TRP
 
 ### NON-GOLD FILARID GENOMES - remove hits that aren't most similar to a TRP, extract sequences of surviving hits
 # while IFS= read -r line; do

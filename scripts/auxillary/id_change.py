@@ -19,6 +19,7 @@ def headerchange(file):
 		for record in records:
 			#print record.id
 			record.id = label + "-" + record.id
+			record.description = ""
 			#print record.id
 			SeqIO.write(record, corrected, 'fasta')
 
