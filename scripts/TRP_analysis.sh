@@ -17,16 +17,16 @@ ngf_dir="${local_dir}/ngf_genomes"
 ngo_dir="${local_dir}/ngo_genomes"
 
 ### Define script output directories
-mkdir "${local_dir}/TRP/"
-mkdir "${local_dir}/TRP/g_genomes"
+# mkdir "${local_dir}/TRP/"
+# mkdir "${local_dir}/TRP/g_genomes"
 gold_out="${local_dir}/TRP/g_genomes"
-mkdir "${local_dir}/TRP/ngf_genomes"
+# mkdir "${local_dir}/TRP/ngf_genomes"
 ngf_out="${local_dir}/TRP/ngf_genomes"
-mkdir "${local_dir}/TRP/ngo_genomes"
+# mkdir "${local_dir}/TRP/ngo_genomes"
 ngo_out="${local_dir}/TRP/ngo_genomes"
-mkdir "${local_dir}/TRP/phylo"
+# mkdir "${local_dir}/TRP/phylo"
 phylo_out="${local_dir}/TRP/phylo"
-mkdir "${local_dir}/TRP/mcl"
+# mkdir "${local_dir}/TRP/mcl"
 mcl_out="${local_dir}/TRP/mcl"
 
 ##Auxillary Scripts
@@ -68,7 +68,7 @@ seeds="${gh_dir}"/auxillary/TRP/trp_seeds.fa
 # mafft --thread 4 --auto "${seeds}" > "${gh_dir}"/auxillary/TRP/trp_seeds.aln
 # trimal -gt 0.7 -cons 2 -in "${gh_dir}"/auxillary/TRP/trp_seeds.aln -out "${gh_dir}"/auxillary/TRP/trp_seeds_trim.aln
 # hmmbuild "${gh_dir}"/auxillary/TRP/TRP.hmm "${gh_dir}"/auxillary/TRP/trp_seeds_trim.aln
-TRP_HMM="${gh_dir}"/auxillary/TRP/TRP.hmm
+# TRP_HMM="${gh_dir}"/auxillary/TRP/TRP.hmm
 
 ### GOLD GENOMES - Prepare BLAST DBs
 # while IFS= read -r line; do
@@ -238,42 +238,58 @@ TRP_HMM="${gh_dir}"/auxillary/TRP/TRP.hmm
 
 
 ### Align files
-mafft --thread 4 --auto "${phylo_out}"/All_rblast_TRPf_outgroup.fa > "${phylo_out}"/All_rblast_TRPf_outgroup.aln
+# mafft --thread 4 --auto "${phylo_out}"/All_rblast_TRPf_outgroup.fa > "${phylo_out}"/All_rblast_TRPf_outgroup.aln
 
 ### Trim alignments
 trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
-"${trimal_cmd}" -in "${phylo_out}"/All_rblast_TRPf_outgroup.aln -out "${phylo_out}"/All_rblast_TRPf_outgroup_trim.aln -gt 0.75 -cons 2
+# "${trimal_cmd}" -in "${phylo_out}"/All_rblast_TRPf_outgroup.aln -out "${phylo_out}"/All_rblast_TRPf_outgroup_trim.aln -gt 0.75 -cons 2
 
 # on server
-ssh zamanian@brc6.secure.biotech.wisc.edu 'nohup ~/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -f a -x 12345 -p 12345 -# 100 -m PROTCATAUTO -s ~/data/TRP/All_rblast_TRPf_outgroup_trim.aln -n TRP &'
+# ssh zamanian@brc6.secure.biotech.wisc.edu 'nohup ~/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -f a -x 12345 -p 12345 -# 100 -m PROTCATAUTO -s ~/data/TRP/All_rblast_TRPf_outgroup_trim.aln -n TRP &'
 
-### NON-GOLD FILARID GENOMES - remove hits that aren't most similar to a TRP, extract sequences of surviving hits
-# while IFS= read -r line; do
-# 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
-# 		cat "${ngf_out}"/${line}_rec.blastout | awk '{print $1 " " $2 " " $7}' | sort -k1,1 -k3,3g | sort -uk1,1 | awk '/C29E6.2|M05B5.6|Y73F8A.1|ZK512.3|T01H8.5|F54D1.5|C05C12.3|ZC21.2|R06B10.4|K01A11.4|R13A5.1|B0212.5|F28H7.10|T09A12.3|T10B10.7|Y40C5A.2|Y71A12B.4/' | sort -k3 -g > "${ngf_out}"/${line}_rblast_TRPhits.txt
-# 		cat "${ngf_out}"/${line}_rblast_TRPhits.txt | awk '{print $1}' |sort | uniq -u > "${ngf_out}"/${line}_rblast_TRPhits_ids.txt
-# 		#Extract these sequences
-# 		curr_dir=$(dirname "${f}")
-# 		#echo ${curr_dir}
-# 		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
-# 		python "${seqextract_py}" "${ngf_out}"/${line}_rblast_TRPhits_ids.txt "${curr_dir}"/protein.tmp.fa "${ngf_out}"/${line}_rblast_TRP.fa
-# 		rm "${curr_dir}"/protein.tmp.fa
-# 	done;
-# done <"$species_ngf"
+######
+###### HMM Analysis
+###### Use ML tree to create clades, extract keys for each clade using FigTree
 
-### GOLD GENOMES - Reciprocal HMMSEARCH of extracted sequences against pfam-a
+clade_out="${phylo_out}"/clades
+
+# cp "${phylo_out}"/*_id.txt "${clade_out}"
+
+### Create trimmed alignments and build hmms for each clade
+# for f in "${clade_out}"/*_id.txt; do
+# 	python "${seqextract_py}" "${f}"  "${phylo_out}"/All_rblast_TRPf_outgroup.fa "${f}".fa
+# 	mafft --thread 4 --auto "${f}".fa > "${f}".aln
+# 	"${trimal_cmd}" -in "${f}".aln -out "${f}"_trim.aln -gt 0.75 -cons 2
+# 	hmmbuild "${f}".hmm "${f}"_trim.aln;
+# done
+
+# for f in "${clade_out}"/*_id.txt.fa; do mv "$f" "${f/_id.txt.fa/.fa}"; done
+# for f in "${clade_out}"/*_id.txt.aln; do mv "$f" "${f/_id.txt.aln/.aln}"; done
+# for f in "${clade_out}"/*_id.txt_trim.aln; do mv "$f" "${f/_id.txt_trim.aln/_trim.aln}"; done
+
+### Build HMM DB
+# cat "${clade_out}"/*hmm > "${clade_out}"/TRPs.hmm
+# hmmpress "${clade_out}"/TRPs.hmm
+TRP_HMM="${clade_out}"/TRPs.hmm
+# for f in "${clade_out}"/*_id.txt.hmm; do mv "$f" "${f/_id.txt.hmm/.hmm}"; done
+
+### GOLD GENOMES - HMMSEARCH of rBLAST hits against HMMs from ML clades
 # while IFS= read -r line; do
 # 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
-# 		#HMMSEARCH all putative chemosensory genes against db of PFAM hmms
-# 		hmmsearch --tblout "${gold_out}"/${line}_rHMM.out --noali "${pfam_HMM}" "${gold_out}"/${line}_TRP.fa
+# 		curr_dir=$(dirname "${f}")
+# 		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
+# 		#HMMSEARCH all predicted proteins against db of TRP hmms
+# 		hmmsearch --tblout "${gold_out}"/${line}_HMM.out --noali "${TRP_HMM}" "${curr_dir}"/protein.tmp.fa 
 # 	done;
 # done <"$species_gold"
 
-### NON-GOLD FILARID GENOMES - Reciprocal HMMSEARCH of extracted sequences against pfam-a
+### NON-GOLD FILARID GENOMES - HMMSEARCH of rBLAST hits against HMMs from ML clades
 # while IFS= read -r line; do
 # 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
-# 		#HMMSEARCH all putative chemosensory genes against db of PFAM hmms
-# 		hmmsearch --tblout "${ngf_out}"/${line}_rHMM.out --noali "${pfam_HMM}" "${ngf_out}"/${line}_TRP.fa
+# 		curr_dir=$(dirname "${f}")
+# 		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
+# 		#HMMSEARCH all predicted proteins against db of TRP hmms
+# 		hmmsearch --tblout "${ngf_out}"/${line}_HMM.out --noali "${TRP_HMM}" "${curr_dir}"/protein.tmp.fa 
 # 	done;
 # done <"$species_ngf"
 		
@@ -281,11 +297,11 @@ ssh zamanian@brc6.secure.biotech.wisc.edu 'nohup ~/install/standard-RAxML/raxmlH
 ### GOLD GENOMES - Parse hmm outputs to remove sequences where first hit is not TRP-like, get list of surviving unique seq ids, extract sequences 
 # while IFS= read -r line; do
 # 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
-# 		cat "${gold_out}"/${line}_rHMM.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/TRP_2|PKD_channel|TRPM_tetra|Ion_trans/' | sort -k4 -g > "${gold_out}"/${line}_TRPhitsf.txt
-# 		cat "${gold_out}"/${line}_TRPhitsf.txt | awk '{print $1}' > "${gold_out}"/${line}_TRPhitsf_ids.txt
+# 		cat "${gold_out}"/${line}_HMM.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | sort -k4 -g > "${gold_out}"/${line}_HMM_TRPhits.txt
+# 		cat "${gold_out}"/${line}_HMM_TRPhits.txt | awk '{print $1}' > "${gold_out}"/${line}_HMM_TRPhits_ids.txt
 # 		curr_dir=$(dirname "${f}")
 #  		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
-# 		python "${seqextract_py}" "${gold_out}"/${line}_TRPhitsf_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_TRPf.fa
+# 		python "${seqextract_py}" "${gold_out}"/${line}_HMM_TRPhits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_HMM_TRP.fa
 # 		rm "${curr_dir}"/protein.tmp.fa
 # 	done;
 # done <"$species_gold"
@@ -293,35 +309,75 @@ ssh zamanian@brc6.secure.biotech.wisc.edu 'nohup ~/install/standard-RAxML/raxmlH
 # ## NON-GOLD FILARID GENOMES - Parse hmm outputs to remove sequences where first hit is not TRP-like, get list of surviving unique seq ids, extract sequences 
 # while IFS= read -r line; do
 # 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
-# 		cat "${ngf_out}"/${line}_rHMM.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/TRP_2|PKD_channel|TRPM_tetra|Ion_trans/' | sort -k4 -g > "${ngf_out}"/${line}_TRPhitsf.txt
-# 		cat "${ngf_out}"/${line}_TRPhitsf.txt | awk '{print $1}' > "${ngf_out}"/${line}_TRPhitsf_ids.txt
+# 		cat "${ngf_out}"/${line}_HMM.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | sort -k4 -g > "${ngf_out}"/${line}_HMM_TRPhits.txt
+# 		cat "${ngf_out}"/${line}_HMM_TRPhits.txt | awk '{print $1}' > "${ngf_out}"/${line}_HMM_TRPhits_ids.txt
 # 		curr_dir=$(dirname "${f}")
 #  		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
-# 		python "${seqextract_py}" "${ngf_out}"/${line}_TRPhitsf_ids.txt "${curr_dir}"/protein.tmp.fa "${ngf_out}"/${line}_TRPf.fa
+# 		python "${seqextract_py}" "${ngf_out}"/${line}_HMM_TRPhits_ids.txt "${curr_dir}"/protein.tmp.fa "${ngf_out}"/${line}_HMM_TRP.fa
 # 		rm "${curr_dir}"/protein.tmp.fa
 # 	done;
 # done <"$species_ngf"
 
+### GOLD GENOMES - Reciprocal BLAST of extracted sequences against pfam-a
+while IFS= read -r line; do
+	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
+		cd "${gold_dir}"/caenorhabditis_elegans/PRJNA13758/
+		#BLAST all putative TRP genes against C. elegans proteome
+		blastp -query "${gold_out}"/${line}_HMM_TRP.fa -db caenorhabditis_elegans.protein.db -out "${gold_out}"/${line}_rec2.blastout -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
+	done;
+done <"$species_gold"
+
+# ## NON-GOLD FILARID GENOMES - Reciprocal BLAST of extracted sequences against pfam-a
+while IFS= read -r line; do
+	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
+		cd "${gold_dir}"/caenorhabditis_elegans/PRJNA13758/
+		#BLAST all putative TRP genes against C. elegans proteome
+		blastp -query "${ngf_out}"/${line}_HMM_TRP.fa -db caenorhabditis_elegans.protein.db -out "${ngf_out}"/${line}_rec2.blastout -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
+	done;
+done <"$species_ngf"
+
+### GOLD GENOMES - Parse hmm outputs to remove sequences where first hit is not TRP domain, get list of surviving unique seq ids, extract sequences 
+# while IFS= read -r line; do
+# 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
+# 		cat "${gold_out}"/${line}_rHMM.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/TRP_2|TRPM_tetra|NUDIX_5|Ank|Ank_2|Ank_3|Ank_4|Ank_5|PH|PKD_channel|Ion_trans/' | sort -k4 -g > "${gold_out}"/${line}_rHMM_TRPhits.txt
+# 		cat "${gold_out}"/${line}_rHMM_TRPhits.txt | awk '{print $1}' > "${gold_out}"/${line}_rHMM_TRPhits_ids.txt
+# 		curr_dir=$(dirname "${f}")
+#  		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
+# 		python "${seqextract_py}" "${gold_out}"/${line}_rHMM_TRPhits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_rHMM_TRP.fa
+# 		rm "${curr_dir}"/protein.tmp.fa
+# 	done;
+# done <"$species_gold"
+
+### NON-GOLD FILARID GENOMES - Parse hmm outputs to remove sequences where first hit is not TRP domain, get list of surviving unique seq ids, extract sequences 
+# while IFS= read -r line; do
+# 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
+# 		cat "${ngf_out}"/${line}_rHMM.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/TRP_2|TRPM_tetra|NUDIX_5|Ank|Ank_2|Ank_3|Ank_4|Ank_5|PH|PKD_channel|Ion_trans/' | sort -k4 -g > "${ngf_out}"/${line}_rHMM_TRPhits.txt
+# 		cat "${ngf_out}"/${line}_rHMM_TRPhits.txt | awk '{print $1}' > "${ngf_out}"/${line}_rHMM_TRPhits_ids.txt
+# 		curr_dir=$(dirname "${f}")
+#  		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
+# 		python "${seqextract_py}" "${ngf_out}"/${line}_rHMM_TRPhits_ids.txt "${curr_dir}"/protein.tmp.fa "${ngf_out}"/${line}_rHMM_TRP.fa
+# 		rm "${curr_dir}"/protein.tmp.fa
+# 	done;
+# done <"$species_ngf"
+
+
 ######
-###### PHYLOGENETIC ANALYSIS
+###### SECOND PHYLOGENETIC ANALYSIS
 ######
 
 ### GOLD GENOMES - Copy sequence files to ../phylo/TRP directory
 # while IFS= read -r line; do
 # 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
-# 		cp "${gold_out}"/${line}_*.fa "${phylo_out}"
+# 		cp "${gold_out}"/${line}_rHMM_TRP.fa "${phylo_out}"
 # 	done;
 # done <"$species_gold"
 
 ### NON-GOLD FILARID GENOMES - Copy sequence files to ../phylo/TRP directory
 # while IFS= read -r line; do
 # 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
-# 		cp "${ngf_out}"/${line}_*.fa "${phylo_out}"
+# 		cp "${ngf_out}"/${line}_rHMM_TRP.fa "${phylo_out}"
 # 	done;
 # done <"$species_ngf"
-
-### Remove the unfiltered NC files
-# rm "${phylo_out}"/*_TRP.fa
 
 ### Label each sequence with its species name
 # for f in "${phylo_out}"/*.fa ; do
@@ -331,15 +387,12 @@ ssh zamanian@brc6.secure.biotech.wisc.edu 'nohup ~/install/standard-RAxML/raxmlH
 # 	mv "$f" "${f/.fa.fa/_label.fa}";
 # done
 
-### Remove Pristionchus and Panagrellus
-# for f in "${phylo_out}"/panagrellus*; do mv "$f" "${f/.fa/.fa.bkp}"; done
-# for f in "${phylo_out}"/pristionchus*; do mv "$f" "${f/.fa/.fa.bkp}"; done
-
 ### Cat and label files for alignment/phylo
-# cat "${phylo_out}"/*_TRPf_label.fa > "${phylo_out}"/All_TRPf.fa
+# cat "${phylo_out}"/*_TRP_label.fa > "${phylo_out}"/All_TRP.fa
+# awk '/^>/{f=!d[$1];d[$1]=1}f' "${phylo_out}"/All_TRP.fa > "${phylo_out}"/All_TRPdd.fa
 
 ### Pull in manually curated outgroup (seeds)
-# cat "${phylo_out}"/All_TRPf.fa "${seeds}" > "${phylo_out}"/All_TRPf_outgroup.fa
+# cat "${phylo_out}"/All_TRPdd.fa "${seeds}" > "${phylo_out}"/All_TRPdd_outgroup.fa
 
 
 ### HMMTOP
