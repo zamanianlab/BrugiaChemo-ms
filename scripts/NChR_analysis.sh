@@ -305,15 +305,15 @@ outgroup_fa="${gh_dir}/auxillary/NChR/outgroup.fa"
 
 # cat "${phylo_out}"/*_NCf_label.fa "${outgroup_fa}" > "${mcl_out}"/All_NCf_outgroup.fa
 
-make_db="${gh_dir}"/scripts/auxillary/makeblastdb
-blast="${gh_dir}/"scripts/auxillary/blastp
-load="${gh_dir}/"scripts/auxillary/mcxload
-mcl="${gh_dir}/"scripts/auxillary/mcl
-mcxdump="${gh_dir}/"scripts/auxillary/mcxdump
-prepCSV_py="${gh_dir}/"scripts/auxillary/format_csv.py
+# make_db="${gh_dir}"/scripts/auxillary/makeblastdb
+# blast="${gh_dir}/"scripts/auxillary/blastp
+# load="${gh_dir}/"scripts/auxillary/mcxload
+# mcl="${gh_dir}/"scripts/auxillary/mcl
+# mcxdump="${gh_dir}/"scripts/auxillary/mcxdump
+# prepCSV_py="${gh_dir}/"scripts/auxillary/format_csv.py
 
 ## blast all vs all
-cd "${mcl_out}"
+# cd "${mcl_out}"
 # "${make_db}" -dbtype prot -in All_NCf_outgroup.fa -out All_NCf_outgroup  
 # "${blast}" -db All_NCf_outgroup -query All_NCf_outgroup.fa -out blastall.out -evalue 0.01 -outfmt 6
 ## prepare for MCL
@@ -332,25 +332,33 @@ cd "${mcl_out}"
 # "${mcxdump}" -icl out.blastall.mci.I60 -tabr blastall.tab -o dump.blastall.mci.I60
 # "${mcxdump}" -icl out.blastall.mci.I12 -tabr blastall.tab -o dump.blastall.mci.I12
 
-python "${prepCSV_py}" "${mcl_out}"/dump.blastall.mci.I12 "${mcl_out}"/clusters.csv
+# python "${prepCSV_py}" "${mcl_out}"/dump.blastall.mci.I12 "${mcl_out}"/clusters.csv
 
 
 
+###
+### DOWN-SAMPLED PHYLOGENETIC TREE
+###
 
+cat "${phylo_out}"/brugia_pahangi_NCf_label.fa "${phylo_out}"/wuchereria_bancrofti_NCf_label.fa "${phylo_out}"/onchocerca_ochengi_NCf_label.fa "${phylo_out}"/brugia_timori_NCf_label.fa "${phylo_out}"/dirofilaria_immitis_NCf_label.fa "${phylo_out}"/caenorhabditis_elegans_NCf_label.fa "${phylo_out}"/necator_americanus_NCf_label.fa "${phylo_out}"/haemonchus_contortus_NCf_label.fa "${phylo_out}"/brugia_malayi_NCf_label.fa "${phylo_out}"/loa_loa_NCf_label.fa "${phylo_out}"/onchocerca_volvulus_NCf_label.fa "${phylo_out}"/strongyloides_ratti_NCf_label.fa > "${phylo_out}"/DS_NC_label.fa
+cat "${phylo_out}"/DS_NC_label.fa "${outgroup_fa}" > "${phylo_out}"/DS_NC_outgroup_label.fa
 
+### HMMTOP
+cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
+./hmmtop -if="${phylo_out}"/DS_NC_outgroup_label.fa -of="${phylo_out}"/DS_NC_outgroup_hmmtop_output.txt -sf=FAS
 
-# #Trim the alignment
-# sed 's/:/_/' ${phylo_out}/All_TMfiltered_align.fa > ${phylo_out}/All_TMfiltered_align_rename.fa
-# cd /Users/mzamanian/Bioinformatics/Noisy-1.5.12 
-# noisy  -v ${phylo_dir}/All_TMfiltered_align_rename.fas
+## Parse HHMTOP output to get list of seq ids with >= 5 TM domains <= 10 TM domains
+python "${HMMTOP_py}" "${phylo_out}"/DS_NC_outgroup_hmmtop_output.txt "${phylo_out}"/DS_NC_outgroup_label.fa "${phylo_out}"/DS_NC_outgroup_TMfiltered.fa
 
+### Align files
+mafft --auto  "${phylo_out}"/DS_NC_outgroup_TMfiltered.fa > "${phylo_out}"/DS_NC_outgroup_TMfiltered.aln
+#mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_out}"/All_NCf_outgroup_TMfiltered.fa > "${phylo_out}"/All_NCf_outgroup_TMfiltered_align.fa
+#mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_out}"/All_NCf_outgroup.fa > "${phylo_out}"/All_NCf_outgroup_align.fa
 
-
-
-
-
-
-
+### Trim alignments
+trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
+"${trimal_cmd}" -in "${phylo_out}"/DS_NC_outgroup_TMfiltered.aln -out "${phylo_out}"/DS_NC_outgroup_TMfiltered_trim.aln -gt 0.8 -cons 2
+# "${trimal_cmd}" -in "${phylo_out}"/All_NCf_outgroup.aln -out "${phylo_out}"/All_NCf_outgroup_trim.aln -gt 0.8 -cons 2
 
 
 
