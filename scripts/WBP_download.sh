@@ -1,11 +1,10 @@
 #!bin/bash
 
 ### Define project directories
-boxdr=~/Box\ Sync
 proj="Local_50HGI"
 
-gh_dir="${boxdr}/GitHub/${proj}"
-local_dir="${boxdr}/GHdata/${proj}"
+gh_dir="${GIT_PATH}/${proj}"
+local_dir="${GIT_DATA}/${proj}"
 
 ### Define wormbase source links and download genomes
 
