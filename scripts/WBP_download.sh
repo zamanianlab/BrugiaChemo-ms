@@ -16,6 +16,7 @@ species_ngf="${gh_dir}/auxillary/species_nongold_filarids.txt"
 species_ngo="${gh_dir}/auxillary/species_nongold_other.txt"
 
 # Create folders corresponding to genome destinations
+mkdir "${local_dir}"
 mkdir "${local_dir}/g_genomes"
 mkdir "${local_dir}/ngf_genomes"
 mkdir "${local_dir}/ngo_genomes"
