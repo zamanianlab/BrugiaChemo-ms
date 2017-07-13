@@ -347,7 +347,7 @@ cat "${phylo_out}"/DS_NC_label.fa "${outgroup_fa}" > "${phylo_out}"/DS_NC_outgro
 cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
 ./hmmtop -if="${phylo_out}"/DS_NC_outgroup_label.fa -of="${phylo_out}"/DS_NC_outgroup_hmmtop_output.txt -sf=FAS
 
-## Parse HHMTOP output to get list of seq ids with >= 5 TM domains <= 10 TM domains
+## Parse HHMTOP output to get list of seq ids with >= 3 TM domains <= 10 TM domains
 python "${HMMTOP_py}" "${phylo_out}"/DS_NC_outgroup_hmmtop_output.txt "${phylo_out}"/DS_NC_outgroup_label.fa "${phylo_out}"/DS_NC_outgroup_TMfiltered.fa
 
 ### Align files
