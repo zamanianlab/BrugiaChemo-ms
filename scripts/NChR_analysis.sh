@@ -1,11 +1,10 @@
 #!bin/bash
 
 ### Define project directories
-boxdr=~/Box\ Sync
 proj="Local_50HGI"
 
-gh_dir="${boxdr}/GitHub/${proj}"
-local_dir="${boxdr}/GHdata/${proj}"
+gh_dir=${GIT_PATH}/${proj}
+local_dir=${GIT_DATA}/${proj}
 
 # Species lists based on genome quality
 species_gold="${gh_dir}/auxillary/species_gold.txt"
@@ -17,16 +16,17 @@ ngf_dir="${local_dir}/ngf_genomes"
 ngo_dir="${local_dir}/ngo_genomes"
 
 ### Define script output directories
-mkdir "${local_dir}/NChR/"
-mkdir "${local_dir}/NChR/g_genomes"
+# mkdir "${local_dir}/NChR/"
+# mkdir "${local_dir}/NChR/g_genomes"
+# mkdir "${local_dir}/NChR/ngf_genomes"
+# mkdir "${local_dir}/NChR/ngo_genomes"
+# mkdir "${local_dir}/NChR/phylo"
+# mkdir "${local_dir}/NChR/mcl"
+
 gold_out="${local_dir}/NChR/g_genomes"
-mkdir "${local_dir}/NChR/ngf_genomes"
-ngf_out="${local_dir}/NChR/ngf_genomes"
-mkdir "${local_dir}/NChR/ngo_genomes"
 ngo_out="${local_dir}/NChR/ngo_genomes"
-mkdir "${local_dir}/NChR/phylo"
+ngf_out="${local_dir}/NChR/ngf_genomes"
 phylo_out="${local_dir}/NChR/phylo"
-mkdir "${local_dir}/NChR/mcl"
 mcl_out="${local_dir}/NChR/mcl"
 
 ##Auxillary Scripts
@@ -340,25 +340,25 @@ outgroup_fa="${gh_dir}/auxillary/NChR/outgroup.fa"
 ### DOWN-SAMPLED PHYLOGENETIC TREE
 ###
 
-cat "${phylo_out}"/brugia_pahangi_NCf_label.fa "${phylo_out}"/wuchereria_bancrofti_NCf_label.fa "${phylo_out}"/onchocerca_ochengi_NCf_label.fa "${phylo_out}"/brugia_timori_NCf_label.fa "${phylo_out}"/dirofilaria_immitis_NCf_label.fa "${phylo_out}"/caenorhabditis_elegans_NCf_label.fa "${phylo_out}"/necator_americanus_NCf_label.fa "${phylo_out}"/haemonchus_contortus_NCf_label.fa "${phylo_out}"/brugia_malayi_NCf_label.fa "${phylo_out}"/loa_loa_NCf_label.fa "${phylo_out}"/onchocerca_volvulus_NCf_label.fa "${phylo_out}"/strongyloides_ratti_NCf_label.fa > "${phylo_out}"/DS_NC_label.fa
-cat "${phylo_out}"/DS_NC_label.fa "${outgroup_fa}" > "${phylo_out}"/DS_NC_outgroup_label.fa
+# cat "${phylo_out}"/brugia_pahangi_NCf_label.fa "${phylo_out}"/wuchereria_bancrofti_NCf_label.fa "${phylo_out}"/onchocerca_ochengi_NCf_label.fa "${phylo_out}"/brugia_timori_NCf_label.fa "${phylo_out}"/dirofilaria_immitis_NCf_label.fa "${phylo_out}"/caenorhabditis_elegans_NCf_label.fa "${phylo_out}"/necator_americanus_NCf_label.fa "${phylo_out}"/haemonchus_contortus_NCf_label.fa "${phylo_out}"/brugia_malayi_NCf_label.fa "${phylo_out}"/loa_loa_NCf_label.fa "${phylo_out}"/onchocerca_volvulus_NCf_label.fa "${phylo_out}"/strongyloides_ratti_NCf_label.fa > "${phylo_out}"/DS_NC_label.fa
+# cat "${phylo_out}"/DS_NC_label.fa "${outgroup_fa}" > "${phylo_out}"/DS_NC_outgroup_label.fa
 
 ### HMMTOP
-cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
-./hmmtop -if="${phylo_out}"/DS_NC_outgroup_label.fa -of="${phylo_out}"/DS_NC_outgroup_hmmtop_output.txt -sf=FAS
+# cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
+# ./hmmtop -if="${phylo_out}"/DS_NC_outgroup_label.fa -of="${phylo_out}"/DS_NC_outgroup_hmmtop_output.txt -sf=FAS
 
-## Parse HHMTOP output to get list of seq ids with >= 3 TM domains <= 10 TM domains
-python "${HMMTOP_py}" "${phylo_out}"/DS_NC_outgroup_hmmtop_output.txt "${phylo_out}"/DS_NC_outgroup_label.fa "${phylo_out}"/DS_NC_outgroup_TMfiltered.fa
+### Parse HHMTOP output to get list of seq ids with >= 3 TM domains <= 10 TM domains
+# python "${HMMTOP_py}" "${phylo_out}"/DS_NC_outgroup_hmmtop_output.txt "${phylo_out}"/DS_NC_outgroup_label.fa "${phylo_out}"/DS_NC_outgroup_TMfiltered.fa
 
 ### Align files
-mafft --auto  "${phylo_out}"/DS_NC_outgroup_TMfiltered.fa > "${phylo_out}"/DS_NC_outgroup_TMfiltered.aln
-#mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_out}"/All_NCf_outgroup_TMfiltered.fa > "${phylo_out}"/All_NCf_outgroup_TMfiltered_align.fa
-#mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_out}"/All_NCf_outgroup.fa > "${phylo_out}"/All_NCf_outgroup_align.fa
+# mafft --auto  "${phylo_out}"/DS_NC_outgroup_TMfiltered.fa > "${phylo_out}"/DS_NC_outgroup_TMfiltered.aln
 
 ### Trim alignments
-trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
-"${trimal_cmd}" -in "${phylo_out}"/DS_NC_outgroup_TMfiltered.aln -out "${phylo_out}"/DS_NC_outgroup_TMfiltered_trim.aln -gt 0.8 -cons 2
-# "${trimal_cmd}" -in "${phylo_out}"/All_NCf_outgroup.aln -out "${phylo_out}"/All_NCf_outgroup_trim.aln -gt 0.8 -cons 2
+# trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
+# "${trimal_cmd}" -in "${phylo_out}"/DS_NC_outgroup_TMfiltered.aln -out "${phylo_out}"/DS_NC_outgroup_TMfiltered_trim.aln -gt 0.8 -cons 2
+
+### MrBayes
+mpirun -np 4 ~/install/MrBayes/src/mb ${local_dir}/NChR/phylo/DS_NC.nxs
 
 
 
