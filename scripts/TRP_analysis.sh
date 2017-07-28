@@ -57,7 +57,7 @@ change_ID_py="${gh_dir}"/scripts/auxillary/id_change.py
 mkdir "$local_dir/auxillary"
 mkdir "$local_dir/auxillary/HMMs"
 wget -nc -O "$local_dir/auxillary/HMMs/Pfam-A.hmm.gz" ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz
-gzcat "$local_dir/auxillary/HMMs/Pfam-A.hmm.gz" > "$local_dir/auxillary/HMMs/Pfam-A.hmm"
+zcat "$local_dir/auxillary/HMMs/Pfam-A.hmm.gz" > "$local_dir/auxillary/HMMs/Pfam-A.hmm"
 hmmpress "$local_dir/auxillary/HMMs/Pfam-A.hmm"
 pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 
@@ -74,7 +74,7 @@ while IFS= read -r line; do
 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
 	  	curr_dir=$(dirname "${f}")
 	  	#echo "${curr_dir}"
-		gzcat "${f}" > "${curr_dir}"/${line}.protein.fa
+		zcat "${f}" > "${curr_dir}"/${line}.protein.fa
 		cd "${curr_dir}"
 		makeblastdb -dbtype prot -in ${line}.protein.fa -out ${line}.protein.db
 	done;
@@ -85,7 +85,7 @@ while IFS= read -r line; do
 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
 	  	curr_dir=$(dirname "${f}")
 	  	#echo "${curr_dir}"
-		gzcat "${f}" > "${curr_dir}"/${line}.protein.fa
+		zcat "${f}" > "${curr_dir}"/${line}.protein.fa
 		cd "${curr_dir}"
 		makeblastdb -dbtype prot -in ${line}.protein.fa -out ${line}.protein.db
 	done;
@@ -121,7 +121,7 @@ while IFS= read -r line; do
 		#Extract these sequences
 		curr_dir=$(dirname "${f}")
 		#echo ${curr_dir}
-		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
+		zcat "${f}" > "${curr_dir}"/protein.tmp.fa
 		python "${seqextract_py}" "${gold_out}"/${line}_blast_TRPhits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_blast_TRP.fa
 		rm "${curr_dir}"/protein.tmp.fa
 	done;
@@ -135,7 +135,7 @@ while IFS= read -r line; do
 		#Extract these sequences
 		curr_dir=$(dirname "${f}")
 		#echo ${curr_dir}
-		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
+		zcat "${f}" > "${curr_dir}"/protein.tmp.fa
 		python "${seqextract_py}" "${ngf_out}"/${line}_blast_TRPhits_ids.txt "${curr_dir}"/protein.tmp.fa "${ngf_out}"/${line}_blast_TRP.fa
 		rm "${curr_dir}"/protein.tmp.fa
 	done;
@@ -169,7 +169,7 @@ while IFS= read -r line; do
 		#Extract these sequences
 		curr_dir=$(dirname "${f}")
 		#echo ${curr_dir}
-		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
+		zcat "${f}" > "${curr_dir}"/protein.tmp.fa
 		python "${seqextract_py}" "${gold_out}"/${line}_rblast_TRPhits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_rblast_TRP.fa
 		rm "${curr_dir}"/protein.tmp.fa
 	done;
@@ -183,7 +183,7 @@ while IFS= read -r line; do
 		#Extract these sequences
 		curr_dir=$(dirname "${f}")
 		#echo ${curr_dir}
-		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
+		zcat "${f}" > "${curr_dir}"/protein.tmp.fa
 		python "${seqextract_py}" "${ngf_out}"/${line}_rblast_TRPhits_ids.txt "${curr_dir}"/protein.tmp.fa "${ngf_out}"/${line}_rblast_TRP.fa
 		rm "${curr_dir}"/protein.tmp.fa
 	done;
