@@ -194,36 +194,36 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 ######
 
 ### GOLD GENOMES - Copy sequence files to ../phylo/ directory
-# while IFS= read -r line; do
-# 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
-# 		cp "${gold_out}"/${line}_rblast_TRP.fa "${phylo_out}"
-# 	done;
-# done <"$species_gold"
+while IFS= read -r line; do
+	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
+		cp "${gold_out}"/${line}_rblast_TRP.fa "${phylo_out}"
+	done;
+done <"$species_gold"
 
 ### NON-GOLD FILARID GENOMES - Copy sequence files to ../phylo/ directory
-# while IFS= read -r line; do
-# 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
-# 		cp "${ngf_out}"/${line}_rblast_TRP.fa "${phylo_out}"
-# 	done;
-# done <"$species_ngf"
+while IFS= read -r line; do
+	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
+		cp "${ngf_out}"/${line}_rblast_TRP.fa "${phylo_out}"
+	done;
+done <"$species_ngf"
 
 ### Label each sequence with its species name
-# for f in "${phylo_out}"/*_rblast_TRP.fa ; do
-# 	python "${change_ID_py}" "$f" "$f".fa;
-# done
-# for f in "${phylo_out}"/*.fa.fa ; do
-# 	mv "$f" "${f/.fa.fa/_label.fa}";
-# done
+for f in "${phylo_out}"/*_rblast_TRP.fa ; do
+	python "${change_ID_py}" "$f" "$f".fa;
+done
+for f in "${phylo_out}"/*.fa.fa ; do
+	mv "$f" "${f/.fa.fa/_label.fa}";
+done
 
 # ### Remove Pristionchus and Panagrellus
-# for f in "${phylo_out}"/panagrellus*; do mv "$f" "${f/.fa/.fa.bkp}"; done
-# for f in "${phylo_out}"/pristionchus*; do mv "$f" "${f/.fa/.fa.bkp}"; done
+for f in "${phylo_out}"/panagrellus*; do mv "$f" "${f/.fa/.fa.bkp}"; done
+for f in "${phylo_out}"/pristionchus*; do mv "$f" "${f/.fa/.fa.bkp}"; done
 
 ### Cat and label files for alignment/phylo
-# cat "${phylo_out}"/*_rblast_TRP_label.fa > "${phylo_out}"/All_rblast_TRP_label.fa
+cat "${phylo_out}"/*_rblast_TRP_label.fa > "${phylo_out}"/All_rblast_TRP_label.fa
 
 ### Pull in manually curated outgroup (seeds)
-# cat "${phylo_out}"/All_rblast_TRP_label.fa "${seeds}" > "${phylo_out}"/All_rblast_TRP_outgroup.fa
+cat "${phylo_out}"/All_rblast_TRP_label.fa "${seeds}" > "${phylo_out}"/All_rblast_TRP_outgroup.fa
 
 
 ### HMMTOP
