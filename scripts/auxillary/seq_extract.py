@@ -1,4 +1,4 @@
-#!/bin/python
+#!~/install/anaconda3/bin/python
 
 import collections
 from collections import Counter
