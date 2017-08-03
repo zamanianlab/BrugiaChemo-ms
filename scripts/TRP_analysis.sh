@@ -229,8 +229,6 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 ### HMMTOP
 cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
 ./hmmtop -if="${phylo_out}"/All_rblast_TRP_outgroup.fa -of="${phylo_out}"/All_rblast_TRP_outgroup_hmmtop_output.txt -sf=FAS
-## Parse HHMTOP output to get list of seq ids with >= 5 TM domains <= 10 TM domains
-python "${HMMTOP_py}" "${phylo_out}"/All_NCf_outgroup_hmmtop_output.txt "${phylo_out}"/All_NCf_outgroup.fa "${phylo_out}"/All_NCf_outgroup_TMfiltered.fa
 ## Remove sequences without any predicted TMs
 cat "${phylo_out}"/All_rblast_TRP_outgroup_hmmtop_output.txt | awk '{print $3 " " $5}' | awk '$2!=0' | awk '{print $1}' > "${phylo_out}"/All_rblast_TRP_outgroup.key
 python "${seqextract_py}" "${phylo_out}"/All_rblast_TRP_outgroup.key "${phylo_out}"/All_rblast_TRP_outgroup.fa "${phylo_out}"/All_rblast_TRPf_outgroup.fa
