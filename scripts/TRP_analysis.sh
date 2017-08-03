@@ -91,7 +91,7 @@ while IFS= read -r line; do
 	done;
 done <"$species_ngf"
 
-### GOLD GENOMES - mine for TRPs, start with recipricol blast
+### GOLD GENOMES - mine for TRPs, start with reciprocal blast
 # line = species name, iterate through gold genome species names
 while IFS= read -r line; do
 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
@@ -102,7 +102,7 @@ while IFS= read -r line; do
 	done;
 done <"$species_gold"
 
-### NON-GOLD FILARID GENOMES - mine for TRPs, start with recipricol blast
+### NON-GOLD FILARID GENOMES - mine for TRPs, start with reciprocal blast
 # line = species name, iterate through gold genome species names
 while IFS= read -r line; do
 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
@@ -190,7 +190,7 @@ while IFS= read -r line; do
 done <"$species_ngf"
 
 ######
-###### FIRST PHYLOGENETIC ANALYSIS
+###### PHYLOGENETIC ANALYSIS
 ######
 
 ### GOLD GENOMES - Copy sequence files to ../phylo/ directory
