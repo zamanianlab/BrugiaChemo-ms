@@ -238,12 +238,12 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 # einsi --thread 4 "${phylo_out}"/All_rblast_TRPf_outgroup.fa > "${phylo_out}"/All_rblast_TRPf_outgroup.aln
 
 ### Trim alignments
-trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
-"${trimal_cmd}" -in "${phylo_out}"/All_rblast_TRPf_outgroup.aln -out "${phylo_out}"/All_rblast_TRPf_outgroup_trim.aln -gt 0.75 -cons 2
+# trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
+# "${trimal_cmd}" -in "${phylo_out}"/All_rblast_TRPf_outgroup.aln -out "${phylo_out}"/All_rblast_TRPf_outgroup_trim.aln -gt 0.75 -cons 2
+# Manually remove gap-heavy genes and duplicate isoforms, output as Nexus format, add MrBayes block
 
-# on server
-# ssh zamanian@brc6.secure.biotech.wisc.edu 'nohup ~/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -f a -x 12345 -p 12345 -# 100 -m PROTCATAUTO -s ~/data/TRP/All_rblast_TRPf_outgroup_trim.aln -n TRP &'
-
+# ~/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -f a -x 12345 -p 12345 -# 100 -m PROTCATAUTO -s ~/data/TRP/All_rblast_TRPf_outgroup_trim.aln -n TRP &'
+mpirun -np 4 mb TRPf.nxs
 
 ######
 ###### MCL CLUSTERING ANALYSIS
