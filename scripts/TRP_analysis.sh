@@ -243,7 +243,7 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 # Manually remove gap-heavy genes and duplicate isoforms, output as Nexus format, add MrBayes block
 
 # ~/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -f a -x 12345 -p 12345 -# 100 -m PROTCATAUTO -s ~/data/TRP/All_rblast_TRPf_outgroup_trim.aln -n TRP &'
-mpirun -np 4 ~/install/MrBayes/src/mb "{phylo_out"/TRPf.nxs
+mpirun -np 4 ~/install/MrBayes/src/mb "{phylo_out}"/TRPf.nxs
 
 ######
 ###### MCL CLUSTERING ANALYSIS
