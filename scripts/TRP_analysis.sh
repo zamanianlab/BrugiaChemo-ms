@@ -1,7 +1,7 @@
  #!bin/bash
 
 ### Define project directories
-proj="Local_50HGI"
+proj="50HGI"
 
 gh_dir="$GIT_PATH/${proj}"
 local_dir="$GIT_DATA/${proj}"
