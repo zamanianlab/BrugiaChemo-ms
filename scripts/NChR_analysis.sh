@@ -34,6 +34,7 @@ mcl_out="${local_dir}/NChR/mcl"
 seqextract_py="${gh_dir}"/scripts/auxillary/seq_extract.py
 # HMMTOP parsing script (filter based on TM range and produce sequences based on TM domains)
 HMMTOP_py="${gh_dir}"/scripts/auxillary/HMMTOP_extract.py
+HMMTOP_strict_py="${gh_dir}"/scripts/auxillary/HMMTOP_extract_strict.py
 # Adding species labels to FASTA IDs
 change_ID_py="${gh_dir}"/scripts/auxillary/id_change.py
 
@@ -340,25 +341,33 @@ outgroup_fa="${gh_dir}/auxillary/NChR/outgroup.fa"
 ### DOWN-SAMPLED PHYLOGENETIC TREE
 ###
 
-# cat "${phylo_out}"/brugia_pahangi_NCf_label.fa "${phylo_out}"/wuchereria_bancrofti_NCf_label.fa "${phylo_out}"/onchocerca_ochengi_NCf_label.fa "${phylo_out}"/brugia_timori_NCf_label.fa "${phylo_out}"/dirofilaria_immitis_NCf_label.fa "${phylo_out}"/caenorhabditis_elegans_NCf_label.fa "${phylo_out}"/necator_americanus_NCf_label.fa "${phylo_out}"/haemonchus_contortus_NCf_label.fa "${phylo_out}"/brugia_malayi_NCf_label.fa "${phylo_out}"/loa_loa_NCf_label.fa "${phylo_out}"/onchocerca_volvulus_NCf_label.fa "${phylo_out}"/strongyloides_ratti_NCf_label.fa > "${phylo_out}"/DS_NC_label.fa
-# cat "${phylo_out}"/DS_NC_label.fa "${outgroup_fa}" > "${phylo_out}"/DS_NC_outgroup_label.fa
+
+### Choose one or more representatives from each non-filarid clade and concatenate
+# cat "${phylo_out}"/caenorhabditis_elegans_NCf_label.fa "${phylo_out}"/necator_americanus_NCf_label.fa "${phylo_out}"/haemonchus_contortus_NCf_label.fa "${phylo_out}"/strongyloides_ratti_NCf_label.fa "${phylo_out}"/trichinella_spiralis_NCf_label.fa "${phylo_out}"/toxocara_canis_NCf_label.fa > "${phylo_out}"/DS_non-filarid.fa
+# cat "${phylo_out}"/brugia_pahangi_NCf_label.fa "${phylo_out}"/wuchereria_bancrofti_NCf_label.fa "${phylo_out}"/onchocerca_ochengi_NCf_label.fa "${phylo_out}"/brugia_timori_NCf_label.fa "${phylo_out}"/dirofilaria_immitis_NCf_label.fa  "${phylo_out}"/brugia_malayi_NCf_label.fa "${phylo_out}"/loa_loa_NCf_label.fa "${phylo_out}"/onchocerca_volvulus_NCf_label.fa  > "${phylo_out}"/DS_filarid.fa
+# cat "${phylo_out}"/DS_non-filarid.fa "${outgroup_fa}" > "${phylo_out}"/DS_non-filarid_outgroup.fa
 
 ### HMMTOP
 # cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
-# ./hmmtop -if="${phylo_out}"/DS_NC_outgroup_label.fa -of="${phylo_out}"/DS_NC_outgroup_hmmtop_output.txt -sf=FAS
+# ./hmmtop -if="${phylo_out}"/DS_non-filarid_outgroup.fa -of="${phylo_out}"/DS_non-filarid_outgroup_hmmtop_output.txt -sf=FAS
+# ./hmmtop -if="${phylo_out}"/DS_filarid.fa -of="${phylo_out}"/DS_filarid_hmmtop_output.txt -sf=FAS
 
 ### Parse HHMTOP output to get list of seq ids with >= 3 TM domains <= 10 TM domains
-# python "${HMMTOP_py}" "${phylo_out}"/DS_NC_outgroup_hmmtop_output.txt "${phylo_out}"/DS_NC_outgroup_label.fa "${phylo_out}"/DS_NC_outgroup_TMfiltered.fa
+# python "${HMMTOP_strict_py}" "${phylo_out}"/DS_non-filarid_outgroup_hmmtop_output.txt "${phylo_out}"/DS_non-filarid_outgroup.fa "${phylo_out}"/DS_non-filarid_outgroup_TMfiltered.fa
+# python "${HMMTOP_py}" "${phylo_out}"/DS_filarid_hmmtop_output.txt "${phylo_out}"/DS_filarid.fa "${phylo_out}"/DS_filarid_TMfiltered.fa
+
+# Join files
+cat "${phylo_out}"/DS_filarid_TMfiltered.fa "${phylo_out}"/DS_non-filarid_outgroup_TMfiltered.fa > "${phylo_out}"/DS_NC2.fa
 
 ### Align files
-# mafft --auto  "${phylo_out}"/DS_NC_outgroup_TMfiltered.fa > "${phylo_out}"/DS_NC_outgroup_TMfiltered.aln
+# einsi --thread 8 "${phylo_out}"/DS_NC2.fa > "${phylo_out}"/DS_NC2.aln
 
 ### Trim alignments
 # trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 # "${trimal_cmd}" -in "${phylo_out}"/DS_NC_outgroup_TMfiltered.aln -out "${phylo_out}"/DS_NC_outgroup_TMfiltered_trim.aln -gt 0.8 -cons 2
 
 ### MrBayes
-mpirun -np 4 ~/install/MrBayes/src/mb ${local_dir}/NChR/phylo/DS_NC.nxs
+# mpirun -np 4 ~/install/MrBayes/src/mb ${local_dir}/NChR/phylo/DS_NC.nxs
 
 
 
