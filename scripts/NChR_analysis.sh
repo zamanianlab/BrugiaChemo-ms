@@ -357,14 +357,14 @@ outgroup_fa="${gh_dir}/auxillary/NChR/outgroup.fa"
 # python "${HMMTOP_py}" "${phylo_out}"/DS_filarid_hmmtop_output.txt "${phylo_out}"/DS_filarid.fa "${phylo_out}"/DS_filarid_TMfiltered.fa
 
 # Join files
-cat "${phylo_out}"/DS_filarid_TMfiltered.fa "${phylo_out}"/DS_non-filarid_outgroup_TMfiltered.fa > "${phylo_out}"/DS_NC2.fa
+# cat "${phylo_out}"/DS_filarid_TMfiltered.fa "${phylo_out}"/DS_non-filarid_outgroup_TMfiltered.fa > "${phylo_out}"/DS_NC2.fa
 
 ### Align files
 # einsi --thread 8 "${phylo_out}"/DS_NC2.fa > "${phylo_out}"/DS_NC2.aln
 
 ### Trim alignments
 # trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
-# "${trimal_cmd}" -in "${phylo_out}"/DS_NC_outgroup_TMfiltered.aln -out "${phylo_out}"/DS_NC_outgroup_TMfiltered_trim.aln -gt 0.8 -cons 2
+# "${trimal_cmd}" -in "${phylo_out}"/DS_NC2.aln -out "${phylo_out}"/DS_NC2_trim.aln -gt 0.8 -cons 2
 
 ### MrBayes
 # mpirun -np 4 ~/install/MrBayes/src/mb ${local_dir}/NChR/phylo/DS_NC.nxs
