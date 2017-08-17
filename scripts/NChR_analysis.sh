@@ -345,7 +345,8 @@ outgroup_fa="${gh_dir}/auxillary/NChR/outgroup.fa"
 ### Choose one or more representatives from each non-filarid clade and concatenate
 # cat "${phylo_out}"/caenorhabditis_elegans_NCf_label.fa "${phylo_out}"/necator_americanus_NCf_label.fa "${phylo_out}"/haemonchus_contortus_NCf_label.fa "${phylo_out}"/strongyloides_ratti_NCf_label.fa "${phylo_out}"/trichinella_spiralis_NCf_label.fa "${phylo_out}"/toxocara_canis_NCf_label.fa > "${phylo_out}"/DS_non-filarid.fa
 # cat "${phylo_out}"/brugia_pahangi_NCf_label.fa "${phylo_out}"/wuchereria_bancrofti_NCf_label.fa "${phylo_out}"/onchocerca_ochengi_NCf_label.fa "${phylo_out}"/brugia_timori_NCf_label.fa "${phylo_out}"/dirofilaria_immitis_NCf_label.fa  "${phylo_out}"/brugia_malayi_NCf_label.fa "${phylo_out}"/loa_loa_NCf_label.fa "${phylo_out}"/onchocerca_volvulus_NCf_label.fa  > "${phylo_out}"/DS_filarid.fa
-# cat "${phylo_out}"/DS_non-filarid.fa "${outgroup_fa}" > "${phylo_out}"/DS_non-filarid_outgroup.fa
+sed 's/>/>out-/' "${outgroup_fa}" > "${phylo_out}"/outgroup.fa
+cat "${phylo_out}"/DS_non-filarid.fa "${phylo_out}"/outgroup.fa > "${phylo_out}"/DS_non-filarid_outgroup.fa
 
 ### HMMTOP
 # cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
@@ -363,18 +364,20 @@ outgroup_fa="${gh_dir}/auxillary/NChR/outgroup.fa"
 # einsi --thread 8 "${phylo_out}"/DS_NC2.fa > "${phylo_out}"/DS_NC2.aln
 
 ### Trim alignments
-trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
-"${trimal_cmd}" -in "${phylo_out}"/DS_NC2.aln -out "${phylo_out}"/DS_NC2_trim.aln -gt 0.8 -cons 2
-"${trimal_cmd}" -in "${phylo_out}"/DS_NC2_trim.aln -out "${phylo_out}"/DS_NC2_trim_filter.aln -resoverlap 0.75 -seqoverlap 70
+# trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
+# "${trimal_cmd}" -in "${phylo_out}"/DS_NC2.aln -out "${phylo_out}"/DS_NC2_trim.aln -gt 0.8 -cons 2
+# "${trimal_cmd}" -in "${phylo_out}"/DS_NC2_trim.aln -out "${phylo_out}"/DS_NC2_trim_filter.aln -resoverlap 0.75 -seqoverlap 71
 ### Change to single-line FASTA
-awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/DS_NC2_trim-single.aln
-mv "${phylo_out}"/DS_NC2_trim-single.aln "${phylo_out}"/DS_NC2_trim.aln
-awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/DS_NC2_trim_filter-single.aln
-mv "${phylo_out}"/DS_NC2_trim_filter-single.aln "${phylo_out}"/DS_NC2_trim_filter.aln
+# awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/DS_NC2_trim-single.aln
+# mv "${phylo_out}"/DS_NC2_trim-single.aln "${phylo_out}"/DS_NC2_trim.aln
+# awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/DS_NC2_trim_filter-single.aln
+# mv "${phylo_out}"/DS_NC2_trim_filter-single.aln "${phylo_out}"/DS_NC2_trim_filter.aln
 ### Get IDs and compare lists
-awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/trimmed_ids.txt
-awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/filtered_ids.txt
-grep -v -f "${phylo_out}"/filtered_ids.txt "${phylo_out}"/trimmed_ids.txt > "${phylo_out}"/missing_ids.txt
+# awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/trimmed_ids.txt
+# awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/filtered_ids.txt
+# grep -v -f "${phylo_out}"/filtered_ids.txt "${phylo_out}"/trimmed_ids.txt > "${phylo_out}"/missing_ids.txt
+
+sed 's/lloa_/lloa/' "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/DS_CHEMO.aln
 
 ### MrBayes
 # mpirun -np 4 ~/install/MrBayes/src/mb ${local_dir}/NChR/phylo/DS_NC.nxs
