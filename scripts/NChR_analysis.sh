@@ -363,8 +363,18 @@ outgroup_fa="${gh_dir}/auxillary/NChR/outgroup.fa"
 # einsi --thread 8 "${phylo_out}"/DS_NC2.fa > "${phylo_out}"/DS_NC2.aln
 
 ### Trim alignments
-# trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
+trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 # "${trimal_cmd}" -in "${phylo_out}"/DS_NC2.aln -out "${phylo_out}"/DS_NC2_trim.aln -gt 0.8 -cons 2
+# "${trimal_cmd}" -in "${phylo_out}"/DS_NC2_trim.aln -out "${phylo_out}"/DS_NC2_trim_filter.aln -resoverlap 0.75 -seqoverlap 80
+### Change to single-line FASTA
+# awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/DS_NC2_trim-single.aln
+# mv "${phylo_out}"/DS_NC2_trim-single.aln "${phylo_out}"/DS_NC2_trim.aln
+# awk '/^>/ {printf("%s%s\t",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/DS_NC2_trim_filter-single.aln
+# mv "${phylo_out}"/DS_NC2_trim_filter-single.aln "${phylo_out}"/DS_NC2_trim_filter.aln
+### Get IDs and compare lists
+# awk '{print $1}' "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/trimmed_ids.txt
+# awk '{print $1}' "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/filtered_ids.txt
+grep -v -f "${phylo_out}"/filtered_ids.txt "${phylo_out}"/trimmed_ids.txt > "${phylo_out}"/missing_ids.txt
 
 ### MrBayes
 # mpirun -np 4 ~/install/MrBayes/src/mb ${local_dir}/NChR/phylo/DS_NC.nxs
