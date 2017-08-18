@@ -143,8 +143,8 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 ### GOLD GENOMES - Parse hmm outputs to remove sequences where first hit is not NChR, get list of surviving unique seq ids, extract sequences 
 # while IFS= read -r line; do
 # 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
-# 		cat "${gold_out}"/${line}_rHMM.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g > "${gold_out}"/${line}_NChitsf.txt
-# 		cat "${gold_out}"/${line}_rHMM.out | awk '{print $1 " " $3  " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g  | awk '{print $1}' > "${gold_out}"/${line}_NChitsf_ids.txt
+# 		cat "${gold_out}"/${line}_rHMM.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7TM_GPCR_S|Srg|Sre|Serpentine_r_xa/' | sort -k4 -g > "${gold_out}"/${line}_NChitsf.txt
+# 		cat "${gold_out}"/${line}_rHMM.out | awk '{print $1 " " $3  " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7TM_GPCR_S|Srg|Sre|Serpentine_r_xa/' | sort -k4 -g  | awk '{print $1}' > "${gold_out}"/${line}_NChitsf_ids.txt
 # 		curr_dir=$(dirname "${f}")
 #  		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
 # 		python "${seqextract_py}" "${gold_out}"/${line}_NChitsf_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_NCf.fa
@@ -152,11 +152,11 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # 	done;
 # done <"$species_gold"
 
-# ## NON-GOLD FILARID GENOMES - Parse hmm outputs to remove sequences where first hit is not NChR, get list of surviving unique seq ids, extract sequences 
+# ### NON-GOLD FILARID GENOMES - Parse hmm outputs to remove sequences where first hit is not NChR, get list of surviving unique seq ids, extract sequences 
 # while IFS= read -r line; do
 # 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
-# 		cat "${ngf_out}"/${line}_rHMM.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g > "${ngf_out}"/${line}_NChitsf.txt
-# 		cat "${ngf_out}"/${line}_rHMM.out | awk '{print $1 " " $3  " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7TM_GPCR_S|srg|sre|srxa/' | sort -k4 -g  | awk '{print $1}' > "${ngf_out}"/${line}_NChitsf_ids.txt
+# 		cat "${ngf_out}"/${line}_rHMM.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7TM_GPCR_S|Srg|Sre|Serpentine_r_xa/' | sort -k4 -g > "${ngf_out}"/${line}_NChitsf.txt
+# 		cat "${ngf_out}"/${line}_rHMM.out | awk '{print $1 " " $3  " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7TM_GPCR_S|Srg|Sre|Serpentine_r_xa/' | sort -k4 -g  | awk '{print $1}' > "${ngf_out}"/${line}_NChitsf_ids.txt
 # 		curr_dir=$(dirname "${f}")
 #  		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
 # 		python "${seqextract_py}" "${ngf_out}"/${line}_NChitsf_ids.txt "${curr_dir}"/protein.tmp.fa "${ngf_out}"/${line}_NCf.fa
@@ -275,7 +275,7 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # cat "${phylo_out}"/All*_lab.fa > "${phylo_out}"/All.fa
 
 ### Pull in manually curated outgroup
-outgroup_fa="${gh_dir}/auxillary/NChR/outgroup.fa"
+# outgroup_fa="${gh_dir}/auxillary/NChR/outgroup.fa"
 # cat "${phylo_out}"/All_NCf.fa "${outgroup_fa}" > "${phylo_out}"/All_NCf_outgroup.fa
 
 
@@ -342,42 +342,45 @@ outgroup_fa="${gh_dir}/auxillary/NChR/outgroup.fa"
 ###
 
 
-### Choose one or more representatives from each non-filarid clade and concatenate
+### Choose one or more representatives from each non-filarid clade and concatenate (can add outgroups if wanted)
 # cat "${phylo_out}"/caenorhabditis_elegans_NCf_label.fa "${phylo_out}"/necator_americanus_NCf_label.fa "${phylo_out}"/haemonchus_contortus_NCf_label.fa "${phylo_out}"/strongyloides_ratti_NCf_label.fa "${phylo_out}"/trichinella_spiralis_NCf_label.fa "${phylo_out}"/toxocara_canis_NCf_label.fa > "${phylo_out}"/DS_non-filarid.fa
 # cat "${phylo_out}"/brugia_pahangi_NCf_label.fa "${phylo_out}"/wuchereria_bancrofti_NCf_label.fa "${phylo_out}"/onchocerca_ochengi_NCf_label.fa "${phylo_out}"/brugia_timori_NCf_label.fa "${phylo_out}"/dirofilaria_immitis_NCf_label.fa  "${phylo_out}"/brugia_malayi_NCf_label.fa "${phylo_out}"/loa_loa_NCf_label.fa "${phylo_out}"/onchocerca_volvulus_NCf_label.fa  > "${phylo_out}"/DS_filarid.fa
-sed 's/>/>out-/' "${outgroup_fa}" > "${phylo_out}"/outgroup.fa
-cat "${phylo_out}"/DS_non-filarid.fa "${phylo_out}"/outgroup.fa > "${phylo_out}"/DS_non-filarid_outgroup.fa
+# sed 's/>/>out-/' "${outgroup_fa}" > "${phylo_out}"/outgroup.fa
+# cat "${phylo_out}"/DS_non-filarid.fa "${phylo_out}"/outgroup.fa > "${phylo_out}"/DS_non-filarid_outgroup.fa
 
-### HMMTOP
+## HMMTOP
 # cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
-# ./hmmtop -if="${phylo_out}"/DS_non-filarid_outgroup.fa -of="${phylo_out}"/DS_non-filarid_outgroup_hmmtop_output.txt -sf=FAS
+# ./hmmtop -if="${phylo_out}"/DS_non-filarid.fa -of="${phylo_out}"/DS_non-filarid_hmmtop_output.txt -sf=FAS
 # ./hmmtop -if="${phylo_out}"/DS_filarid.fa -of="${phylo_out}"/DS_filarid_hmmtop_output.txt -sf=FAS
 
-### Parse HHMTOP output to get list of seq ids with >= 3 TM domains <= 10 TM domains
-# python "${HMMTOP_strict_py}" "${phylo_out}"/DS_non-filarid_outgroup_hmmtop_output.txt "${phylo_out}"/DS_non-filarid_outgroup.fa "${phylo_out}"/DS_non-filarid_outgroup_TMfiltered.fa
+### Parse HHMTOP output to get list of seq ids with >= 3 TM domains <= 10 TM domains for filarids, and 7 TM domains for non-filarids
+# python "${HMMTOP_strict_py}" "${phylo_out}"/DS_non-filarid_hmmtop_output.txt "${phylo_out}"/DS_non-filarid.fa "${phylo_out}"/DS_non-filarid_TMfiltered.fa
 # python "${HMMTOP_py}" "${phylo_out}"/DS_filarid_hmmtop_output.txt "${phylo_out}"/DS_filarid.fa "${phylo_out}"/DS_filarid_TMfiltered.fa
 
 # Join files
-# cat "${phylo_out}"/DS_filarid_TMfiltered.fa "${phylo_out}"/DS_non-filarid_outgroup_TMfiltered.fa > "${phylo_out}"/DS_NC2.fa
+# cat "${phylo_out}"/DS_filarid_TMfiltered.fa "${phylo_out}"/DS_non-filarid_TMfiltered.fa > "${phylo_out}"/DS_NC2.fa
 
 ### Align files
-# einsi --thread 8 "${phylo_out}"/DS_NC2.fa > "${phylo_out}"/DS_NC2.aln
+einsi --thread 8 "${phylo_out}"/DS_NC2.fa > "${phylo_out}"/DS_NC2.aln
+### Email when complete
+mailx -s "Alignment complete!" njwheeler@wisc.edu <<< "The alignment of DS_NC2 has successfully completed."
 
 ### Trim alignments
-# trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
-# "${trimal_cmd}" -in "${phylo_out}"/DS_NC2.aln -out "${phylo_out}"/DS_NC2_trim.aln -gt 0.8 -cons 2
-# "${trimal_cmd}" -in "${phylo_out}"/DS_NC2_trim.aln -out "${phylo_out}"/DS_NC2_trim_filter.aln -resoverlap 0.75 -seqoverlap 71
-### Change to single-line FASTA
-# awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/DS_NC2_trim-single.aln
-# mv "${phylo_out}"/DS_NC2_trim-single.aln "${phylo_out}"/DS_NC2_trim.aln
-# awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/DS_NC2_trim_filter-single.aln
-# mv "${phylo_out}"/DS_NC2_trim_filter-single.aln "${phylo_out}"/DS_NC2_trim_filter.aln
-### Get IDs and compare lists
-# awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/trimmed_ids.txt
-# awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/filtered_ids.txt
-# grep -v -f "${phylo_out}"/filtered_ids.txt "${phylo_out}"/trimmed_ids.txt > "${phylo_out}"/missing_ids.txt
+sed 's/lloa_/lloa/' "${phylo_out}"/DS_NC2.aln > "${phylo_out}"/DS_NC3.aln
+mv "${phylo_out}"/DS_NC3.aln "${phylo_out}"/DS_NC2.aln
+trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
+"${trimal_cmd}" -in "${phylo_out}"/DS_NC2.aln -out "${phylo_out}"/DS_NC2_trim.aln -gt 0.8 -cons 2
+"${trimal_cmd}" -in "${phylo_out}"/DS_NC2_trim.aln -out "${phylo_out}"/DS_NC2_trim_filter.aln -resoverlap 0.75 -seqoverlap 71
+# ### Change to single-line FASTA
+awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/DS_NC2_trim-single.aln
+mv "${phylo_out}"/DS_NC2_trim-single.aln "${phylo_out}"/DS_NC2_trim.aln
+awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/DS_NC2_trim_filter-single.aln
+mv "${phylo_out}"/DS_NC2_trim_filter-single.aln "${phylo_out}"/DS_NC2_trim_filter.aln
+# ### Get IDs and compare lists
+awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/trimmed_ids.txt
+awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/filtered_ids.txt
+grep -v -f "${phylo_out}"/filtered_ids.txt "${phylo_out}"/trimmed_ids.txt > "${phylo_out}"/missing_ids.txt
 
-sed 's/lloa_/lloa/' "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/DS_CHEMO.aln
 
 ### MrBayes
 # mpirun -np 4 ~/install/MrBayes/src/mb ${local_dir}/NChR/phylo/DS_NC.nxs
