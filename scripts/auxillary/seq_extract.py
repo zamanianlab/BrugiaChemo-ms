@@ -10,7 +10,7 @@ from Bio import SeqIO
 
 p = open(filename1) #list of GeneIDs in list/txt format
 record_dict = SeqIO.index(filename2, "fasta") #proteome fasta file
-output_handle = open(filename3, "w") #output file of exracted sequences
+output_handle = open(filename3, "w") #output file of extracted sequences
 
 def seqextract(file):
 	for line in file:
