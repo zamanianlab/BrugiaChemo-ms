@@ -291,7 +291,7 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 #mafft --op 2 --ep 1 --thread 2 --maxiterate 1 "${phylo_out}"/All_NCf_outgroup.fa > "${phylo_out}"/All_NCf_outgroup_align.fa
 
 ### Trim alignments
-# trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
+trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 # "${trimal_cmd}" -in "${phylo_out}"/All_NCf_outgroup_TMfiltered.aln -out "${phylo_out}"/All_NCf_outgroup_TMfiltered_trim.aln -gt 0.8 -cons 2
 # "${trimal_cmd}" -in "${phylo_out}"/All_NCf_outgroup.aln -out "${phylo_out}"/All_NCf_outgroup_trim.aln -gt 0.8 -cons 2
 
@@ -361,25 +361,27 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # cat "${phylo_out}"/DS_filarid_TMfiltered.fa "${phylo_out}"/DS_non-filarid_TMfiltered.fa > "${phylo_out}"/DS_NC2.fa
 
 ### Align files
-einsi --thread 8 "${phylo_out}"/DS_NC2.fa > "${phylo_out}"/DS_NC2.aln
+# einsi --thread 8 "${phylo_out}"/DS_NC2.fa > "${phylo_out}"/DS_NC2.aln
 ### Email when complete
-mailx -s "Alignment complete!" njwheeler@wisc.edu <<< "The alignment of DS_NC2 has successfully completed."
+# mailx -s "Alignment complete!" njwheeler@wisc.edu <<< "The alignment of DS_NC2 has successfully completed."
 
 ### Trim alignments
-sed 's/lloa_/lloa/' "${phylo_out}"/DS_NC2.aln > "${phylo_out}"/DS_NC3.aln
-mv "${phylo_out}"/DS_NC3.aln "${phylo_out}"/DS_NC2.aln
-trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
-"${trimal_cmd}" -in "${phylo_out}"/DS_NC2.aln -out "${phylo_out}"/DS_NC2_trim.aln -gt 0.8 -cons 2
-"${trimal_cmd}" -in "${phylo_out}"/DS_NC2_trim.aln -out "${phylo_out}"/DS_NC2_trim_filter.aln -resoverlap 0.75 -seqoverlap 71
+# sed 's/lloa_/lloa/' "${phylo_out}"/DS_NC2.aln > "${phylo_out}"/DS_NC3.aln
+# mv "${phylo_out}"/DS_NC3.aln "${phylo_out}"/DS_NC2.aln
+# trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
+# "${trimal_cmd}" -in "${phylo_out}"/DS_NC2.aln -out "${phylo_out}"/DS_NC2_trim.aln -gt 0.8 -cons 2
+## Manually split in to DS_NC2_filarid_trim.aln and DS_NC2_non-filarid_trim.aln
+"${trimal_cmd}" -in "${phylo_out}"/DS_NC2_non-filarid_trim.aln -out "${phylo_out}"/DS_NC2_non-filarid_filter_trim.aln -resoverlap 0.75 -seqoverlap 71
 # ### Change to single-line FASTA
-awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/DS_NC2_trim-single.aln
-mv "${phylo_out}"/DS_NC2_trim-single.aln "${phylo_out}"/DS_NC2_trim.aln
-awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/DS_NC2_trim_filter-single.aln
-mv "${phylo_out}"/DS_NC2_trim_filter-single.aln "${phylo_out}"/DS_NC2_trim_filter.aln
+cat "${phylo_out}"/DS_NC2_filarid_trim.aln "${phylo_out}"/DS_NC2_non-filarid_filter_trim.aln > "${phylo_out}"/DS_NC2_trim_filter.aln
+# awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/DS_NC2_trim-single.aln
+# mv "${phylo_out}"/DS_NC2_trim-single.aln "${phylo_out}"/DS_NC2_trim.aln
+# awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/DS_NC2_trim_filter-single.aln
+# mv "${phylo_out}"/DS_NC2_trim_filter-single.aln "${phylo_out}"/DS_NC2_trim_filter.aln
 # ### Get IDs and compare lists
-awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/trimmed_ids.txt
-awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/filtered_ids.txt
-grep -v -f "${phylo_out}"/filtered_ids.txt "${phylo_out}"/trimmed_ids.txt > "${phylo_out}"/missing_ids.txt
+# awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/trimmed_ids.txt
+# awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/filtered_ids.txt
+# grep -v -f "${phylo_out}"/filtered_ids.txt "${phylo_out}"/trimmed_ids.txt > "${phylo_out}"/missing_ids.txt
 
 
 ### MrBayes
