@@ -22,7 +22,7 @@ ngo_dir="${local_dir}/ngo_genomes"
 # mkdir "${local_dir}/NChR/ngo_genomes"
 # mkdir "${local_dir}/NChR/phylo"
 # mkdir "${local_dir}/NChR/mcl"
-mkdir "${local_dir}/NChR/phylo/c_elegans/"
+# mkdir "${local_dir}/NChR/phylo/c_elegans/"
 
 gold_out="${local_dir}/NChR/g_genomes"
 ngo_out="${local_dir}/NChR/ngo_genomes"
@@ -32,7 +32,7 @@ mcl_out="${local_dir}/NChR/mcl"
 cel_out="${local_dir}/NChR/phylo/c_elegans/"
 
 ### Start C. elegans NChR re-alignment (following protocol from https://bmcbiol.biomedcentral.com/articles/10.1186/1741-7007-6-42)
-mv "${phylo_out}"/caenorhabditis_elegans_NCf_label.fa "${cel_out}"/
+# mv "${phylo_out}"/caenorhabditis_elegans_NCf_label.fa "${cel_out}"/
 ### Align files
 einsi --thread 8 "${cel_out}"/caenorhabditis_elegans_NCf_label.fa > "${cel_out}"/caenorhabditis_elegans_NCf_label.aln
 ### Email when complete
