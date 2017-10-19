@@ -354,6 +354,7 @@ trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 # ./hmmtop -if="${phylo_out}"/DS_filarid.fa -of="${phylo_out}"/DS_filarid_hmmtop_output.txt -sf=FAS
 
 ### Parse HHMTOP output to get list of seq ids with >= 3 TM domains <= 10 TM domains for filarids, and 7 TM domains for non-filarids
+# extract only TM domains
 # python "${HMMTOP_strict_py}" "${phylo_out}"/DS_non-filarid_hmmtop_output.txt "${phylo_out}"/DS_non-filarid.fa "${phylo_out}"/DS_non-filarid_TMfiltered.fa
 # python "${HMMTOP_py}" "${phylo_out}"/DS_filarid_hmmtop_output.txt "${phylo_out}"/DS_filarid.fa "${phylo_out}"/DS_filarid_TMfiltered.fa
 
@@ -365,19 +366,20 @@ trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 ### Email when complete
 # mailx -s "Alignment complete!" njwheeler@wisc.edu <<< "The alignment of DS_NC2 has successfully completed."
 
-### Trim alignments
+### Trim alignment
+## fix loa loa IDs
 # sed 's/lloa_/lloa/' "${phylo_out}"/DS_NC2.aln > "${phylo_out}"/DS_NC3.aln
 # mv "${phylo_out}"/DS_NC3.aln "${phylo_out}"/DS_NC2.aln
+## trim
 # trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 # "${trimal_cmd}" -in "${phylo_out}"/DS_NC2.aln -out "${phylo_out}"/DS_NC2_trim.aln -gt 0.8 -cons 2
-## Manually split in to DS_NC2_filarid_trim.aln and DS_NC2_non-filarid_trim.aln
-"${trimal_cmd}" -in "${phylo_out}"/DS_NC2_non-filarid_trim.aln -out "${phylo_out}"/DS_NC2_non-filarid_filter_trim.aln -resoverlap 0.75 -seqoverlap 71
-# ### Change to single-line FASTA
+
+## Manually split in to DS_NC2_filarid_trim.aln and DS_NC2_non-filarid_trim.aln, to remove short poorly aligned sequences from non-filarids
+# "${trimal_cmd}" -in "${phylo_out}"/DS_NC2_non-filarid_trim.aln -out "${phylo_out}"/DS_NC2_non-filarid_filter_trim.aln -resoverlap 0.75 -seqoverlap 71
 cat "${phylo_out}"/DS_NC2_filarid_trim.aln "${phylo_out}"/DS_NC2_non-filarid_filter_trim.aln > "${phylo_out}"/DS_NC2_trim_filter.aln
-# awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/DS_NC2_trim-single.aln
-# mv "${phylo_out}"/DS_NC2_trim-single.aln "${phylo_out}"/DS_NC2_trim.aln
-# awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/DS_NC2_trim_filter-single.aln
-# mv "${phylo_out}"/DS_NC2_trim_filter-single.aln "${phylo_out}"/DS_NC2_trim_filter.aln
+## Change to single-line FASTA
+awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/DS_NC2_trim_filter-single.aln
+mv "${phylo_out}"/DS_NC2_trim_filter-single.aln "${phylo_out}"/DS_CHEMO.aln
 # ### Get IDs and compare lists
 # awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/trimmed_ids.txt
 # awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/filtered_ids.txt
