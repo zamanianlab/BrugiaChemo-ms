@@ -22,7 +22,7 @@ ngo_dir="${local_dir}/ngo_genomes"
 # mkdir "${local_dir}/NChR/ngo_genomes"
 # mkdir "${local_dir}/NChR/phylo"
 # mkdir "${local_dir}/NChR/mcl"
-# mkdir "${local_dir}/NChR/phylo/c_elegans/"
+mkdir "${local_dir}/NChR/phylo/c_elegans/"
 
 gold_out="${local_dir}/NChR/g_genomes"
 ngo_out="${local_dir}/NChR/ngo_genomes"
