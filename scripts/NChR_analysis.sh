@@ -362,28 +362,31 @@ trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 # cat "${phylo_out}"/DS_filarid_TMfiltered.fa "${phylo_out}"/DS_non-filarid_TMfiltered.fa > "${phylo_out}"/DS_NC2.fa
 
 ### Align files
-# einsi --thread 8 "${phylo_out}"/DS_NC2.fa > "${phylo_out}"/DS_NC2.aln
+einsi --thread 4 "${phylo_out}"/DS_NC2.fa > "${phylo_out}"/DS_NC2.aln
 ### Email when complete
-# mailx -s "Alignment complete!" njwheeler@wisc.edu <<< "The alignment of DS_NC2 has successfully completed."
+mailx -s "Alignment complete!" njwheeler@wisc.edu <<< "The alignment of DS_NC2 has successfully completed."
 
 ### Trim alignment
 ## fix loa loa IDs
-# sed 's/lloa_/lloa/' "${phylo_out}"/DS_NC2.aln > "${phylo_out}"/DS_NC3.aln
-# mv "${phylo_out}"/DS_NC3.aln "${phylo_out}"/DS_NC2.aln
-## trim
-# trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
-# "${trimal_cmd}" -in "${phylo_out}"/DS_NC2.aln -out "${phylo_out}"/DS_NC2_trim.aln -gt 0.8 -cons 2
-
-## Manually split in to DS_NC2_filarid_trim.aln and DS_NC2_non-filarid_trim.aln, to remove short poorly aligned sequences from non-filarids
-# "${trimal_cmd}" -in "${phylo_out}"/DS_NC2_non-filarid_trim.aln -out "${phylo_out}"/DS_NC2_non-filarid_filter_trim.aln -resoverlap 0.75 -seqoverlap 71
-cat "${phylo_out}"/DS_NC2_filarid_trim.aln "${phylo_out}"/DS_NC2_non-filarid_filter_trim.aln > "${phylo_out}"/DS_NC2_trim_filter.aln
+sed 's/lloa_/lloa/' "${phylo_out}"/DS_NC2.aln > "${phylo_out}"/DS_NC3.aln
+mv "${phylo_out}"/DS_NC3.aln "${phylo_out}"/DS_NC2.aln
+## Trim
+trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
+"${trimal_cmd}" -in "${phylo_out}"/DS_NC2.aln -out "${phylo_out}"/DS_NC2_trim.aln -gt 0.7
+## Split in to DS_NC2_filarid_trim.aln and DS_NC2_non-filarid_trim.aln, to remove short poorly aligned sequences from non-filarids
+cat "${phylo_out}"/DS_NC2_trim.aln | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/bmala|bpaha|wbanc|ooche|btimo|dimmi|lloa|ovolv/' > "${phylo_out}"/DS_NC2_filarid_trim.aln
+cat "${phylo_out}"/DS_NC2_trim.aln | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '!/bmala|bpaha|wbanc|ooche|btimo|dimmi|lloa|ovolv/' > "${phylo_out}"/DS_NC2_non-filarid_trim.aln
+cat "${phylo_out}"/DS_NC2_filarid_trim.aln | tr '\t' '\n' > "${phylo_out}"/DS_NC2_filarid_trim2.aln
+cat "${phylo_out}"/DS_NC2_non-filarid_trim.aln | tr '\t' '\n' > "${phylo_out}"/DS_NC2_non-filarid_trim2.aln
+"${trimal_cmd}" -in "${phylo_out}"/DS_NC2_non-filarid_trim2.aln -out "${phylo_out}"/DS_NC2_non-filarid_filter_trim.aln -resoverlap 0.70 -seqoverlap 70
+cat "${phylo_out}"/DS_NC2_filarid_trim2.aln "${phylo_out}"/DS_NC2_non-filarid_filter_trim.aln > "${phylo_out}"/DS_NC2_trim_filter.aln
 ## Change to single-line FASTA
 awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/DS_NC2_trim_filter-single.aln
 mv "${phylo_out}"/DS_NC2_trim_filter-single.aln "${phylo_out}"/DS_CHEMO.aln
-# ### Get IDs and compare lists
-# awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/trimmed_ids.txt
-# awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/filtered_ids.txt
-# grep -v -f "${phylo_out}"/filtered_ids.txt "${phylo_out}"/trimmed_ids.txt > "${phylo_out}"/missing_ids.txt
+### Get IDs and compare lists
+awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/trimmed_ids.txt
+awk 'NR%2==1' "${phylo_out}"/DS_CHEMO.aln > "${phylo_out}"/filtered_ids.txt
+grep -v -f "${phylo_out}"/filtered_ids.txt "${phylo_out}"/trimmed_ids.txt > "${phylo_out}"/missing_ids.txt
 
 
 ### MrBayes
