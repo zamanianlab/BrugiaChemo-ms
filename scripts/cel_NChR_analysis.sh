@@ -49,4 +49,4 @@ trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 # grep -v -f "${cel_out}"/filtered_ids.txt "${cel_out}"/trimmed_ids.txt > "${cel_out}"/missing_ids.txt
 
 ### ML tree inference
-/home/BIOTECH/zamanian/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -T 4 -f a -x 12345 -p 12345 -# 100 -m PROTGAMMAAUTO -s "${cel_out}"/caenorhabditis_elegans_NCf_trim_filter.aln -n "${cel_out}"/caenorhabditis_elegans_ML
+/home/BIOTECH/zamanian/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -T 4 -f a -x 12345 -p 12345 -# 100 -m PROTGTRGAMMA -s "${cel_out}"/caenorhabditis_elegans_NCf_trim_filter.aln -n "${cel_out}"/caenorhabditis_elegans_ML
