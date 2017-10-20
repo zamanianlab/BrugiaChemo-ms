@@ -42,6 +42,6 @@ trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 "${trimal_cmd}" -in "${cel_out}"/caenorhabditis_elegans_NCf_label.aln -out "${cel_out}"/caenorhabditis_elegans_NCf_trim.aln -gt 0.7 
 "${trimal_cmd}" -in "${cel_out}"/caenorhabditis_elegans_NCf_trim.aln -out "${cel_out}"/caenorhabditis_elegans_NCf_trim_filter.aln -resoverlap 0.70 -seqoverlap 70
 ## Get IDs and compare lists
-awk 'NR%2==1' "${phylo_out}"/caenorhabditis_elegans_NCf_trim.aln > "${phylo_out}"/trimmed_ids.txt
-awk 'NR%2==1' "${phylo_out}"/caenorhabditis_elegans_NCf_trim_filter.aln > "${phylo_out}"/filtered_ids.txt
-grep -v -f "${phylo_out}"/filtered_ids.txt "${phylo_out}"/trimmed_ids.txt > "${phylo_out}"/missing_ids.txt
+awk 'NR%2==1' "${cel_out}"/caenorhabditis_elegans_NCf_trim.aln > "${cel_out}"/trimmed_ids.txt
+awk 'NR%2==1' "${cel_out}"/caenorhabditis_elegans_NCf_trim_filter.aln > "${cel_out}"/filtered_ids.txt
+grep -v -f "${cel_out}"/filtered_ids.txt "${cel_out}"/trimmed_ids.txt > "${cel_out}"/missing_ids.txt
