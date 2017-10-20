@@ -39,4 +39,5 @@ cel_out="${local_dir}/NChR/phylo/c_elegans/"
 # mailx -s "Alignment complete!" njwheeler@wisc.edu <<< "The alignment of caenorhabditis_elegans_NCf_label has successfully completed."
 ## Trim
 trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
-"${trimal_cmd}" -in "${cel_out}"/caenorhabditis_elegans_NCf_label.aln -out "${cel_out}"/caenorhabditis_elegans_NCf_trim.aln -gt 0.7 -resoverlap 0.70 -seqoverlap 0.70
+"${trimal_cmd}" -in "${cel_out}"/caenorhabditis_elegans_NCf_label.aln -out "${cel_out}"/caenorhabditis_elegans_NCf_trim.aln -gt 0.7 
+"${trimal_cmd}" -in "${cel_out}"/aenorhabditis_elegans_NCf_trim.aln -out "${cel_out}"/caenorhabditis_elegans_NCf_trim_filter.aln -gt 0.7 -resoverlap 0.70 -seqoverlap 0.70
