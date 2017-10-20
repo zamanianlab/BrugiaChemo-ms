@@ -41,7 +41,9 @@ cel_out="${local_dir}/NChR/phylo/c_elegans/"
 trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 "${trimal_cmd}" -in "${cel_out}"/caenorhabditis_elegans_NCf_label.aln -out "${cel_out}"/caenorhabditis_elegans_NCf_trim.aln -gt 0.7 
 "${trimal_cmd}" -in "${cel_out}"/caenorhabditis_elegans_NCf_trim.aln -out "${cel_out}"/caenorhabditis_elegans_NCf_trim_filter.aln -resoverlap 0.70 -seqoverlap 70
-## Get IDs and compare lists
-awk 'NR%2==1' "${cel_out}"/caenorhabditis_elegans_NCf_trim.aln > "${cel_out}"/trimmed_ids.txt
-awk 'NR%2==1' "${cel_out}"/caenorhabditis_elegans_NCf_trim_filter.aln > "${cel_out}"/filtered_ids.txt
+## Make single-line FASTA and get IDs to compare lists
+awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${cel_out}"/caenorhabditis_elegans_NCf_trim.aln > "${cel_out}"/caenorhabditis_elegans_NCf_trim-single.aln
+awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${cel_out}"/caenorhabditis_elegans_NCf_trim_filter.aln > "${cel_out}"/caenorhabditis_elegans_NCf_trim_filter-single.aln
+awk 'NR%2==1' "${cel_out}"/caenorhabditis_elegans_NCf_trim-single.aln > "${cel_out}"/trimmed_ids.txt
+awk 'NR%2==1' $"${cel_out}"/caenorhabditis_elegans_NCf_trim_filter-single.aln > "${cel_out}"/filtered_ids.txt
 grep -v -f "${cel_out}"/filtered_ids.txt "${cel_out}"/trimmed_ids.txt > "${cel_out}"/missing_ids.txt
