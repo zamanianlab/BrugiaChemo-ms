@@ -33,7 +33,10 @@ cel_out="${local_dir}/NChR/phylo/c_elegans/"
 
 ### Start C. elegans NChR re-alignment (following protocol from https://bmcbiol.biomedcentral.com/articles/10.1186/1741-7007-6-42)
 # mv "${phylo_out}"/caenorhabditis_elegans_NCf_label.fa "${cel_out}"/
-### Align files
-einsi --thread 8 "${cel_out}"/caenorhabditis_elegans_NCf_label.fa > "${cel_out}"/caenorhabditis_elegans_NCf_label.aln
-### Email when complete
-mailx -s "Alignment complete!" njwheeler@wisc.edu <<< "The alignment of caenorhabditis_elegans_NCf_label has successfully completed."
+## Align files
+# einsi --thread 8 "${cel_out}"/caenorhabditis_elegans_NCf_label.fa > "${cel_out}"/caenorhabditis_elegans_NCf_label.aln
+## Email when complete
+# mailx -s "Alignment complete!" njwheeler@wisc.edu <<< "The alignment of caenorhabditis_elegans_NCf_label has successfully completed."
+## Trim
+trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
+"${trimal_cmd}" -in "${cel_out}"/caenorhabditis_elegans_NCf_label.aln -out "${cel_out}"/caenorhabditis_elegans_NCf_trim.aln -gt 0.7 -resoverlap 0.70 -seqoverlap 0.70
