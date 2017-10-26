@@ -226,6 +226,28 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # 	done;
 # done <"$species_ngf"
 
+make_db="${gh_dir}"/scripts/auxillary/makeblastdb
+# "${make_db}" -dbtype prot -in "${gold_dir}/caenorhabditis_elegans/PRJNA13758"/caenorhabditis_elegans.protein.fa -out "${gold_dir}/caenorhabditis_elegans/PRJNA13758"/caenorhabditis_elegans.protein
+
+### GOLD GENOMES - Reciprocal blastp of extracted sequences against C. elegans
+while IFS= read -r line; do
+	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
+		#blast filtered NChRs against C. elegans proteome, using E-value cutoff
+		cd "${gold_dir}"/caenorhabditis_elegans/PRJNA13758/
+		blastp -query "${gold_out}"/${line}_NCf.fa -db caenorhabditis_elegans.protein.db -out "${gold_out}"/${line}_rec.blastout -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
+	done;
+done <"$species_gold"
+
+## NON-GOLD FILARID GENOMES - Reciprocal blastp of extracted sequences against C. elegans
+while IFS= read -r line; do
+	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
+		#blast filtered NChRs against C. elegans proteome, using E-value cutoff
+		cd "${gold_dir}"/caenorhabditis_elegans/PRJNA13758/
+		blastp -query "${ngf_out}"/${line}_NCf.fa -db caenorhabditis_elegans.protein.db -out "${ngf_out}"/${line}_rec.blastout -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
+	done;
+done <"$species_ngf"
+
+
 ######
 ###### PHYLOGENETIC ANALYSIS
 ######
@@ -362,31 +384,31 @@ trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 # cat "${phylo_out}"/DS_filarid_TMfiltered.fa "${phylo_out}"/DS_non-filarid_TMfiltered.fa > "${phylo_out}"/DS_NC2.fa
 
 ### Align files
-einsi --thread 4 "${phylo_out}"/DS_NC2.fa > "${phylo_out}"/DS_NC2.aln
+# einsi --thread 4 "${phylo_out}"/DS_NC2.fa > "${phylo_out}"/DS_NC2.aln
 ### Email when complete
-mailx -s "Alignment complete!" njwheeler@wisc.edu <<< "The alignment of DS_NC2 has successfully completed."
+# mailx -s "Alignment complete!" njwheeler@wisc.edu <<< "The alignment of DS_NC2 has successfully completed."
 
 ### Trim alignment
 ## fix loa loa IDs
-sed 's/lloa_/lloa/' "${phylo_out}"/DS_NC2.aln > "${phylo_out}"/DS_NC3.aln
-mv "${phylo_out}"/DS_NC3.aln "${phylo_out}"/DS_NC2.aln
+# sed 's/lloa_/lloa/' "${phylo_out}"/DS_NC2.aln > "${phylo_out}"/DS_NC3.aln
+# mv "${phylo_out}"/DS_NC3.aln "${phylo_out}"/DS_NC2.aln
 ## Trim
-trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
-"${trimal_cmd}" -in "${phylo_out}"/DS_NC2.aln -out "${phylo_out}"/DS_NC2_trim.aln -gt 0.7
+# trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
+# "${trimal_cmd}" -in "${phylo_out}"/DS_NC2.aln -out "${phylo_out}"/DS_NC2_trim.aln -gt 0.7
 ## Split in to DS_NC2_filarid_trim.aln and DS_NC2_non-filarid_trim.aln, to remove short poorly aligned sequences from non-filarids
-cat "${phylo_out}"/DS_NC2_trim.aln | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/bmala|bpaha|wbanc|ooche|btimo|dimmi|lloa|ovolv/' > "${phylo_out}"/DS_NC2_filarid_trim.aln
-cat "${phylo_out}"/DS_NC2_trim.aln | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '!/bmala|bpaha|wbanc|ooche|btimo|dimmi|lloa|ovolv/' > "${phylo_out}"/DS_NC2_non-filarid_trim.aln
-cat "${phylo_out}"/DS_NC2_filarid_trim.aln | tr '\t' '\n' > "${phylo_out}"/DS_NC2_filarid_trim2.aln
-cat "${phylo_out}"/DS_NC2_non-filarid_trim.aln | tr '\t' '\n' > "${phylo_out}"/DS_NC2_non-filarid_trim2.aln
-"${trimal_cmd}" -in "${phylo_out}"/DS_NC2_non-filarid_trim2.aln -out "${phylo_out}"/DS_NC2_non-filarid_filter_trim.aln -resoverlap 0.70 -seqoverlap 70
-cat "${phylo_out}"/DS_NC2_filarid_trim2.aln "${phylo_out}"/DS_NC2_non-filarid_filter_trim.aln > "${phylo_out}"/DS_NC2_trim_filter.aln
+# cat "${phylo_out}"/DS_NC2_trim.aln | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/bmala|bpaha|wbanc|ooche|btimo|dimmi|lloa|ovolv/' > "${phylo_out}"/DS_NC2_filarid_trim.aln
+# cat "${phylo_out}"/DS_NC2_trim.aln | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '!/bmala|bpaha|wbanc|ooche|btimo|dimmi|lloa|ovolv/' > "${phylo_out}"/DS_NC2_non-filarid_trim.aln
+# cat "${phylo_out}"/DS_NC2_filarid_trim.aln | tr '\t' '\n' > "${phylo_out}"/DS_NC2_filarid_trim2.aln
+# cat "${phylo_out}"/DS_NC2_non-filarid_trim.aln | tr '\t' '\n' > "${phylo_out}"/DS_NC2_non-filarid_trim2.aln
+# "${trimal_cmd}" -in "${phylo_out}"/DS_NC2_non-filarid_trim2.aln -out "${phylo_out}"/DS_NC2_non-filarid_filter_trim.aln -resoverlap 0.70 -seqoverlap 70
+# cat "${phylo_out}"/DS_NC2_filarid_trim2.aln "${phylo_out}"/DS_NC2_non-filarid_filter_trim.aln > "${phylo_out}"/DS_NC2_trim_filter.aln
 ## Change to single-line FASTA
-awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/DS_NC2_trim_filter-single.aln
-mv "${phylo_out}"/DS_NC2_trim_filter-single.aln "${phylo_out}"/DS_CHEMO.aln
+# awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/DS_NC2_trim_filter-single.aln
+# mv "${phylo_out}"/DS_NC2_trim_filter-single.aln "${phylo_out}"/DS_CHEMO.aln
 ### Get IDs and compare lists
-awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/trimmed_ids.txt
-awk 'NR%2==1' "${phylo_out}"/DS_CHEMO.aln > "${phylo_out}"/filtered_ids.txt
-grep -v -f "${phylo_out}"/filtered_ids.txt "${phylo_out}"/trimmed_ids.txt > "${phylo_out}"/missing_ids.txt
+# awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/trimmed_ids.txt
+# awk 'NR%2==1' "${phylo_out}"/DS_CHEMO.aln > "${phylo_out}"/filtered_ids.txt
+# grep -v -f "${phylo_out}"/filtered_ids.txt "${phylo_out}"/trimmed_ids.txt > "${phylo_out}"/missing_ids.txt
 
 
 ### MrBayes
