@@ -149,10 +149,11 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 #  		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
 # 		python "${seqextract_py}" "${gold_out}"/${line}_NChitsf_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_NCf.fa
 # 		rm "${curr_dir}"/protein.tmp.fa
+# 		grep -v -f "${gold_out}"/${line}_NChitsf_ids.txt "${gold_out}"/${line}_NChits_ids.txt > "${gold_out}"/${line}_filtered1_ids.tx
 # 	done;
 # done <"$species_gold"
 
-# ### NON-GOLD FILARID GENOMES - Parse hmm outputs to remove sequences where first hit is not NChR, get list of surviving unique seq ids, extract sequences 
+### NON-GOLD FILARID GENOMES - Parse hmm outputs to remove sequences where first hit is not NChR, get list of surviving unique seq ids, extract sequences 
 # while IFS= read -r line; do
 # 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
 # 		cat "${ngf_out}"/${line}_rHMM.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7TM_GPCR_S|Srg|Sre|Serpentine_r_xa/' | sort -k4 -g > "${ngf_out}"/${line}_NChitsf.txt
@@ -161,6 +162,7 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 #  		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
 # 		python "${seqextract_py}" "${ngf_out}"/${line}_NChitsf_ids.txt "${curr_dir}"/protein.tmp.fa "${ngf_out}"/${line}_NCf.fa
 # 		rm "${curr_dir}"/protein.tmp.fa
+# 		grep -v -f "${ngf_out}"/${line}_NChitsf_ids.txt "${ngf_out}"/${line}_NChits_ids.txt > "${ngf_out}"/${line}_filtered1_ids.tx
 # 	done;
 # done <"$species_ngf"
 
@@ -226,26 +228,56 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # 	done;
 # done <"$species_ngf"
 
-make_db="${gh_dir}"/scripts/auxillary/makeblastdb
-# "${make_db}" -dbtype prot -in "${gold_dir}/caenorhabditis_elegans/PRJNA13758"/caenorhabditis_elegans.protein.fa -out "${gold_dir}/caenorhabditis_elegans/PRJNA13758"/caenorhabditis_elegans.protein
-
 ### GOLD GENOMES - Reciprocal blastp of extracted sequences against C. elegans
-while IFS= read -r line; do
-	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
-		#blast filtered NChRs against C. elegans proteome, using E-value cutoff
-		cd "${gold_dir}"/caenorhabditis_elegans/PRJNA13758/
-		blastp -query "${gold_out}"/${line}_NCf.fa -db caenorhabditis_elegans.protein.db -out "${gold_out}"/${line}_rec.blastout -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
-	done;
-done <"$species_gold"
+# while IFS= read -r line; do
+# 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
+# 		#blast filtered NChRs against C. elegans proteome, using E-value cutoff
+# 		cd "${gold_dir}"/caenorhabditis_elegans/PRJNA13758/
+# 		blastp -query "${gold_out}"/${line}_NCf.fa -db caenorhabditis_elegans.protein.db -out "${gold_out}"/${line}_rec.blastout -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
+# 	done;
+# done <"$species_gold"
 
-## NON-GOLD FILARID GENOMES - Reciprocal blastp of extracted sequences against C. elegans
-while IFS= read -r line; do
-	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
-		#blast filtered NChRs against C. elegans proteome, using E-value cutoff
-		cd "${gold_dir}"/caenorhabditis_elegans/PRJNA13758/
-		blastp -query "${ngf_out}"/${line}_NCf.fa -db caenorhabditis_elegans.protein.db -out "${ngf_out}"/${line}_rec.blastout -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
-	done;
-done <"$species_ngf"
+### NON-GOLD FILARID GENOMES - Reciprocal blastp of extracted sequences against C. elegans
+# while IFS= read -r line; do
+# 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
+# 		#blast filtered NChRs against C. elegans proteome, using E-value cutoff
+# 		cd "${gold_dir}"/caenorhabditis_elegans/PRJNA13758/
+# 		blastp -query "${ngf_out}"/${line}_NCf.fa -db caenorhabditis_elegans.protein.db -out "${ngf_out}"/${line}_rec.blastout -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
+# 	done;
+# done <"$species_ngf"
+
+
+### GOLD GENOMES - remove hits that aren't most similar to a C. elegans ChemoR, extract sequences of surviving hits
+# while IFS= read -r line; do
+# 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
+# 		cat "${gold_out}"/${line}_rec.blastout | awk '{print $1 " " $2 " " $7}' | sort -k1,1 -k3,3g | sort -uk1,1 | grep -wF -f "${gold_out}"/caenorhabditis_elegans_NChitsf_ids.txt | sort -k3 -g > "${gold_out}"/${line}_rblast_ChemoRhits.txt
+# 		cat "${gold_out}"/${line}_rblast_ChemoRhits.txt | awk '{print $1}' > "${gold_out}"/${line}_rblast_ChemoRhits_ids.txt
+# 		#Extract these sequences
+# 		curr_dir=$(dirname "${f}")
+# 		#echo ${curr_dir}
+# 		zcat "${f}" > "${curr_dir}"/protein.tmp.fa
+# 		python "${seqextract_py}" "${gold_out}"/${line}_rblast_ChemoRhits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_rblast_ChemoR.fa
+# 		rm "${curr_dir}"/protein.tmp.fa
+# 		grep -v -f "${gold_out}"/${line}_rblast_ChemoRhits_ids.txt "${gold_out}"/${line}_NChitsf_ids.txt > "${gold_out}"/${line}_filtered2_ids.txt
+# 	done;
+# done <"$species_gold"
+
+### NON-GOLD FILARID GENOMES - remove hits that aren't most similar to a C. elegans ChemoR, extract sequences of surviving hits
+# while IFS= read -r line; do
+# 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
+# 		cat "${ngf_out}"/${line}_rec.blastout | awk '{print $1 " " $2 " " $7}' | sort -k1,1 -k3,3g | sort -uk1,1 | grep -wF -f "${gold_out}"/caenorhabditis_elegans_NChitsf_ids.txt | sort -k3 -g > "${ngf_out}"/${line}_rblast_ChemoRhits.txt
+# 		cat "${ngf_out}"/${line}_rblast_ChemoRhits.txt | awk '{print $1}' > "${ngf_out}"/${line}_rblast_ChemoRhits_ids.txt
+# 		#Extract these sequences
+# 		curr_dir=$(dirname "${f}")
+# 		#echo ${curr_dir}
+# 		zcat "${f}" > "${curr_dir}"/protein.tmp.fa
+# 		python "${seqextract_py}" "${ngf_out}"/${line}_rblast_ChemoRhits_ids.txt "${curr_dir}"/protein.tmp.fa "${ngf_out}"/${line}_rblast_ChemoR.fa
+# 		rm "${curr_dir}"/protein.tmp.fa
+# 		grep -v -f "${ngf_out}"/${line}_rblast_ChemoRhits_ids.txt "${ngf_out}"/${line}_NChitsf_ids.txt > "${ngf_out}"/${line}_filtered2_ids.txt
+# 	done;
+# done <"$species_ngf"
+
+### Double check filtered2 for filarids (filtered2_description.xlsx). Retain 8 of the 105 that were filtered; manually add to the ChemoRhits IDs and FASTA file
 
 
 ######
@@ -358,35 +390,65 @@ trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 # python "${prepCSV_py}" "${mcl_out}"/dump.blastall.mci.I12 "${mcl_out}"/clusters.csv
 
 
-
 ###
 ### DOWN-SAMPLED PHYLOGENETIC TREE
 ###
 
+### GOLD GENOMES - Copy sequence files to ../phylo/NemChR directory
+# while IFS= read -r line; do
+# 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
+# 		cp "${gold_out}"/${line}_rblast_ChemoR.fa "${phylo_out}"
+# 	done;
+# done <"$species_gold"
+
+### NON-GOLD FILARID GENOMES - Copy sequence files to ../phylo/NemChR directory
+# while IFS= read -r line; do
+# 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
+# 		cp "${ngf_out}"/${line}_rblast_ChemoR.fa "${phylo_out}"
+# 	done;
+# done <"$species_ngf"
+
+
+### Label each sequence with its species name
+# for f in "${phylo_out}"/*_rblast_ChemoR.fa ; do
+# 	python "${change_ID_py}" "$f" "$f".fa;
+# done
+
+# for f in "${phylo_out}"/*.fa.fa ; do
+# 	mv "$f" "${f/.fa.fa/_label.fa}";
+# done
+
 
 ### Choose one or more representatives from each non-filarid clade and concatenate (can add outgroups if wanted)
-# cat "${phylo_out}"/caenorhabditis_elegans_NCf_label.fa "${phylo_out}"/necator_americanus_NCf_label.fa "${phylo_out}"/haemonchus_contortus_NCf_label.fa "${phylo_out}"/strongyloides_ratti_NCf_label.fa "${phylo_out}"/trichinella_spiralis_NCf_label.fa "${phylo_out}"/toxocara_canis_NCf_label.fa > "${phylo_out}"/DS_non-filarid.fa
-# cat "${phylo_out}"/brugia_pahangi_NCf_label.fa "${phylo_out}"/wuchereria_bancrofti_NCf_label.fa "${phylo_out}"/onchocerca_ochengi_NCf_label.fa "${phylo_out}"/brugia_timori_NCf_label.fa "${phylo_out}"/dirofilaria_immitis_NCf_label.fa  "${phylo_out}"/brugia_malayi_NCf_label.fa "${phylo_out}"/loa_loa_NCf_label.fa "${phylo_out}"/onchocerca_volvulus_NCf_label.fa  > "${phylo_out}"/DS_filarid.fa
-# sed 's/>/>out-/' "${outgroup_fa}" > "${phylo_out}"/outgroup.fa
-# cat "${phylo_out}"/DS_non-filarid.fa "${phylo_out}"/outgroup.fa > "${phylo_out}"/DS_non-filarid_outgroup.fa
+# cat "${phylo_out}"/caenorhabditis_elegans_rblast_ChemoR_label.fa "${phylo_out}"/necator_americanus_rblast_ChemoR_label.fa "${phylo_out}"/haemonchus_contortus_rblast_ChemoR_label.fa "${phylo_out}"/strongyloides_ratti_rblast_ChemoR_label.fa "${phylo_out}"/trichinella_spiralis_rblast_ChemoR_label.fa "${phylo_out}"/toxocara_canis_rblast_ChemoR_label.fa > "${phylo_out}"/DS_non-filarid.fa
+# cat "${phylo_out}"/brugia_pahangi_rblast_ChemoR_label.fa "${phylo_out}"/wuchereria_bancrofti_rblast_ChemoR_label.fa "${phylo_out}"/onchocerca_ochengi_rblast_ChemoR_label.fa "${phylo_out}"/brugia_timori_rblast_ChemoR_label.fa "${phylo_out}"/dirofilaria_immitis_rblast_ChemoR_label.fa  "${phylo_out}"/brugia_malayi_rblast_ChemoR_label.fa "${phylo_out}"/loa_loa_rblast_ChemoR_label.fa "${phylo_out}"/onchocerca_volvulus_rblast_ChemoR_label.fa  > "${phylo_out}"/DS_filarid.fa
+
+# Join files
+# cat "${phylo_out}"/DS_filarid.fa "${phylo_out}"/DS_non-filarid.fa > "${phylo_out}"/DS_NC.fa
 
 ## HMMTOP
 # cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
 # ./hmmtop -if="${phylo_out}"/DS_non-filarid.fa -of="${phylo_out}"/DS_non-filarid_hmmtop_output.txt -sf=FAS
 # ./hmmtop -if="${phylo_out}"/DS_filarid.fa -of="${phylo_out}"/DS_filarid_hmmtop_output.txt -sf=FAS
 
-### Parse HHMTOP output to get list of seq ids with >= 3 TM domains <= 10 TM domains for filarids, and 7 TM domains for non-filarids
-# extract only TM domains
+### Parse HHMTOP output to get FASTA file of non-filarid sequences with exactly 7 TMs; extract entire sequence,; don't filter filarids
 # python "${HMMTOP_strict_py}" "${phylo_out}"/DS_non-filarid_hmmtop_output.txt "${phylo_out}"/DS_non-filarid.fa "${phylo_out}"/DS_non-filarid_TMfiltered.fa
-# python "${HMMTOP_py}" "${phylo_out}"/DS_filarid_hmmtop_output.txt "${phylo_out}"/DS_filarid.fa "${phylo_out}"/DS_filarid_TMfiltered.fa
 
 # Join files
-# cat "${phylo_out}"/DS_filarid_TMfiltered.fa "${phylo_out}"/DS_non-filarid_TMfiltered.fa > "${phylo_out}"/DS_NC2.fa
+# cat "${phylo_out}"/DS_filarid.fa "${phylo_out}"/DS_non-filarid_TMfiltered.fa > "${phylo_out}"/DS_NC2.fa
+
+### Change to single-line FASTA
+# awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC.fa > "${phylo_out}"/DS_NC-single.fa
+# awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2.fa > "${phylo_out}"/DS_NC2-single.fa
+### Get IDs and compare lists
+# awk 'NR%2==1' "${phylo_out}"/DS_NC-single.fa > "${phylo_out}"/raw_ids.txt
+# awk 'NR%2==1' "${phylo_out}"/DS_NC2-single.fa > "${phylo_out}"/filtered1_ids.txt
+# grep -v -f "${phylo_out}"/filtered1_ids.txt "${phylo_out}"/raw_ids.txt > "${phylo_out}"/removed_ids.txt
 
 ### Align files
-# einsi --thread 4 "${phylo_out}"/DS_NC2.fa > "${phylo_out}"/DS_NC2.aln
+einsi --thread 8 "${phylo_out}"/DS_NC2.fa > "${phylo_out}"/DS_NC2.aln
 ### Email when complete
-# mailx -s "Alignment complete!" njwheeler@wisc.edu <<< "The alignment of DS_NC2 has successfully completed."
+mailx -s "Alignment complete!" njwheeler@wisc.edu <<< "The alignment of DS_NC2 has successfully completed."
 
 ### Trim alignment
 ## fix loa loa IDs

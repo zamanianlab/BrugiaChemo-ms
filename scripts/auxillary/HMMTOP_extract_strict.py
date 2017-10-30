@@ -17,7 +17,7 @@ def seqextract(file):
 		line = line.strip()
 		#print line
 		match = re.search('>HP:\s+\d+\s+(.*?)\s.*?[IN|OUT]\s+(\d+)', line)
-		if match and int(match.group(2)) > 5 and int(match.group(2)) < 10:
+		if match and int(match.group(2)) == 7:
 			protein_id = match.group(1)
 			print protein_id + " " + match.group(2)
 			current = record_dict[protein_id]
@@ -81,7 +81,7 @@ def TMDextract(file):
 		else: 
 			pass
 
-#run = seqextract(p)
+run = seqextract(p)
 #run = TMseqextract(p)
-run = TMDextract(p)
+# run = TMDextract(p)
 outfile.close()
