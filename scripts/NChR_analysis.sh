@@ -434,6 +434,79 @@ trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 ### Parse HHMTOP output to get FASTA file of non-filarid sequences with exactly 7 TMs; extract entire sequence,; don't filter filarids
 # python "${HMMTOP_strict_py}" "${phylo_out}"/DS_non-filarid_hmmtop_output.txt "${phylo_out}"/DS_non-filarid.fa "${phylo_out}"/DS_non-filarid_TMfiltered.fa
 
+awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${gh_dir}/auxillary/12915_2008_195_MOESM33_ESM.fast" > "${phylo_out}"/BMC.celeg.fasta
+
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/sra/' > "${phylo_out}"/sra.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/srab/' >"${phylo_out}"/srab.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/srh/' > "${phylo_out}"/srh.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/str/' > "${phylo_out}"/str.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/sri/' > "${phylo_out}"/sri.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/srd/' > "${phylo_out}"/srd.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/srj/' > "${phylo_out}"/srj.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/srm/' > "${phylo_out}"/srm.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/srn/' > "${phylo_out}"/srn.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/sre/' > "${phylo_out}"/sre.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/srb/' > "${phylo_out}"/srb.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/srx/' > "${phylo_out}"/srx.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/srt/' > "${phylo_out}"/srt.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/srg/' > "${phylo_out}"/srg.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/sru/' > "${phylo_out}"/sru.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/srv/' > "${phylo_out}"/srv.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/srxa/' >"${phylo_out}"/srxa.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/srw/' > "${phylo_out}"/srw.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/srz/' > "${phylo_out}"/srz.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/srbc/' >"${phylo_out}"/srbc.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/srsx/' >"${phylo_out}"/srsx.celeg.fa
+cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s", $0); next } 1' | awk '/srr/' > "${phylo_out}"/srr.celeg.fa
+
+for f in s*.celeg.fa; do muscle -in $f -out $f.aln; done
+for f in *.fa.aln ; do mv "$f" "${f/.fa.aln/.aln}"; done
+
+muscle -profile -in1 "${phylo_out}"/srr.aln -in2 "${phylo_out}"/sra.aln -out 2.aln
+muscle -profile -in1 "${phylo_out}"/2.aln -in2 "${phylo_out}"/srab.aln -out 3.aln
+muscle -profile -in1 "${phylo_out}"/3.aln -in2 "${phylo_out}"/srh.aln -out 4.aln
+muscle -profile -in1 "${phylo_out}"/4.aln -in2 "${phylo_out}"/str.aln -out 5.aln
+muscle -profile -in1 "${phylo_out}"/5.aln -in2 "${phylo_out}"/sri.aln -out 6.aln
+muscle -profile -in1 "${phylo_out}"/6.aln -in2 "${phylo_out}"/srd.aln -out 7.aln
+muscle -profile -in1 "${phylo_out}"/7.aln -in2 "${phylo_out}"/srj.aln -out 8.aln
+muscle -profile -in1 "${phylo_out}"/8.aln -in2 "${phylo_out}"/srm.aln -out 9.aln
+muscle -profile -in1 "${phylo_out}"/9.aln -in2 "${phylo_out}"/srn.aln -out 10.aln
+muscle -profile -in1 "${phylo_out}"/10.aln -in2 "${phylo_out}"/sre.aln -out 11.aln
+muscle -profile -in1 "${phylo_out}"/11.aln -in2 "${phylo_out}"/srb.aln -out 12.aln
+muscle -profile -in1 "${phylo_out}"/12.aln -in2 "${phylo_out}"/srx.aln -out 13.aln
+muscle -profile -in1 "${phylo_out}"/13.aln -in2 "${phylo_out}"/srt.aln -out 14.aln
+muscle -profile -in1 "${phylo_out}"/14.aln -in2 "${phylo_out}"/srg.aln -out 15.aln
+muscle -profile -in1 "${phylo_out}"/10.aln -in2 "${phylo_out}"/sru.aln -out 16.aln
+muscle -profile -in1 "${phylo_out}"/11.aln -in2 "${phylo_out}"/srxa.aln -out 17.aln
+muscle -profile -in1 "${phylo_out}"/12.aln -in2 "${phylo_out}"/srw.aln -out 18.aln
+muscle -profile -in1 "${phylo_out}"/13.aln -in2 "${phylo_out}"/srz.aln -out 19.aln
+muscle -profile -in1 "${phylo_out}"/19.aln -in2 "${phylo_out}"/srbc.aln -out 20.aln
+muscle -profile -in1 "${phylo_out}"/20.aln -in2 "${phylo_out}"/srsx.aln -out 21.aln
+
+"${phylo_out}"/DS_non-filarid_TMfiltered.fa "${phylo_out}"/non-filard.fa
+
+#manually remove all celeg sequences from non-filarid.fa
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Join files
 # cat "${phylo_out}"/DS_filarid.fa "${phylo_out}"/DS_non-filarid_TMfiltered.fa > "${phylo_out}"/DS_NC2.fa
 
@@ -446,31 +519,32 @@ trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 # grep -v -f "${phylo_out}"/filtered1_ids.txt "${phylo_out}"/raw_ids.txt > "${phylo_out}"/removed_ids.txt
 
 ### Align files
-einsi --thread 8 "${phylo_out}"/DS_NC2.fa > "${phylo_out}"/DS_NC2.aln
+# einsi --thread 8 "${phylo_out}"/DS_NC2.fa > "${phylo_out}"/DS_NC2.aln
 ### Email when complete
-mailx -s "Alignment complete!" njwheeler@wisc.edu <<< "The alignment of DS_NC2 has successfully completed."
+# mailx -s "Alignment complete!" njwheeler@wisc.edu <<< "The alignment of DS_NC2 has successfully completed."
 
 ### Trim alignment
-## fix loa loa IDs
-# sed 's/lloa_/lloa/' "${phylo_out}"/DS_NC2.aln > "${phylo_out}"/DS_NC3.aln
-# mv "${phylo_out}"/DS_NC3.aln "${phylo_out}"/DS_NC2.aln
 ## Trim
-# trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
-# "${trimal_cmd}" -in "${phylo_out}"/DS_NC2.aln -out "${phylo_out}"/DS_NC2_trim.aln -gt 0.7
-## Split in to DS_NC2_filarid_trim.aln and DS_NC2_non-filarid_trim.aln, to remove short poorly aligned sequences from non-filarids
-# cat "${phylo_out}"/DS_NC2_trim.aln | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/bmala|bpaha|wbanc|ooche|btimo|dimmi|lloa|ovolv/' > "${phylo_out}"/DS_NC2_filarid_trim.aln
-# cat "${phylo_out}"/DS_NC2_trim.aln | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '!/bmala|bpaha|wbanc|ooche|btimo|dimmi|lloa|ovolv/' > "${phylo_out}"/DS_NC2_non-filarid_trim.aln
-# cat "${phylo_out}"/DS_NC2_filarid_trim.aln | tr '\t' '\n' > "${phylo_out}"/DS_NC2_filarid_trim2.aln
-# cat "${phylo_out}"/DS_NC2_non-filarid_trim.aln | tr '\t' '\n' > "${phylo_out}"/DS_NC2_non-filarid_trim2.aln
-# "${trimal_cmd}" -in "${phylo_out}"/DS_NC2_non-filarid_trim2.aln -out "${phylo_out}"/DS_NC2_non-filarid_filter_trim.aln -resoverlap 0.70 -seqoverlap 70
-# cat "${phylo_out}"/DS_NC2_filarid_trim2.aln "${phylo_out}"/DS_NC2_non-filarid_filter_trim.aln > "${phylo_out}"/DS_NC2_trim_filter.aln
+trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
+"${trimal_cmd}" -in "${phylo_out}"/DS_NC2.aln -out "${phylo_out}"/DS_NC2_trim.aln -gt 0.7
 ## Change to single-line FASTA
-# awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim_filter.aln > "${phylo_out}"/DS_NC2_trim_filter-single.aln
-# mv "${phylo_out}"/DS_NC2_trim_filter-single.aln "${phylo_out}"/DS_CHEMO.aln
+awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/DS_NC2_trim-single.aln
+## Split in to DS_NC2_filarid_trim.aln and DS_NC2_non-filarid_trim.aln
+cat "${phylo_out}"/DS_NC2_trim-single.aln | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/bmala|bpaha|wbanc|ooche|btimo|dimmi|lloa|ovolv/' > "${phylo_out}"/DS_NC2_filarid_trim.aln
+cat "${phylo_out}"/DS_NC2_trim-single.aln | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '!/bmala|bpaha|wbanc|ooche|btimo|dimmi|lloa|ovolv/' > "${phylo_out}"/DS_NC2_non-filarid_trim.aln
+# Change back to two-line fasta
+cat "${phylo_out}"/DS_NC2_non-filarid_trim.aln | tr '\t' '\n' > "${phylo_out}"/DS_NC2_non-filarid_trim2.aln
+## Remove short poorly aligned sequences from non-filarids
+"${trimal_cmd}" -in "${phylo_out}"/DS_NC2_non-filarid_trim2.aln -out "${phylo_out}"/DS_NC2_non-filarid_filter_trim.aln -resoverlap 0.70 -seqoverlap 70
+## Cat files back together
+cat "${phylo_out}"/DS_NC2_filarid_trim.aln "${phylo_out}"/DS_NC2_non-filarid_filter_trim.aln > "${phylo_out}"/DS_NC2_trim_filter.aln
+## Change to single-line FASTA
+awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim_filter.aln | sed '/^$/d' > "${phylo_out}"/DS_NC2_trim_filter-single.aln
+awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/DS_NC2_trim-single.aln
 ### Get IDs and compare lists
-# awk 'NR%2==1' "${phylo_out}"/DS_NC2_trim.aln > "${phylo_out}"/trimmed_ids.txt
-# awk 'NR%2==1' "${phylo_out}"/DS_CHEMO.aln > "${phylo_out}"/filtered_ids.txt
-# grep -v -f "${phylo_out}"/filtered_ids.txt "${phylo_out}"/trimmed_ids.txt > "${phylo_out}"/missing_ids.txt
+cat "${phylo_out}"/DS_NC2_trim_filter-single.aln | tr '\t' '\n' | awk 'NR%2==1' > "${phylo_out}"/filtered_ids.txt
+cat "${phylo_out}"/DS_NC2_trim-single.aln | tr '\t' '\n' | awk 'NR%2==1' > "${phylo_out}"/trimmed_ids.txt
+grep -v -f "${phylo_out}"/filtered_ids.txt "${phylo_out}"/trimmed_ids.txt > "${phylo_out}"/missing_ids.txt
 
 
 ### MrBayes
