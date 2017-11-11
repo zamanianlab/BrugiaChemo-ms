@@ -6,7 +6,7 @@ library(ggtree)
 library(tidyverse)
 library(geiger)
 
-setwd("~/Box Sync/ZamanianLab/Data/Phylogenetics/ChemoR/Celegans_ChemoRs_BMCBiology/")
+setwd("~/Box Sync/GHdata/50HGI/NChR/phylo/")
   
 # read in alignment, calculate distance matrix, infer neighbor-joining tree
 aln <- read.alignment("final.trim.filter.aln", format = "fasta")
@@ -17,10 +17,10 @@ NJ  <- NJ(aa_dist)
 
 # reroot based on the output of the ggtree command
 ggtree(NJ, size = 1.3,  layout = "circular", branch.length="none") +  geom_tiplab2(size = 2) + geom_text2(aes(subset=!isTip, label=node), size = 2, hjust=-.3)
-NJ <-  phytools::reroot(NJ, 2745)
+NJ <-  phytools::reroot(NJ, 2843)
 
 # load in reference file matching species <-> clade
-reference <- read.csv("../clade_species_phylum.csv", header = FALSE) %>%
+reference <- read.csv("~/Box Sync/ZamanianLab/Data/Phylogenetics/ChemoR/clade_species_phylum.csv", header = FALSE) %>%
   rename(Species = V1, Clade = V2, Phylum = V3)
 
 # add species name to tip label, options to include: Species."-".Gene_ID."-".Clade."-".Phylum
