@@ -17,7 +17,14 @@ NJ  <- NJ(aa_dist)
 
 # reroot based on the output of the ggtree command
 ggtree(NJ, size = 1.3,  layout = "circular", branch.length="none") +  geom_tiplab2(size = 2) + geom_text2(aes(subset=!isTip, label=node), size = 2, hjust=-.3)
-NJ <-  phytools::reroot(NJ, 2843)
+NJ <-  phytools::reroot(NJ, 2716)
+
+
+library("polysat")
+# 100 NJ trees
+for(i in 1:100){
+  
+}
 
 # load in reference file matching species <-> clade
 reference <- read.csv("~/Box Sync/ZamanianLab/Data/Phylogenetics/ChemoR/clade_species_phylum.csv", header = FALSE) %>%
@@ -36,9 +43,9 @@ tip_labels <- tip_labels %>%
 NJ[]$tip.label <- tip_labels$final_label
 
 # plot tree
-t <- ggtree(NJ, size = 1.3,  layout = "circular", branch.length="none") #+ 
-  # geom_tiplab2(size = 2) +
-  # geom_text2(aes(subset=!isTip, label=node), size = 2, hjust=-.3)
+t <- ggtree(NJ, size = 1.3,  layout = "circular", branch.length="none") + 
+  geom_tiplab2(size = 2) +
+  geom_text2(aes(subset=!isTip, label=node), size = 2, hjust=-.3)
 
 # attach annotation df to ggtree object
 df <- tip_labels %>%
@@ -51,46 +58,48 @@ t_ann <- t %<+% df +
   scale_color_manual(values = c(I = "#a361c7", IIIa = "#58a865", IIIb = "#c65c8a", IVb = "#9b9c3b", Va = "#648ace", Vb = "#c98443", Ve = "#cb4f42"))
 
 # choose nodes to collapse, family names are below
-nodes <- c(3788,
-           3724,
-           3689,
-           3600,
-           3531,
-           3463,
-           3440,
-           3219,
-           2970,
-           3120,
-           3105,
-           3095,
-           3061,
-           2796,
-           2304,
-           2008,
-           2390,
-           2489,
-           2529
+nodes <- c(3905,
+           2766,
+           2479,
+           2422,
+           2330,
+           2063,
+           3831,
+           3773,
+           3716,
+           3647,
+           3628,
+           3452,
+           3594,
+           3518,
+           3329,
+           3235,
+           2861,
+           3192,
+           3086,
+           2962
            )
 
 labels <- c("srw",
+            "sri",
+            "srh",
+            "srd",
+            "srj",
+            "str",
             "srt",
             "srv",
             "sru",
             "srg",
-            "srx",
-            "srxa",
-            "sre",
-            "srsx",
-            "srbc",
             "srb",
-            "srab",
+            "sre",
             "sra",
+            "srab",
             "srz",
-            "sri",
-            "srh",
-            "srj",
-            "srd",
-            "str"
+            "srbc",
+            "srsx",
+            "srxa",
+            "srx",
+            "srx"
             )
 
 # collapse node with loop
@@ -106,15 +115,16 @@ t_ann <- t_ann %<+% c_df
 
 # superfamily hilighting
 t_ann <- t_ann + 
-  geom_hilight(node=3698, fill = "red" , alpha = 0.5) + #Srg
+  geom_hilight(node=2057, fill = "yellow" , alpha = 0.5) + #Str
+  geom_hilight(node=3423, fill = "blue" , alpha = 0.5) + #Sra
+  
+  geom_hilight(node=3644, fill = "red" , alpha = 0.5) + #Srg
   geom_hilight(node=3647, fill = "red" , alpha = 0.5) + #Srg
   geom_hilight(node=3527, fill = "red" , alpha = 0.5) + #Srg
   geom_hilight(node=3274, fill = "red" , alpha = 0.5) + #Srg
   geom_hilight(node=3212, fill = "red" , alpha = 0.5) + #Srg
   geom_hilight(node=2893, fill = "green" , alpha = 0.5) + #srsx
   geom_hilight(node=3119, fill = "green" , alpha = 0.5) + #srbc
-  geom_hilight(node=2986, fill = "blue" , alpha = 0.5) + #Sra
-  geom_hilight(node=2003, fill = "yellow" , alpha = 0.5) + #Str
   geom_hilight(node=3784, fill = "green" , alpha = 0.5) + #srw
   geom_hilight(node=2795, fill = "green" , alpha = 0.5) #srz
 
@@ -139,13 +149,13 @@ t_ann$data <- t_ann$data %>%
   mutate(label = ifelse(Clade == "IIIb",final_label, Species)) # Species + Gene_ID + Clade for clade III, species for all other clades
 
 # final tree
-t_final <- t_ann + #geom_tiplab2(aes(label = label, size = 1)) +
+t_final <- t_ann +
   geom_tiplab2(aes(label = family), size = 6, align = TRUE, linetype = 5, hjust = -0.25) +
-  geom_tiplab2(size = 4, align = TRUE, linetype = 5, hjust = -.5) +
+  # geom_tiplab2(size = 4, align = TRUE, linetype = 5, hjust = -.5) +
   theme(legend.position="right", legend.title = element_text(size = 40), legend.text = element_text(size = 35), legend.key.size = unit(2, "cm")) +
   geom_tippoint(aes(color = Clade), size = 5) +
   geom_point2(aes(subset=(is.na(family) == FALSE)), size = 8, shape = 21, fill = "yellow2")
-# t_final
+t_final
 
 ggsave("CHEMO_NJ_TREE_label.pdf", t_final, width = 40, height = 40)
 
