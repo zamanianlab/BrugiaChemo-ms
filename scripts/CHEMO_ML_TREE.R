@@ -13,7 +13,7 @@ raxml_file <- "RAxML_bipartitionsBranchLabels.final_ML"
 raxml <- read.raxml(raxml_file)
 
 # reroot based on the output of the ggtree command
-ggtree(raxml, size = 1.3,  layout = "circular", branch.length="none") + geom_label(aes(label=bootstrap, fill=bootstrap)) +  geom_tiplab2(size = 2) + geom_text2(aes(subset=!isTip, label=node), size = 2, hjust=-.3)
+# ggtree(raxml, size = 1.3,  layout = "circular", branch.length="none") + geom_label(aes(label=bootstrap, fill=bootstrap)) +  geom_tiplab2(size = 2) + geom_text2(aes(subset=!isTip, label=node), size = 2, hjust=-.3)
 raxml <-  ggtree::reroot(raxml, 2269)
 
 
@@ -22,18 +22,23 @@ reference <- read.csv("~/Box Sync/ZamanianLab/Data/Phylogenetics/ChemoR/clade_sp
   rename(Species = V1, Clade = V2, Phylum = V3)
 
 # add species name to tip label, options to include: Species."-".Gene_ID."-".Clade."-".Phylum
+# retain Transcript_ID for C. elegans genes
 tip_labels <- as.data.frame(raxml@phylo$tip.label) %>%
   rename(tip_label = "raxml@phylo$tip.label")
 tip_labels <- tidyr::separate(tip_labels, tip_label, into = c("Species", "Gene_ID"), sep = "-", remove = TRUE, extra = "merge")
 tip_labels <- tip_labels %>%
+  mutate(Transcript_ID = ifelse(Species %in% reference$Species, "", Species)) %>%
   mutate(Species = ifelse(Species %in% reference$Species, Species, "celeg")) # Species + Gene_ID + Clade for clade III, species for all other clades
-tip_labels <- left_join(tip_labels,reference,by="Species")
+tip_labels <- left_join(tip_labels, reference, by="Species")
 tip_labels <- tip_labels %>%
-  mutate(final_label = paste0(tip_labels$Species,"-",tip_labels$Gene_ID,"-",tip_labels$Clade)) %>%
+  mutate(final_label = paste0(tip_labels$Species, "-", tip_labels$Transcript_ID, "-", tip_labels$Gene_ID, "-", tip_labels$Clade)) %>%
   select(-Phylum)
+tip_labels <- data.frame(lapply(tip_labels, function(x) {
+  gsub("--", "-", x)
+}))
 
 # replace the original tip labels
-raxml@phylo$tip.label <- tip_labels$final_label
+raxml@phylo$tip.label <- as.character(tip_labels$final_label)
 
 # plot tree
 t <- ggtree(raxml, size = 1.3,  layout = "circular", branch.length="none") #+ 
@@ -152,12 +157,12 @@ t_ann <- t_ann +
 # geom_tiplab2 uses column label by default, so copy whatever data you want to the label column
 t_ann$data <- t_ann$data %>%
   # mutate(final_label = label) %>%
-  mutate(label = ifelse(Clade == "IIIb",final_label, Species)) # Species + Gene_ID + Clade for clade III, species for all other clades
+  mutate(label = ifelse(Clade == "IIIb", as.character(final_label), as.character(Species))) # Species + Gene_ID + Clade for clade III, species for all other clades
 
 # final tree
 t_final <- t_ann +
   geom_tiplab2(aes(label = family), size = 6, align = TRUE, linetype = 5, hjust = -0.25) +
-  # geom_tiplab2(size = 4, align = TRUE, linetype = 5, hjust = -.5) +
+  geom_tiplab2(size = 4, align = TRUE, linetype = 5, hjust = -.5) +
   theme(legend.position="right", legend.title = element_text(size = 40), legend.text = element_text(size = 35), legend.key.size = unit(2, "cm")) +
   geom_tippoint(aes(color = Clade), size = 5) +
   geom_point2(aes(subset=(is.na(family) == FALSE)), size = 8, shape = 21, fill = "yellow2") +
@@ -176,34 +181,32 @@ ggsave("CHEMO_NJ_TREE_nodes.pdf", t_final_nodes, width = 40, height = 40)
 ## Get taxon labels for a particular node ##
 ############################################
 
-
-
-node <- c(S1 = 3713,
-          S2 = 3460,
-          S3 = 3430,
-          S4 = 3424,
-          S5 = 3420,
-          S6 = 3341,
-          L1 = 3346,
-          L2 = 3358,
-          S7 = 2911,
-          L3 = 2927,
-          S8 = 2965,
-          S9 = 2952,
-          S10 = 3208,
-          S11 = 3050,
-          L4 = 3011,
-          S12 = 2285)
+filarid_nodes <- c(srsx1 = 3779,
+          srsx2 = 3756,
+          srsx3 = 3707,
+          srsx4 = 3727,
+          srbc = 2202,
+          srab1 = 2080,
+          srab2 = 2119,
+          srxa = 2535,
+          srx1 = 2496,
+          srx2 = 2506,
+          srx3 = 2310,
+          srx4 = 2353,
+          srx5 = 2317,
+          srx6 = 2323,
+          srt = 3624,
+          srh = 2845)
 
 # create list of lists that include gene names grouped by clade
 des <- list()
 n <- 1
-for(x in node) {
-  y <- geiger::tips(NJ, x)
+for(x in filarid_nodes) {
+  y <- geiger::tips(raxml@phylo, x)
   des[n] <- list(y)
   n <- n + 1
 }
-names(des) <- names(node)
+names(des) <- names(filarid_nodes)
 # get lengths of lists in list-des
 len <- sapply(des, length)
 n <- max(len)
@@ -211,10 +214,48 @@ len <- n - len
 # write csv
 csv <- mapply(function(x,y) c( x , rep( NA , y ) ) , des , len )
 csv.m <- gather(as.data.frame(csv), key = "Clade", value = "Gene_ID", na.rm = TRUE)
-write.csv(csv.m, file="clades.csv", row.names = FALSE, col.names = TRUE)
+write.csv(csv.m, file="filarid_clades.csv", row.names = FALSE, col.names = TRUE)
 
+family_nodes <- c(srw = 3797,
+                  pep1 = 3991,
+                  pep2 = 3792,
+                  pep3 = 3785,
+                  srsx = 3692,
+                  srbc = 2199,
+                  sre = 2137,
+                  srb = 2046,
+                  sra = 2006,
+                  srab = 2063,
+                  srxa = 2510,
+                  srx = 2294,
+                  srt = 3606,
+                  srz = 2549,
+                  srv = 2763,
+                  sru = 2644,
+                  srg = 2691,
+                  sri = 3114,
+                  srh = 2817,
+                  srd = 3520,
+                  srj = 3192,
+                  str = 3255
+)
 
-
+des <- list()
+n <- 1
+for(x in family_nodes) {
+  y <- geiger::tips(raxml@phylo, x)
+  des[n] <- list(y)
+  n <- n + 1
+}
+names(des) <- names(family_nodes)
+# get lengths of lists in list-des
+len <- sapply(des, length)
+n <- max(len)
+len <- n - len
+# write csv
+csv <- mapply(function(x,y) c( x , rep( NA , y ) ) , des , len )
+csv.m <- gather(as.data.frame(csv), key = "Clade", value = "Gene_ID", na.rm = TRUE)
+write.csv(csv.m, file="family_clades.csv", row.names = FALSE, col.names = TRUE)
 
 
 

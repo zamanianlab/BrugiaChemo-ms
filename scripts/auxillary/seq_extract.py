@@ -19,8 +19,12 @@ def seqextract(file):
 		ids.append(line)
 		#print ids
 		for entry in ids:
-			current = record_dict[entry]
-			SeqIO.write(current, output_handle, "fasta")
+			# print entry
+			try:
+				current = record_dict[entry]
+				SeqIO.write(current, output_handle, "fasta")
+			except KeyError:
+				print("Could not find {} in {}.".format(entry, filename2))
 		else: 
 			pass
 

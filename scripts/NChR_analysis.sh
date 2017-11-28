@@ -366,47 +366,150 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # 	done
 
 ### align family profiles to each other, sequentially
-muscle -profile -in1 "${phylo_out}"/sra.celeg.aln -in2 "${phylo_out}"/srab.celeg.aln -out "${phylo_out}"/2.aln
-muscle -profile -in1 "${phylo_out}"/2.aln -in2 "${phylo_out}"/srh.celeg.aln -out "${phylo_out}"/3.aln
-muscle -profile -in1 "${phylo_out}"/3.aln -in2 "${phylo_out}"/str.celeg.aln -out "${phylo_out}"/4.aln
-muscle -profile -in1 "${phylo_out}"/4.aln -in2 "${phylo_out}"/sri.celeg.aln -out "${phylo_out}"/5.aln
-muscle -profile -in1 "${phylo_out}"/5.aln -in2 "${phylo_out}"/srd.celeg.aln -out "${phylo_out}"/6.aln
-muscle -profile -in1 "${phylo_out}"/6.aln -in2 "${phylo_out}"/srj.celeg.aln -out "${phylo_out}"/7.aln
-muscle -profile -in1 "${phylo_out}"/7.aln -in2 "${phylo_out}"/sre.celeg.aln -out "${phylo_out}"/8.aln
-muscle -profile -in1 "${phylo_out}"/8.aln -in2 "${phylo_out}"/srb.celeg.aln -out "${phylo_out}"/9.aln
-muscle -profile -in1 "${phylo_out}"/9.aln -in2 "${phylo_out}"/srx.celeg.aln -out "${phylo_out}"/10.aln
-muscle -profile -in1 "${phylo_out}"/10.aln -in2 "${phylo_out}"/srt.celeg.aln -out "${phylo_out}"/11.aln
-muscle -profile -in1 "${phylo_out}"/11.aln -in2 "${phylo_out}"/srg.celeg.aln -out "${phylo_out}"/12.aln
-muscle -profile -in1 "${phylo_out}"/12.aln -in2 "${phylo_out}"/sru.celeg.aln -out "${phylo_out}"/13.aln
-muscle -profile -in1 "${phylo_out}"/13.aln -in2 "${phylo_out}"/srxa.celeg.aln -out "${phylo_out}"/14.aln
-muscle -profile -in1 "${phylo_out}"/14.aln -in2 "${phylo_out}"/srw.celeg.aln -out "${phylo_out}"/15.aln
-muscle -profile -in1 "${phylo_out}"/15.aln -in2 "${phylo_out}"/srz.celeg.aln -out "${phylo_out}"/16.aln
-muscle -profile -in1 "${phylo_out}"/16.aln -in2 "${phylo_out}"/srbc.celeg.aln -out "${phylo_out}"/17.aln
-muscle -profile -in1 "${phylo_out}"/17.aln -in2 "${phylo_out}"/srsx.celeg.aln -out "${phylo_out}"/18.aln
-muscle -profile -in1 "${phylo_out}"/18.aln -in2 "${phylo_out}"/srv.celeg.aln -out "${phylo_out}"/19.aln
+# muscle -profile -in1 "${phylo_out}"/sra.celeg.aln -in2 "${phylo_out}"/srab.celeg.aln -out "${phylo_out}"/2.aln
+# muscle -profile -in1 "${phylo_out}"/2.aln -in2 "${phylo_out}"/srh.celeg.aln -out "${phylo_out}"/3.aln
+# muscle -profile -in1 "${phylo_out}"/3.aln -in2 "${phylo_out}"/str.celeg.aln -out "${phylo_out}"/4.aln
+# muscle -profile -in1 "${phylo_out}"/4.aln -in2 "${phylo_out}"/sri.celeg.aln -out "${phylo_out}"/5.aln
+# muscle -profile -in1 "${phylo_out}"/5.aln -in2 "${phylo_out}"/srd.celeg.aln -out "${phylo_out}"/6.aln
+# muscle -profile -in1 "${phylo_out}"/6.aln -in2 "${phylo_out}"/srj.celeg.aln -out "${phylo_out}"/7.aln
+# muscle -profile -in1 "${phylo_out}"/7.aln -in2 "${phylo_out}"/sre.celeg.aln -out "${phylo_out}"/8.aln
+# muscle -profile -in1 "${phylo_out}"/8.aln -in2 "${phylo_out}"/srb.celeg.aln -out "${phylo_out}"/9.aln
+# muscle -profile -in1 "${phylo_out}"/9.aln -in2 "${phylo_out}"/srx.celeg.aln -out "${phylo_out}"/10.aln
+# muscle -profile -in1 "${phylo_out}"/10.aln -in2 "${phylo_out}"/srt.celeg.aln -out "${phylo_out}"/11.aln
+# muscle -profile -in1 "${phylo_out}"/11.aln -in2 "${phylo_out}"/srg.celeg.aln -out "${phylo_out}"/12.aln
+# muscle -profile -in1 "${phylo_out}"/12.aln -in2 "${phylo_out}"/sru.celeg.aln -out "${phylo_out}"/13.aln
+# muscle -profile -in1 "${phylo_out}"/13.aln -in2 "${phylo_out}"/srxa.celeg.aln -out "${phylo_out}"/14.aln
+# muscle -profile -in1 "${phylo_out}"/14.aln -in2 "${phylo_out}"/srw.celeg.aln -out "${phylo_out}"/15.aln
+# muscle -profile -in1 "${phylo_out}"/15.aln -in2 "${phylo_out}"/srz.celeg.aln -out "${phylo_out}"/16.aln
+# muscle -profile -in1 "${phylo_out}"/16.aln -in2 "${phylo_out}"/srbc.celeg.aln -out "${phylo_out}"/17.aln
+# muscle -profile -in1 "${phylo_out}"/17.aln -in2 "${phylo_out}"/srsx.celeg.aln -out "${phylo_out}"/18.aln
+# muscle -profile -in1 "${phylo_out}"/18.aln -in2 "${phylo_out}"/srv.celeg.aln -out "${phylo_out}"/19.aln
 
 #manually remove all celeg sequences from DS_non-filarid_TMfiltered2.fa
 
 ### add non-C.elegans representatives to the alignment
-"${mafft_cmd}" --reorder --thread 8 --addfull "${phylo_out}"/DS_non-filarid_TMfiltered2.fa --keeplength "${phylo_out}"/19.aln > "${phylo_out}"/non-filarid.aln
+# "${mafft_cmd}" --reorder --thread 8 --addfull "${phylo_out}"/DS_non-filarid_TMfiltered2.fa --keeplength "${phylo_out}"/19.aln > "${phylo_out}"/non-filarid.aln
 ### add filarid ChemoRs to the alignment
-"${mafft_cmd}" --reorder --thread 8 --addfull "${phylo_out}"/DS_filarid.fa --keeplength "${phylo_out}"/non-filarid.aln > "${phylo_out}"/final.aln
+# "${mafft_cmd}" --reorder --thread 8 --addfull "${phylo_out}"/DS_filarid.fa --keeplength "${phylo_out}"/non-filarid.aln > "${phylo_out}"/final.aln
 ### trim and filter
-"${trimal_cmd}" -gt 0.7 -in "${phylo_out}"/final.aln -out "${phylo_out}"/final.trim.aln
-"${trimal_cmd}" -resoverlap 0.70 -seqoverlap 70 -in "${phylo_out}"/final.trim.aln -out "${phylo_out}"/final.trim.filter.aln
+# "${trimal_cmd}" -gt 0.7 -in "${phylo_out}"/final.aln -out "${phylo_out}"/final.trim.aln
+# "${trimal_cmd}" -resoverlap 0.70 -seqoverlap 70 -in "${phylo_out}"/final.trim.aln -out "${phylo_out}"/final.trim.filter.aln
 ### Change to single-line FASTA
-awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/final.trim.aln > "${phylo_out}"/final.trim-single.aln
-awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/final.trim.filter.aln | sed '/^$/d' > "${phylo_out}"/final.trim.filter-single.aln
+# awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/final.trim.aln > "${phylo_out}"/final.trim-single.aln
+# awk '/^>/ {printf("%s%s\n",(N>0?"\n":""),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/final.trim.filter.aln | sed '/^$/d' > "${phylo_out}"/final.trim.filter-single.aln
 ### Get IDs and compare lists
-cat "${phylo_out}"/final.trim-single.aln | tr '\t' '\n' | awk 'NR%2==1' > "${phylo_out}"/trimmed_ids.txt
-cat "${phylo_out}"/final.trim.filter-single.aln | tr '\t' '\n' | awk 'NR%2==1' > "${phylo_out}"/filtered_ids.txt
-grep -v -f "${phylo_out}"/filtered_ids.txt "${phylo_out}"/trimmed_ids.txt > "${phylo_out}"/missing_ids.txt
-
-cat "${phylo_out}"/final.trim.filter.aln | sed 's/ce|/celeg-/' > "${phylo_out}"/final.trim.filter2.align
-mv "${phylo_out}"/final.trim.filter2.align "${phylo_out}"/final.trim.filter.aln
+# cat "${phylo_out}"/final.trim-single.aln | tr '\t' '\n' | awk 'NR%2==1' > "${phylo_out}"/trimmed_ids.txt
+# cat "${phylo_out}"/final.trim.filter-single.aln | tr '\t' '\n' | awk 'NR%2==1' > "${phylo_out}"/filtered_ids.txt
+# grep -v -f "${phylo_out}"/filtered_ids.txt "${phylo_out}"/trimmed_ids.txt > "${phylo_out}"/missing_ids.txt
+# cat "${phylo_out}"/final.trim.filter.aln | sed 's/ce|/celeg-/' > "${phylo_out}"/final.trim.filter2.align
+# mv "${phylo_out}"/final.trim.filter2.align "${phylo_out}"/final.trim.filter.aln
 
 ### ML tree on server
 # /home/BIOTECH/zamanian/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -T 4 -f a -x 12345 -p 12345 -# 100 -m PROTGAMMAVT -s final.trim.filter.aln -n final_ML
+
+
+################################################################################################################################
+###########																											 ###########
+###########																											 ###########
+###########												Heatmap														 ###########
+###########																											 ###########
+###########																											 ###########
+################################################################################################################################
+
+
+# python "${seqextract_py}" "${phylo_out}"/ML/family_clades_ids.txt "${local_dir}"/p_genomes/phylo.fa "${phylo_out}"/ML/family_clades.fa
+## manually edit to remove protein names (eg. srw-25) and species abbreviations
+# auxillary/makeblastdb  -dbtype prot -in "${phylo_out}"/ML/family_clades.fa -out "${phylo_out}"/ML/family_clades.db
+
+### Label each sequence with its species name
+# for f in "${gold_out}"/*_rblast_ChemoR.fa ; do
+# 	python "${change_ID_py}" "$f" "$f".fa;
+# done
+
+# for f in "${gold_out}"/*.fa.fa ; do
+# 	mv "$f" "${f/.fa.fa/_label.fa}";
+# done
+
+### Label each sequence with its species name
+# for f in "${ngf_out}"/*_rblast_ChemoR.fa ; do
+# 	python "${change_ID_py}" "$f" "$f".fa;
+# done
+
+# for f in "${ngf_out}"/*.fa.fa ; do
+# 	mv "$f" "${f/.fa.fa/_label.fa}";
+# done
+
+
+### GOLD GENOMES - BLAST species not included in original tree agaisnt families
+# while IFS= read -r line; do
+# 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
+# 		cd "${phylo_out}"/ML/
+# 		blastp -query "${gold_out}"/${line}_rblast_ChemoR_label.fa -db family_clades.db -out "${gold_out}"/${line}_ChemoR_family.blastout -num_threads 4 -evalue 0.01 -max_target_seqs 1 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
+# 	done;
+# done <"$species_gold"
+
+### NON-GOLD FILARID - BLAST species not included in original tree agaisnt families
+# while IFS= read -r line; do
+# 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
+# 		cd "${phylo_out}"/ML/
+# 		blastp -query "${ngf_out}"/${line}_rblast_ChemoR_label.fa -db family_clades.db -out "${ngf_out}"/${line}_ChemoR_family.blastout -num_threads 4 -evalue 0.01 -max_target_seqs 1 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
+# 	done;
+# done <"$species_ngf"
+
+## concatenate blast results and remove self to self HSPs
+# cat "${gold_out}"/*_ChemoR_family.blastout "${ngf_out}"/*_ChemoR_family.blastout | sed 's/-/\t/' | awk '$2!=$3' | sed 's/lloa_/lloa/g' > "${phylo_out}"/ChemoR_parse.blastout
+
+################################################################################################################################
+###########																											 ###########
+###########																											 ###########
+###########											Family Alignments												 ###########
+###########																											 ###########
+###########																											 ###########
+################################################################################################################################
+
+
+
+for f in "${phylo_out}"/ML/families/*_ids.txt ; do
+	python "${seqextract_py}" ${f} 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
