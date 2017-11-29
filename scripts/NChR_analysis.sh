@@ -468,14 +468,22 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 ################################################################################################################################
 
 
+### NOTE: this command includes IDs from BMC Genomics 2008 lit, which includes pseudogenes. Pseudogenes were ommited from the C. elegans proteome, so these IDs are dropped
+# for f in "${phylo_out}"/ML/families/*_ids.txt ; do
+# 	python "${seqextract_py}" "${f}" "${local_dir}"/a_genomes/all.fa "${f}".fa;
+# done
 
-for f in "${phylo_out}"/ML/families/*_ids.txt ; do
-	python "${seqextract_py}" ${f} 
+for f in "${phylo_out}"/ML/families/*_ids.txt.fa ; do
+	mv "$f" "${f/_ids.txt.fa/.fa}";
+done
 
+for f in "${phylo_out}"/ML/families/*.fa; do
+	einsi "${f}" > "${f}.aln";
+done
 
-
-
-
+for f in "${phylo_out}"/ML/families/*.fa.aln ; do
+	mv "$f" "${f/.fa.aln/.aln}";
+done
 
 
 

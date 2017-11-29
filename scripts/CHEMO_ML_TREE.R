@@ -159,22 +159,56 @@ t_ann$data <- t_ann$data %>%
   # mutate(final_label = label) %>%
   mutate(label = ifelse(Clade == "IIIb", as.character(final_label), as.character(Species))) # Species + Gene_ID + Clade for clade III, species for all other clades
 
+# selected nodes to display bootstrap
+bs <- raxml@bootstrap
+nodes <- c(3784, #srw
+        3692, #srsx
+        2199, #srbc
+        2002, #Sra
+        2137, #sre
+        2049, #srb
+        2006, #sra
+        2063, #srab
+        2510, #srxa
+        2482,
+        2496,
+        2502,
+        2293, #Srg
+        2295, #srx
+        3606, #srt
+        2549, #srz
+        2763, #srv
+        2644, #sru
+        2691, #srg
+        2814, #Str
+        3116, #sri
+        2817, #srh
+        3522, #srd
+        3192, #srj
+        3255) #str
+
+bs2 <- bs[bs$node %in% nodes,] %>%
+  rename(BS = bootstrap)
+bs2$BS <- as.numeric(bs2$BS)
+t_bs <- t_ann %<+% bs2
+
 # final tree
-t_final <- t_ann +
+t_final <- t_bs +
   geom_tiplab2(aes(label = family), size = 6, align = TRUE, linetype = 5, hjust = -0.25) +
   geom_tiplab2(size = 4, align = TRUE, linetype = 5, hjust = -.5) +
   theme(legend.position="right", legend.title = element_text(size = 40), legend.text = element_text(size = 35), legend.key.size = unit(2, "cm")) +
   geom_tippoint(aes(color = Clade), size = 5) +
   geom_point2(aes(subset=(is.na(family) == FALSE)), size = 8, shape = 21, fill = "yellow2") +
-  geom_label(aes(label=bootstrap, fill=bootstrap)) +
+  geom_label2(aes(na.rm=TRUE, label = BS, fill = BS))
+  # geom_label(aes(label=bootstrap, fill=bootstrap)) +
   scale_fill_continuous(low='darkgreen', high='red')
-# t_final
+t_final
 
-ggsave("CHEMO_NJ_TREE_label.pdf", t_final, width = 40, height = 40)
+ggsave("CHEMO_ML_TREE_label.pdf", t_final, width = 40, height = 40)
 
 # add node labels
 t_final_nodes <- t_final + geom_text2(aes(subset=!isTip, label = node), hjust = -0.3)
-ggsave("CHEMO_NJ_TREE_nodes.pdf", t_final_nodes, width = 40, height = 40)
+ggsave("CHEMO_ML_TREE_nodes.pdf", t_final_nodes, width = 40, height = 40)
 
 
 ############################################
