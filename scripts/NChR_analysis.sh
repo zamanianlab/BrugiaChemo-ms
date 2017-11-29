@@ -479,7 +479,7 @@ done
 
 ### align families
 for f in "${phylo_out}"/ML/families/*.fa; do
-	mafft --reorder --auto "${f}" > "${f}.aln";
+	mafft --thread 4 --reorder --auto "${f}" > "${f}.aln";
 	"${trimal_cmd}" -gt 0.7 -in "${f}.aln" -out "${f}.trim.aln";
 done
 
