@@ -63,7 +63,7 @@ GRAFS_NemChR_HMM="${gh_dir}"/auxillary/pfam_HMMs/GPCR/GRAFS_NemChR.hmm
 # wget -nc -O "$local_dir/auxillary/HMMs/Pfam-A.hmm.gz" ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.gz
 # gzcat "$local_dir/auxillary/HMMs/Pfam-A.hmm.gz" > "$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # hmmpress "$local_dir/auxillary/HMMs/Pfam-A.hmm"
-pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
+pfam_HMM="${local_dir}/auxillary/HMMs/Pfam-A.hmm"
 
 
 ################################################################################################################################
@@ -513,13 +513,10 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # rm "${phylo_out}"/ML/families/S*3.aln
 # rm "${phylo_out}"/ML/families/S*4.aln
 
-
-
-for f "${phylo_out}"/ML/families/*.trim.aln; do
+for f in "${phylo_out}"/ML/families/*.trim.aln; do
 	/home/BIOTECH/zamanian/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -T 4 -f a -x 12345 -p 12345 -# 100 -m PROTGAMMAVT -s "${f}" -n "${f}".tre;
 done
 
-# 
 
 
 
