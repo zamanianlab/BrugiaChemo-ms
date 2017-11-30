@@ -1,4 +1,5 @@
 library(tidyverse)
+library(viridis)
 
 setwd("~/Box Sync/GHdata/50HGI/NChR/phylo/ML/")
 
@@ -7,6 +8,8 @@ tree <- read_csv("family_clades.csv")
 # load in reference file matching species <-> clade
 reference <- read.csv("~/Box Sync/ZamanianLab/Data/Phylogenetics/ChemoR/clade_species_phylum.csv", header = FALSE) %>%
   rename(Species = V1, Clade = V2, Phylum = V3)
+species_info <- read.csv("~/Box Sync/GitHub/50HGI/auxillary/species_info.csv", header = TRUE) %>%
+  select(-Genome.Version, -Classification)
 
 blast <- read_tsv("../ChemoR_parse.blastout", col_names = FALSE) %>%
   distinct(X2, .keep_all = TRUE) %>%
@@ -30,7 +33,8 @@ df.p <- df %>%
   filter(!grepl("pep", Family)) %>%
   group_by(Species) %>%
   mutate(Count_Norm = Count / sum(Count)) %>%
-  ungroup
+  ungroup %>%
+  left_join(., species_info)
 
 chemo_families <- data.frame(Family = c("srh", "str", "sri", "srd", "srj", "srm", "srn", 
                                         "sre", "sra", "srab", "srb",
@@ -43,14 +47,43 @@ chemo_families <- data.frame(Family = c("srh", "str", "sri", "srd", "srj", "srm"
 
 df.p <- left_join(df.p, chemo_families, by = "Family")
 
-plot <- ggplot(df.p, aes(Species, Family)) +
+plot <- ggplot(df.p, aes(Full, Family)) +
   geom_tile(aes(fill = Count_Norm)) +
-  facet_grid(Superfamily ~ Clade, scales = "free") + 
-  theme(axis.text.x = element_text(size = rel(0.7), angle = 60, hjust = 1))
-plot
+  facet_grid(Superfamily ~ Clade, scales = "free") +
+  theme_bw() +
+  theme(panel.grid.major = element_line(colour = "white"),
+        panel.grid.minor = element_line(colour = "white"), 
+        panel.background = element_blank(),
+        axis.text.x = element_text(size = 10, angle = 60, hjust = 1),
+        strip.text = element_text(face = "bold")) +
+  scale_fill_viridis(name = "Genes", option = "plasma")
+# plot
 
-ggsave("CHEMO_HEATMAP.pdf", plot, width = 15, height = 15)
+gtab <- ggplot_gtable(ggplot_build(plot))
+stript <- which(grepl('strip-t', gtab$layout$name))
+fillt <- c("#a361c7", "#58a865", "#c65c8a", "gray", "#9b9c3b", "#648ace", "#c98443", "palegreen", "#cb4f42")
+k <- 1
+for (i in stript) {
+  j <- which(grepl('rect', gtab$grobs[[i]]$grobs[[1]]$childrenOrder))
+  gtab$grobs[[i]]$grobs[[1]]$children[[j]]$gp$fill <- fillt[k]
+  k <- k+1
+}
+stripr <- which(grepl('strip-r', gtab$layout$name))
+fills <- c("gray", "#708cc9", "#c8615d", "#5fa271")
+k <- 1
+for (i in stripr) {
+  j <- which(grepl('rect', gtab$grobs[[i]]$grobs[[1]]$childrenOrder))
+  gtab$grobs[[i]]$grobs[[1]]$children[[j]]$gp$fill <- fills[k]
+  k <- k+1
+}
+grid::grid.draw(gtab)
 
+ggsave("CHEMO_HEATMAP.pdf", gtab, width = 15, height = 15)
+
+
+
+
+###########################################
 write.csv(df, file="family_assignment.csv", row.names = FALSE, col.names = TRUE)
 
 

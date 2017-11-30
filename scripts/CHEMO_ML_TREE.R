@@ -121,20 +121,20 @@ t_ann <- t_ann %<+% c_df
 
 # superfamily hilighting
 t_ann <- t_ann + 
-  geom_cladelabel(node=2814, label = "", barsize = 5, color = "yellow" , alpha = 0.5, offset = 2) + #Str
+  geom_cladelabel(node=2814, label = "", barsize = 5, color = "#5fa271", offset = 2) + #Str
 
-  geom_cladelabel(node=2003, label = "", barsize = 5, color = "blue" , alpha = 0.5, offset = 2) + #Sra
+  geom_cladelabel(node=2003, label = "", barsize = 5, color = "#708cc9", offset = 2) + #Sra
 
-  geom_cladelabel(node=2642, label = "", barsize = 5, color = "red" , alpha = 0.5, offset = 2) + #Srg
-  geom_cladelabel(node=3606, label = "", barsize = 5, color = "red" , alpha = 0.5, offset = 2) + #Srg
-  geom_cladelabel(node=2293, label = "", barsize = 5, color = "red" , alpha = 0.5, offset = 2) + #Srg
-  geom_cladelabel(node=3274, label = "", barsize = 5, color = "red" , alpha = 0.5, offset = 2) + #Srg
+  geom_cladelabel(node=2642, label = "", barsize = 5, color = "#c8615d", offset = 2) + #Srg
+  geom_cladelabel(node=3606, label = "", barsize = 5, color = "#c8615d", offset = 2) + #Srg
+  geom_cladelabel(node=2293, label = "", barsize = 5, color = "#c8615d", offset = 2) + #Srg
+  geom_cladelabel(node=3274, label = "", barsize = 5, color = "#c8615d", offset = 2) + #Srg
 
-  geom_cladelabel(node=3692, label = "", barsize = 5, color = "green" , alpha = 0.5, offset = 2) + #srsx
-  geom_cladelabel(node=2199, label = "", barsize = 5, color = "green" , alpha = 0.5, offset = 2) + #srbc
-  geom_cladelabel(node=3784, label = "", barsize = 5, color = "green" , alpha = 0.5, offset = 2) + #srw
-  geom_cladelabel(node=2549, label = "", barsize = 5, color = "green" , alpha = 0.5, offset = 2) #srz
- 
+  geom_cladelabel(node=3692, label = "", barsize = 5, color = "#88a83d", offset = 2) + #srsx
+  geom_cladelabel(node=2199, label = "", barsize = 5, color = "#9b63ca", offset = 2) + #srbc
+  geom_cladelabel(node=3784, label = "", barsize = 5, color = "#c55d93", offset = 2) + #srw
+  geom_cladelabel(node=2549, label = "", barsize = 5, color = "#c77332", offset = 2) #srz
+
 # filarid clusters
 t_ann <- t_ann + 
   geom_cladelabel(node = 3779, label = "", offset = 1, barsize = 5, color = "#c65c8a") +
@@ -157,7 +157,8 @@ t_ann <- t_ann +
 # geom_tiplab2 uses column label by default, so copy whatever data you want to the label column
 t_ann$data <- t_ann$data %>%
   # mutate(final_label = label) %>%
-  mutate(label = ifelse(Clade == "IIIb", as.character(final_label), as.character(Species))) # Species + Gene_ID + Clade for clade III, species for all other clades
+  # mutate(label = ifelse(Clade == "IIIb", as.character(final_label), as.character(Species))) # Species + Gene_ID + Clade for clade III, species for all other clades
+  mutate(label = ifelse(Clade == "IIIb", as.character(Gene_ID), "")) # Species + Gene_ID + Clade for clade III, blank for all other clades
 
 # selected nodes to display bootstrap
 bs <- raxml@bootstrap
@@ -195,14 +196,14 @@ t_bs <- t_ann %<+% bs2
 # final tree
 t_final <- t_bs +
   geom_tiplab2(aes(label = family), size = 6, align = TRUE, linetype = 5, hjust = -0.25) +
-  geom_tiplab2(size = 4, align = TRUE, linetype = 5, hjust = -.5) +
+  # geom_tiplab2(size = 4, align = TRUE, hjust = -1) +
   theme(legend.position="right", legend.title = element_text(size = 40), legend.text = element_text(size = 35), legend.key.size = unit(2, "cm")) +
   geom_tippoint(aes(color = Clade), size = 5) +
   geom_point2(aes(subset=(is.na(family) == FALSE)), size = 8, shape = 21, fill = "yellow2") +
-  geom_label2(aes(na.rm=TRUE, label = BS, fill = BS))
+  geom_label2(aes(na.rm=TRUE, label = BS, fill = BS)) +
   # geom_label(aes(label=bootstrap, fill=bootstrap)) +
   scale_fill_continuous(low='darkgreen', high='red')
-t_final
+# t_final
 
 ggsave("CHEMO_ML_TREE_label.pdf", t_final, width = 40, height = 40)
 

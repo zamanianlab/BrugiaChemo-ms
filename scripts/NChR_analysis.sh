@@ -492,26 +492,34 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # done
 
 ### align family profiles to each other to make superfamily alignments
-muscle -profile -in1 "${phylo_out}"/ML/families/srh.trim.aln -in2 "${phylo_out}"/ML/families/str.trim.aln -out "${phylo_out}"/ML/families/Str1.aln
-muscle -profile -in1 "${phylo_out}"/ML/families/Str1.aln -in2 "${phylo_out}"/ML/families/sri.trim.aln -out "${phylo_out}"/ML/families/Str2.aln
-muscle -profile -in1 "${phylo_out}"/ML/families/Str2.aln -in2 "${phylo_out}"/ML/families/srd.trim.aln -out "${phylo_out}"/ML/families/Str3.aln
-muscle -profile -in1 "${phylo_out}"/ML/families/Str3.aln -in2 "${phylo_out}"/ML/families/srj.trim.aln -out "${phylo_out}"/ML/families/Str.aln
+## NOTE: OS X overwrites files with same name but differnt capitalization
+# muscle -profile -in1 "${phylo_out}"/ML/families/srh.trim.aln -in2 "${phylo_out}"/ML/families/str.trim.aln -out "${phylo_out}"/ML/families/Str1.aln
+# muscle -profile -in1 "${phylo_out}"/ML/families/Str1.aln -in2 "${phylo_out}"/ML/families/sri.trim.aln -out "${phylo_out}"/ML/families/Str2.aln
+# muscle -profile -in1 "${phylo_out}"/ML/families/Str2.aln -in2 "${phylo_out}"/ML/families/srd.trim.aln -out "${phylo_out}"/ML/families/Str3.aln
+# muscle -profile -in1 "${phylo_out}"/ML/families/Str3.aln -in2 "${phylo_out}"/ML/families/srj.trim.aln -out "${phylo_out}"/ML/families/Str_sf.aln
 
-muscle -profile -in1 "${phylo_out}"/ML/families/sre.trim.aln -in2 "${phylo_out}"/ML/families/sra.trim.aln -out "${phylo_out}"/ML/families/Sra1.aln
-muscle -profile -in1 "${phylo_out}"/ML/families/Sra1.aln -in2 "${phylo_out}"/ML/families/srab.trim.aln -out "${phylo_out}"/ML/families/Sra2.aln
-muscle -profile -in1 "${phylo_out}"/ML/families/Sra2.aln -in2 "${phylo_out}"/ML/families/srb.trim.aln -out "${phylo_out}"/ML/families/Sra.aln
+# muscle -profile -in1 "${phylo_out}"/ML/families/sre.trim.aln -in2 "${phylo_out}"/ML/families/sra.trim.aln -out "${phylo_out}"/ML/families/Sra1.aln
+# muscle -profile -in1 "${phylo_out}"/ML/families/Sra1.aln -in2 "${phylo_out}"/ML/families/srab.trim.aln -out "${phylo_out}"/ML/families/Sra2.aln
+# muscle -profile -in1 "${phylo_out}"/ML/families/Sra2.aln -in2 "${phylo_out}"/ML/families/srb.trim.aln -out "${phylo_out}"/ML/families/Sra_sf.aln
 
-muscle -profile -in1 "${phylo_out}"/ML/families/srx.trim.aln -in2 "${phylo_out}"/ML/families/srt.trim.aln -out "${phylo_out}"/ML/families/Srg1.aln
-muscle -profile -in1 "${phylo_out}"/ML/families/Srg1.aln -in2 "${phylo_out}"/ML/families/srg.trim.aln -out "${phylo_out}"/ML/families/Srg2.aln
-muscle -profile -in1 "${phylo_out}"/ML/families/Srg2.aln -in2 "${phylo_out}"/ML/families/sru.trim.aln -out "${phylo_out}"/ML/families/Srg3.aln
-muscle -profile -in1 "${phylo_out}"/ML/families/Srg3.aln -in2 "${phylo_out}"/ML/families/srv.trim.aln -out "${phylo_out}"/ML/families/Srg4.aln
-muscle -profile -in1 "${phylo_out}"/ML/families/Srg4.aln -in2 "${phylo_out}"/ML/families/srxa.trim.aln -out "${phylo_out}"/ML/families/Srg.aln
+# muscle -profile -in1 "${phylo_out}"/ML/families/srx.trim.aln -in2 "${phylo_out}"/ML/families/srt.trim.aln -out "${phylo_out}"/ML/families/Srg1.aln
+# muscle -profile -in1 "${phylo_out}"/ML/families/Srg1.aln -in2 "${phylo_out}"/ML/families/srg.trim.aln -out "${phylo_out}"/ML/families/Srg2.aln
+# muscle -profile -in1 "${phylo_out}"/ML/families/Srg2.aln -in2 "${phylo_out}"/ML/families/sru.trim.aln -out "${phylo_out}"/ML/families/Srg3.aln
+# muscle -profile -in1 "${phylo_out}"/ML/families/Srg3.aln -in2 "${phylo_out}"/ML/families/srv.trim.aln -out "${phylo_out}"/ML/families/Srg4.aln
+# muscle -profile -in1 "${phylo_out}"/ML/families/Srg4.aln -in2 "${phylo_out}"/ML/families/srxa.trim.aln -out "${phylo_out}"/ML/families/Srg_sf.aln
+
+# rm "${phylo_out}"/ML/families/S*1.aln
+# rm "${phylo_out}"/ML/families/S*2.aln
+# rm "${phylo_out}"/ML/families/S*3.aln
+# rm "${phylo_out}"/ML/families/S*4.aln
 
 
 
+for f "${phylo_out}"/ML/families/*.trim.aln; do
+	/home/BIOTECH/zamanian/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -T 4 -f a -x 12345 -p 12345 -# 100 -m PROTGAMMAVT -s "${f}" -n "${f}".tre;
+done
 
-
-
+# 
 
 
 
