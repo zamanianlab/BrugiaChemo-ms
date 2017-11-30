@@ -473,39 +473,39 @@ pfam_HMM="$local_dir/auxillary/HMMs/Pfam-A.hmm"
 # 	python "${seqextract_py}" "${f}" "${local_dir}"/a_genomes/all.fa "${f}".fa;
 # done
 
-for f in "${phylo_out}"/ML/families/*_ids.txt.fa ; do
-	mv "$f" "${f/_ids.txt.fa/.fa}";
-done
+# for f in "${phylo_out}"/ML/families/*_ids.txt.fa ; do
+# 	mv "$f" "${f/_ids.txt.fa/.fa}";
+# done
 
 ### align families
-for f in "${phylo_out}"/ML/families/*.fa; do
-	mafft --thread 4 --reorder --auto "${f}" > "${f}.aln";
-	"${trimal_cmd}" -gt 0.7 -in "${f}.aln" -out "${f}.trim.aln";
-done
+# for f in "${phylo_out}"/ML/families/*.fa; do
+# 	mafft --thread 4 --reorder --auto "${f}" > "${f}.aln";
+# 	"${trimal_cmd}" -gt 0.7 -in "${f}.aln" -out "${f}.trim.aln";
+# done
 
-for f in "${phylo_out}"/ML/families/*.fa.aln ; do
-	mv "$f" "${f/.fa.aln/.aln}";
-done
+# for f in "${phylo_out}"/ML/families/*.fa.aln ; do
+# 	mv "$f" "${f/.fa.aln/.aln}";
+# done
 
-for f in "${phylo_out}"/ML/families/*.fa.trim.aln ; do
-	mv "$f" "${f/.fa.trim.aln/.trim.aln}";
-done
+# for f in "${phylo_out}"/ML/families/*.fa.trim.aln ; do
+# 	mv "$f" "${f/.fa.trim.aln/.trim.aln}";
+# done
 
 ### align family profiles to each other to make superfamily alignments
-muscle -profile -in1 "${phylo_out}"/ML/families/srh.aln -in2 "${phylo_out}"/ML/families/str.aln -out "${phylo_out}"/Str1.aln
-muscle -profile -in1 "${phylo_out}"/ML/families/Str1.aln -in2 "${phylo_out}"/ML/families/sri.aln -out "${phylo_out}"/Str2.aln
-muscle -profile -in1 "${phylo_out}"/ML/families/Str2.aln -in2 "${phylo_out}"/ML/families/srd.aln -out "${phylo_out}"/Str3.aln
-muscle -profile -in1 "${phylo_out}"/ML/families/Str3.aln -in2 "${phylo_out}"/ML/families/srj.aln -out "${phylo_out}"/Str.aln
+muscle -profile -in1 "${phylo_out}"/ML/families/srh.trim.aln -in2 "${phylo_out}"/ML/families/str.trim.aln -out "${phylo_out}"/ML/families/Str1.aln
+muscle -profile -in1 "${phylo_out}"/ML/families/Str1.aln -in2 "${phylo_out}"/ML/families/sri.trim.aln -out "${phylo_out}"/ML/families/Str2.aln
+muscle -profile -in1 "${phylo_out}"/ML/families/Str2.aln -in2 "${phylo_out}"/ML/families/srd.trim.aln -out "${phylo_out}"/ML/families/Str3.aln
+muscle -profile -in1 "${phylo_out}"/ML/families/Str3.aln -in2 "${phylo_out}"/ML/families/srj.trim.aln -out "${phylo_out}"/ML/families/Str.aln
 
-muscle -profile -in1 "${phylo_out}"/ML/families/sre.aln -in2 "${phylo_out}"/ML/families/sra.aln -out "${phylo_out}"/Sra1.aln
-muscle -profile -in1 "${phylo_out}"/ML/families/Sra1.aln -in2 "${phylo_out}"/ML/families/srab.aln -out "${phylo_out}"/Sra2.aln
-muscle -profile -in1 "${phylo_out}"/ML/families/Sra2.aln -in2 "${phylo_out}"/ML/families/srb.aln -out "${phylo_out}"/Sra.aln
+muscle -profile -in1 "${phylo_out}"/ML/families/sre.trim.aln -in2 "${phylo_out}"/ML/families/sra.trim.aln -out "${phylo_out}"/ML/families/Sra1.aln
+muscle -profile -in1 "${phylo_out}"/ML/families/Sra1.aln -in2 "${phylo_out}"/ML/families/srab.trim.aln -out "${phylo_out}"/ML/families/Sra2.aln
+muscle -profile -in1 "${phylo_out}"/ML/families/Sra2.aln -in2 "${phylo_out}"/ML/families/srb.trim.aln -out "${phylo_out}"/ML/families/Sra.aln
 
-muscle -profile -in1 "${phylo_out}"/ML/families/srx.aln -in2 "${phylo_out}"/ML/families/srt.aln -out "${phylo_out}"/Srg1.aln
-muscle -profile -in1 "${phylo_out}"/ML/families/Srg1.aln -in2 "${phylo_out}"/ML/families/srg.aln -out "${phylo_out}"/Srg2.aln
-muscle -profile -in1 "${phylo_out}"/ML/families/Srg2.aln -in2 "${phylo_out}"/ML/families/sru.aln -out "${phylo_out}"/Srg3.aln
-muscle -profile -in1 "${phylo_out}"/ML/families/Srg3.aln -in2 "${phylo_out}"/ML/families/srv.aln -out "${phylo_out}"/Srg4.aln
-muscle -profile -in1 "${phylo_out}"/ML/families/Srg4.aln -in2 "${phylo_out}"/ML/families/srxa.aln -out "${phylo_out}"/Srg.aln
+muscle -profile -in1 "${phylo_out}"/ML/families/srx.trim.aln -in2 "${phylo_out}"/ML/families/srt.trim.aln -out "${phylo_out}"/ML/families/Srg1.aln
+muscle -profile -in1 "${phylo_out}"/ML/families/Srg1.aln -in2 "${phylo_out}"/ML/families/srg.trim.aln -out "${phylo_out}"/ML/families/Srg2.aln
+muscle -profile -in1 "${phylo_out}"/ML/families/Srg2.aln -in2 "${phylo_out}"/ML/families/sru.trim.aln -out "${phylo_out}"/ML/families/Srg3.aln
+muscle -profile -in1 "${phylo_out}"/ML/families/Srg3.aln -in2 "${phylo_out}"/ML/families/srv.trim.aln -out "${phylo_out}"/ML/families/Srg4.aln
+muscle -profile -in1 "${phylo_out}"/ML/families/Srg4.aln -in2 "${phylo_out}"/ML/families/srxa.trim.aln -out "${phylo_out}"/ML/families/Srg.aln
 
 
 
