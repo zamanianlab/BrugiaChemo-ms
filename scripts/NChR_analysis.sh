@@ -481,6 +481,7 @@ pfam_HMM="${local_dir}/auxillary/HMMs/Pfam-A.hmm"
 # for f in "${phylo_out}"/ML/families/*.fa; do
 # 	mafft --thread 4 --reorder --auto "${f}" > "${f}.aln";
 # 	"${trimal_cmd}" -gt 0.7 -in "${f}.aln" -out "${f}.trim.aln";
+# 	"${trimal_cmd}" -resoverlap 0.70 -seqoverlap 70 -in "${f}.trim.aln" -out "${f}.trim.filter.aln"
 # done
 
 # for f in "${phylo_out}"/ML/families/*.fa.aln ; do
@@ -491,8 +492,12 @@ pfam_HMM="${local_dir}/auxillary/HMMs/Pfam-A.hmm"
 # 	mv "$f" "${f/.fa.trim.aln/.trim.aln}";
 # done
 
+# for f in "${phylo_out}"/ML/families/*.fa.trim.filter.aln ; do
+# 	mv "$f" "${f/.fa.trim.filter.aln/.trim.filter.aln}";
+# done
+
 ### align family profiles to each other to make superfamily alignments
-## NOTE: OS X overwrites files with same name but differnt capitalization
+## NOTE: OS X overwrites files with same name but different capitalization
 # muscle -profile -in1 "${phylo_out}"/ML/families/srh.trim.aln -in2 "${phylo_out}"/ML/families/str.trim.aln -out "${phylo_out}"/ML/families/Str1.aln
 # muscle -profile -in1 "${phylo_out}"/ML/families/Str1.aln -in2 "${phylo_out}"/ML/families/sri.trim.aln -out "${phylo_out}"/ML/families/Str2.aln
 # muscle -profile -in1 "${phylo_out}"/ML/families/Str2.aln -in2 "${phylo_out}"/ML/families/srd.trim.aln -out "${phylo_out}"/ML/families/Str3.aln
@@ -514,7 +519,7 @@ pfam_HMM="${local_dir}/auxillary/HMMs/Pfam-A.hmm"
 # rm "${phylo_out}"/ML/families/S*4.aln
 
 cd "${phylo_out}"/ML/families/
-for f in *.trim.aln; do
+for f in *.trim.filtere.aln; do
 	/home/BIOTECH/zamanian/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -T 4 -f a -x 12345 -p 12345 -# 100 -m PROTGAMMAVT -s "${f}" -n "${f}".tre;
 done
 

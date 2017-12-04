@@ -9,7 +9,7 @@ tree <- read_csv("family_clades.csv")
 reference <- read.csv("~/Box Sync/ZamanianLab/Data/Phylogenetics/ChemoR/clade_species_phylum.csv", header = FALSE) %>%
   rename(Species = V1, Clade = V2, Phylum = V3)
 species_info <- read.csv("~/Box Sync/GitHub/50HGI/auxillary/species_info.csv", header = TRUE) %>%
-  select(-Genome.Version, -Classification)
+  select(-BioProject, -Classification)
 
 blast <- read_tsv("../ChemoR_parse.blastout", col_names = FALSE) %>%
   distinct(X2, .keep_all = TRUE) %>%
@@ -56,7 +56,7 @@ plot <- ggplot(df.p, aes(Full, Family)) +
         panel.background = element_blank(),
         axis.text.x = element_text(size = 10, angle = 60, hjust = 1),
         strip.text = element_text(face = "bold")) +
-  scale_fill_viridis(name = "Genes", option = "plasma")
+  scale_fill_viridis(name = "Normalized Gene Count", option = "plasma")
 # plot
 
 gtab <- ggplot_gtable(ggplot_build(plot))
@@ -82,9 +82,51 @@ ggsave("CHEMO_HEATMAP.pdf", gtab, width = 15, height = 15)
 
 
 
+plot2 <- ggplot(df.p, aes(Full, Family)) +
+  geom_tile(aes(fill = Count)) +
+  facet_grid(Superfamily ~ Clade, scales = "free") +
+  theme_bw() +
+  theme(panel.grid.major = element_line(colour = "white"),
+        panel.grid.minor = element_line(colour = "white"), 
+        panel.background = element_blank(),
+        axis.text.x = element_text(size = 10, angle = 60, hjust = 1),
+        strip.text = element_text(face = "bold")) +
+  scale_fill_viridis(name = "Raw Gene Count", option = "plasma")
+# plot
+
+gtab2 <- ggplot_gtable(ggplot_build(plot2))
+stript2 <- which(grepl('strip-t', gtab2$layout$name))
+fillt2 <- c("#a361c7", "#58a865", "#c65c8a", "gray", "#9b9c3b", "#648ace", "#c98443", "palegreen", "#cb4f42")
+k <- 1
+for (i in stript2) {
+  j <- which(grepl('rect', gtab2$grobs[[i]]$grobs[[1]]$childrenOrder))
+  gtab2$grobs[[i]]$grobs[[1]]$children[[j]]$gp$fill <- fillt2[k]
+  k <- k+1
+}
+stripr2 <- which(grepl('strip-r', gtab$layout$name))
+fills2 <- c("gray", "#708cc9", "#c8615d", "#5fa271")
+k <- 1
+for (i in stripr2) {
+  j <- which(grepl('rect', gtab2$grobs[[i]]$grobs[[1]]$childrenOrder))
+  gtab2$grobs[[i]]$grobs[[1]]$children[[j]]$gp$fill <- fills2[k]
+  k <- k+1
+}
+grid::grid.draw(gtab2)
+
+ggsave("CHEMO_HEATMAP_raw.pdf", gtab2, width = 15, height = 15)
+
+
 
 ###########################################
-write.csv(df, file="family_assignment.csv", row.names = FALSE, col.names = TRUE)
+df3 <- left_join(df, species_info) %>%
+  left_join(., chemo_families) %>%
+  select(-Clade, -Species) %>%
+  rename(Species = Full) %>%
+  filter(!grepl("pep", Family)) %>%
+  select(Gene_ID, Species, Family, Superfamily)
 
+write.csv(df3, file="family_assignment.csv", row.names = FALSE, col.names = TRUE)
+write.csv(df3, file="../../synteny/family_assignment.csv", row.names = FALSE, col.names = TRUE)
+write.csv(df3, file="~/Box Sync/ZamanianLab/Manuscripts/2017-ChemoR/Scripts/family_assignment.csv", row.names = FALSE, col.names = TRUE)
 
 
