@@ -519,7 +519,7 @@ pfam_HMM="${local_dir}/auxillary/HMMs/Pfam-A.hmm"
 # rm "${phylo_out}"/ML/families/S*4.aln
 
 cd "${phylo_out}"/ML/families/
-for f in *.trim.filtere.aln; do
+for f in *.trim.filter.aln; do
 	/home/BIOTECH/zamanian/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -T 4 -f a -x 12345 -p 12345 -# 100 -m PROTGAMMAVT -s "${f}" -n "${f}".tre;
 done
 
