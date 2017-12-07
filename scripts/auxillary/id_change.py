@@ -11,7 +11,7 @@ from Bio import SeqIO
 
 def headerchange(file):
 	with open(filename1) as original, open(filename2, 'w') as corrected:
-		base =  os.path.basewname(filename1)
+		base =  os.path.basename(filename1)
 		genus, species = base.split("_", 1)
 		label = genus[0] + species[0:4] 
 		records = SeqIO.parse(original, 'fasta')

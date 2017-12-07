@@ -443,7 +443,7 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 # done
 
 
-### GOLD GENOMES - BLAST species not included in original tree agaisnt families
+### GOLD GENOMES - BLAST species not included in original tree against families
 # while IFS= read -r line; do
 # 	for f in "${gold_dir}"/"${line}"/**/*.protein.fa.gz ; do
 # 		cd "${phylo_out}"/ML/
@@ -451,7 +451,7 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 # 	done;
 # done <"$species_gold"
 
-### NON-GOLD FILARID - BLAST species not included in original tree agaisnt families
+### NON-GOLD FILARID - BLAST species not included in original tree against families
 # while IFS= read -r line; do
 # 	for f in "${ngf_dir}"/"${line}"/**/*.protein.fa.gz ; do
 # 		cd "${phylo_out}"/ML/
@@ -470,6 +470,17 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 ###########																											 ###########
 ################################################################################################################################
 
+## Label each sequence with its species name
+# for f in "${local_dir}"/a_genomes/*.fa; do
+# 	python "${change_ID_py}" "$f" "$f".fa
+# done
+
+# for f in "${local_dir}"/a_genomes/*.fa.fa; do
+# 	mv "$f" "${f/.fa.fa/_label.fa}"
+# done
+
+# cat "${local_dir}"/a_genomes/*_label.fa > "${local_dir}"/a_genomes/all.fa
+
 # while IFS= read -r line; do
 # 	python "${seqextract_py}" "${phylo_out}"/ML/families/"${line}"_ids.txt "${local_dir}"/a_genomes/all.fa "${phylo_out}"/ML/families/"${line}".fa
 # 	"${mafft_cmd}" --thread 4 --reorder --auto "${phylo_out}"/ML/families/"${line}".fa > "${phylo_out}"/ML/families/"${line}".aln
@@ -477,8 +488,8 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 # 	"${trimal_cmd}" -resoverlap 0.70 -seqoverlap 70 -in "${phylo_out}"/ML/families/"${line}".trim.aln -out "${phylo_out}"/ML/families/"${line}".trim.filter.aln
 # done <"$chemoR_families"
 
-### align family profiles to each other to make superfamily alignments
-## NOTE: OS X overwrites files with same name but different capitalization
+# align family profiles to each other to make superfamily alignments
+# NOTE: OS X overwrites files with same name but different capitalization
 # "${muscle_cmd}" -profile -in1 "${phylo_out}"/ML/families/srh.trim.aln -in2 "${phylo_out}"/ML/families/str.trim.aln -out "${phylo_out}"/ML/families/Str1.aln
 # "${muscle_cmd}" -profile -in1 "${phylo_out}"/ML/families/Str1.aln -in2 "${phylo_out}"/ML/families/sri.trim.aln -out "${phylo_out}"/ML/families/Str2.aln
 # "${muscle_cmd}" -profile -in1 "${phylo_out}"/ML/families/Str2.aln -in2 "${phylo_out}"/ML/families/srd.trim.aln -out "${phylo_out}"/ML/families/Str3.aln
@@ -499,9 +510,9 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 # rm "${phylo_out}"/ML/families/S*3.aln
 # rm "${phylo_out}"/ML/families/S*4.aln
 
-# for f in *.trim.filter.aln; do
-# 	/home/BIOTECH/zamanian/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -T 4 -f a -x 12345 -p 12345 -# 100 -m PROTGAMMAVT -s "${f}" -n "${f}".tre;
-# done
+while IFS= read -r line; do
+	/home/BIOTECH/zamanian/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -T 4 -f a -x 12345 -p 12345 -# 100 -m PROTGAMMAVT -s "${line}.trim.filter.aln" -n "${line}".tre;
+done <"$chemoR_families"
 
 # while IFS= read -r line; do
 # 	awk '/^>/ {printf("%s%s\n",(N>0?"\n":"),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/ML/families/"${line}".trim.aln > "${phylo_out}"/ML/families/"${line}".trim-single.aln
@@ -518,11 +529,11 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 # 	cat "${phylo_out}"/ML/families/"${line}".trim.filter.aln | sed 's/-//' | "${makeblastdb_cmd}" -dbtype prot -in - -out "${line}".db -title "${line}"
 # done <"$chemoR_families"
 
-while IFS= read -r line; do
-	cat "${phylo_out}"/ML/families/"${line}".missing_ids.txt | sed 's/>//' | python "${seqextract_py}" /dev/stdin "${local_dir}"/a_genomes/all.fa "${phylo_out}"/ML/families/"${line}".missing.fa
-	cd "${phylo_out}"/ML/families/
-	"${blastp_cmd}" -query "${line}".missing.fa -db "${line}".db -out "${line}".missing.blastout -num_threads 4 -evalue 0.01 -max_target_seqs 1 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
-done <"$chemoR_families"
+# while IFS= read -r line; do
+# 	cat "${phylo_out}"/ML/families/"${line}".missing_ids.txt | sed 's/>//' | python "${seqextract_py}" /dev/stdin "${local_dir}"/a_genomes/all.fa "${phylo_out}"/ML/families/"${line}".missing.fa
+# 	cd "${phylo_out}"/ML/families/
+# 	"${blastp_cmd}" -query "${line}".missing.fa -db "${line}".db -out "${line}".missing.blastout -num_threads 4 -evalue 0.01 -max_target_seqs 1 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
+# done <"$chemoR_families"
 
 
 
