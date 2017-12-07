@@ -511,6 +511,7 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 # rm "${phylo_out}"/ML/families/S*4.aln
 
 while IFS= read -r line; do
+	cd "${phylo_out}"/ML/families/
 	/home/BIOTECH/zamanian/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -T 4 -f a -x 12345 -p 12345 -# 100 -m PROTGAMMAVT -s "${line}.trim.filter.aln" -n "${line}".tre;
 done <"$chemoR_families"
 
