@@ -438,7 +438,7 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 # 	python "${change_ID_py}" "$f" "$f".fa;
 # done
 
-# for f in "${ngf_out}"/*.fa.fa ; do
+# for f in "${ngf_out}"/*.fa.fa ; d
 # 	mv "$f" "${f/.fa.fa/_label.fa}";
 # done
 
@@ -516,8 +516,8 @@ while IFS= read -r line; do
 done <"$chemoR_families"
 
 # while IFS= read -r line; do
-# 	awk '/^>/ {printf("%s%s\n",(N>0?"\n":"),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/ML/families/"${line}".trim.aln > "${phylo_out}"/ML/families/"${line}".trim-single.aln
-# 	awk '/^>/ {printf("%s%s\n",(N>0?"\n":"),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/ML/families/"${line}".trim.filter.aln > "${phylo_out}"/ML/families/"${line}".trim.filter-single.aln
+# 	perl -pe '/^>/ ? print "\n" : chomp' "${phylo_out}"/ML/families/"${line}".trim.aln | tail -n +2 > "${phylo_out}"/ML/families/"${line}".trim-single.aln
+# 	perl -pe '/^>/ ? print "\n" : chomp' "${phylo_out}"/ML/families/"${line}".trim.filter.aln | tail -n +2 > "${phylo_out}"/ML/families//"${line}".trim.filter-single.aln
 # 	cat "${phylo_out}"/ML/families/"${line}".trim-single.aln | tr '\t' '\n' | awk 'NR%2==1' > "${phylo_out}"/ML/families/"${line}".trimmed_ids.txt
 # 	cat "${phylo_out}"/ML/families/"${line}".trim.filter-single.aln | tr '\t' '\n' | awk 'NR%2==1' > "${phylo_out}"/ML/families/"${line}".filtered_ids.txt
 # 	grep -v -f "${phylo_out}"/ML/families/"${line}".filtered_ids.txt "${phylo_out}"/ML/families/"${line}".trimmed_ids.txt > "${phylo_out}"/ML/families/"${line}".missing_ids.txt
