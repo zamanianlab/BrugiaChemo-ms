@@ -481,6 +481,7 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 
 # cat "${local_dir}"/a_genomes/*_label.fa > "${local_dir}"/a_genomes/all.fa
 
+## get sequences for families, align and trim
 # while IFS= read -r line; do
 # 	python "${seqextract_py}" "${phylo_out}"/ML/families/"${line}"_ids.txt "${local_dir}"/a_genomes/all.fa "${phylo_out}"/ML/families/"${line}".fa
 # 	"${mafft_cmd}" --thread 4 --reorder --auto "${phylo_out}"/ML/families/"${line}".fa > "${phylo_out}"/ML/families/"${line}".aln
@@ -488,7 +489,7 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 # 	"${trimal_cmd}" -resoverlap 0.70 -seqoverlap 70 -in "${phylo_out}"/ML/families/"${line}".trim.aln -out "${phylo_out}"/ML/families/"${line}".trim.filter.aln
 # done <"$chemoR_families"
 
-# align family profiles to each other to make superfamily alignments
+## align family profiles to each other to make superfamily alignments
 # NOTE: OS X overwrites files with same name but different capitalization
 # "${muscle_cmd}" -profile -in1 "${phylo_out}"/ML/families/srh.trim.aln -in2 "${phylo_out}"/ML/families/str.trim.aln -out "${phylo_out}"/ML/families/Str1.aln
 # "${muscle_cmd}" -profile -in1 "${phylo_out}"/ML/families/Str1.aln -in2 "${phylo_out}"/ML/families/sri.trim.aln -out "${phylo_out}"/ML/families/Str2.aln
@@ -515,6 +516,7 @@ while IFS= read -r line; do
 	/home/BIOTECH/zamanian/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -T 4 -f a -x 12345 -p 12345 -# 100 -m PROTGAMMAVT -s "${line}.trim.filter.aln" -n "${line}".tre;
 done <"$chemoR_families"
 
+## find sequences that were filtered out
 # while IFS= read -r line; do
 # 	perl -pe '/^>/ ? print "\n" : chomp' "${phylo_out}"/ML/families/"${line}".trim.aln | tail -n +2 > "${phylo_out}"/ML/families/"${line}".trim-single.aln
 # 	perl -pe '/^>/ ? print "\n" : chomp' "${phylo_out}"/ML/families/"${line}".trim.filter.aln | tail -n +2 > "${phylo_out}"/ML/families//"${line}".trim.filter-single.aln
@@ -530,6 +532,7 @@ done <"$chemoR_families"
 # 	cat "${phylo_out}"/ML/families/"${line}".trim.filter.aln | sed 's/-//' | "${makeblastdb_cmd}" -dbtype prot -in - -out "${line}".db -title "${line}"
 # done <"$chemoR_families"
 
+## for those that were removed, blast against families to see where they *would* be placed in tree, if they weren't filtered
 # while IFS= read -r line; do
 # 	cat "${phylo_out}"/ML/families/"${line}".missing_ids.txt | sed 's/>//' | python "${seqextract_py}" /dev/stdin "${local_dir}"/a_genomes/all.fa "${phylo_out}"/ML/families/"${line}".missing.fa
 # 	cd "${phylo_out}"/ML/families/
