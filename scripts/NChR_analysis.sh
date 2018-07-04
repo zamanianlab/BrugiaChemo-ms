@@ -511,10 +511,10 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 # rm "${phylo_out}"/ML/families/S*3.aln
 # rm "${phylo_out}"/ML/families/S*4.aln
 
-while IFS= read -r line; do
-	cd "${phylo_out}"/ML/families/
-	/home/BIOTECH/zamanian/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -T 4 -f a -x 12345 -p 12345 -# 100 -m PROTGAMMAVT -s "${line}.trim.filter.aln" -n "${line}".tre;
-done <"$chemoR_families"
+# while IFS= read -r line; do
+# 	cd "${phylo_out}"/ML/families/
+# 	/home/BIOTECH/zamanian/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -T 4 -f a -x 12345 -p 12345 -# 100 -m PROTGAMMAVT -s "${line}.trim.filter.aln" -n "${line}".tre;
+# done <"$chemoR_families"
 
 ## find sequences that were filtered out
 # while IFS= read -r line; do
@@ -527,17 +527,20 @@ done <"$chemoR_families"
 
 # rm "${phylo_out}"/ML/families/*single*
 
+# make a blast db using the sequences that weren't filtered above
+# do that by getting the headers, removing the preceding species information, adding a newline to the end of the file, getting the full-length sequence, and making a db
 # while IFS= read -r line; do
 # 	cd "${phylo_out}"/ML/families
-# 	cat "${phylo_out}"/ML/families/"${line}".trim.filter.aln | sed 's/-//' | "${makeblastdb_cmd}" -dbtype prot -in - -out "${line}".db -title "${line}"
+# 	cat "${phylo_out}"/ML/families/"${line}".trim.filter.aln | grep -P '>.*' | sed 's/>//' | sed '$a\' | python "${seqextract_py}" /dev/stdin "${local_dir}"/a_genomes/all.fa "${phylo_out}"/ML/families/"${line}".db.fa
+# 	"${makeblastdb_cmd}" -dbtype prot -in "${line}".db.fa -out "${line}".db 
 # done <"$chemoR_families"
 
 ## for those that were removed, blast against families to see where they *would* be placed in tree, if they weren't filtered
-# while IFS= read -r line; do
-# 	cat "${phylo_out}"/ML/families/"${line}".missing_ids.txt | sed 's/>//' | python "${seqextract_py}" /dev/stdin "${local_dir}"/a_genomes/all.fa "${phylo_out}"/ML/families/"${line}".missing.fa
-# 	cd "${phylo_out}"/ML/families/
-# 	"${blastp_cmd}" -query "${line}".missing.fa -db "${line}".db -out "${line}".missing.blastout -num_threads 4 -evalue 0.01 -max_target_seqs 1 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
-# done <"$chemoR_families"
+while IFS= read -r line; do
+	cat "${phylo_out}"/ML/families/"${line}".missing_ids.txt | sed 's/>//' | python "${seqextract_py}" /dev/stdin "${local_dir}"/a_genomes/all.fa "${phylo_out}"/ML/families/"${line}".missing.fa
+	cd "${phylo_out}"/ML/families/
+	"${blastp_cmd}" -query "${line}".missing.fa -db "${line}".db -out "${line}".missing.blastout -num_threads 4 -evalue 0.01 -max_target_seqs 1 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
+done <"$chemoR_families"
 
 
 

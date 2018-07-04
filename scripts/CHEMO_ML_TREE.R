@@ -14,7 +14,7 @@ raxml <- read.raxml(raxml_file)
 
 # reroot based on the output of the ggtree command
 # ggtree(raxml, size = 1.3,  layout = "circular", branch.length="none") + geom_label(aes(label=bootstrap, fill=bootstrap)) +  geom_tiplab2(size = 2) + geom_text2(aes(subset=!isTip, label=node), size = 2, hjust=-.3)
-raxml <-  ggtree::reroot(raxml, 2269)
+raxml@phylo <-  phytools::reroot(raxml@phylo, 2269)
 
 
 # load in reference file matching species <-> clade
@@ -161,7 +161,7 @@ t_ann$data <- t_ann$data %>%
   mutate(label = ifelse(Clade == "IIIb", as.character(Gene_ID), "")) # Species + Gene_ID + Clade for clade III, blank for all other clades
 
 # selected nodes to display bootstrap
-bs <- raxml@bootstrap
+bs <- raxml@data
 nodes <- c(3784, #srw
         3692, #srsx
         2199, #srbc
