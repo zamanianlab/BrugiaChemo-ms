@@ -53,7 +53,7 @@ seeds="${gh_dir}"/auxillary/CNG/cng_seeds.fa
 # hmmbuild "${gh_dir}"/auxillary/CNG/cng.hmm "${gh_dir}"/auxillary/CNG/cng_seeds_trim.aln
 CNG_HMM="${gh_dir}"/auxillary/CNG/cng.hmm
 
-# ### GOLD GENOMES - Prepare BLAST DBs
+# ### GOLD GENOMES - Prepare BLASTp DBs
 # while IFS= read -r line; do
 # 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
 # 	  	curr_dir=$(dirname "${f}")
@@ -64,7 +64,7 @@ CNG_HMM="${gh_dir}"/auxillary/CNG/cng.hmm
 # 	done;
 # done <"$species_gold"
 
-### NON-GOLD FILARID GENOMES - Prepare BLAST DBs
+### NON-GOLD FILARID GENOMES - Prepare BLASTp DBs
 # while IFS= read -r line; do
 # 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
 # 	  	curr_dir=$(dirname "${f}")
@@ -112,63 +112,107 @@ CNG_HMM="${gh_dir}"/auxillary/CNG/cng.hmm
 # done <"$species_gold"
 
 ### NON-GOLD FILARID GENOMES - extract sequences of surviving hits
-while IFS= read -r line; do
-	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
-		cat "${ngf_out}"/${line}.blastout | awk '{print $1 " " $2 " " $7}' > "${ngf_out}"/${line}_blast_CNGhits.txt
-		cat "${ngf_out}"/${line}_blast_CNGhits.txt | awk '{print $2}' | awk '!seen[$0]++' > "${ngf_out}"/${line}_blast_CNGhits_ids.txt
-		#Extract these sequences
-		curr_dir=$(dirname "${f}")
-		#echo ${curr_dir}
-		gunzip -c "${f}" > "${curr_dir}"/protein.tmp.fa
-		python "${seqextract_py}" "${ngf_out}"/${line}_blast_CNGhits_ids.txt "${curr_dir}"/protein.tmp.fa "${ngf_out}"/${line}_blast_CNG.fa
-		rm "${curr_dir}"/protein.tmp.fa
-	done;
-done <"$species_ngf"
+# while IFS= read -r line; do
+# 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
+# 		cat "${ngf_out}"/${line}.blastout | awk '{print $1 " " $2 " " $7}' > "${ngf_out}"/${line}_blast_CNGhits.txt
+# 		cat "${ngf_out}"/${line}_blast_CNGhits.txt | awk '{print $2}' | awk '!seen[$0]++' > "${ngf_out}"/${line}_blast_CNGhits_ids.txt
+# 		#Extract these sequences
+# 		curr_dir=$(dirname "${f}")
+# 		#echo ${curr_dir}
+# 		gunzip -c "${f}" > "${curr_dir}"/protein.tmp.fa
+# 		python "${seqextract_py}" "${ngf_out}"/${line}_blast_CNGhits_ids.txt "${curr_dir}"/protein.tmp.fa "${ngf_out}"/${line}_blast_CNG.fa
+# 		rm "${curr_dir}"/protein.tmp.fa
+# 	done;
+# done <"$species_ngf"
 
 ### GOLD GENOMES - Reciprocal BLAST of extracted sequences against C. elegans proteome
-while IFS= read -r line; do
-	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
-	  	curr_dir=$(dirname "${f}")
-		# blast CNG seeds against all proteomes, using E-value cutoff
-		cd "${gold_dir}"/caenorhabditis_elegans/PRJNA13758/
-		blastp -query "${gold_out}"/${line}_blast_CNG.fa -db caenorhabditis_elegans.protein.db -out "${gold_out}"/${line}_rec.blastout -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
-	done;
-done <"$species_gold"
+# while IFS= read -r line; do
+# 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
+# 	  	curr_dir=$(dirname "${f}")
+# 		# blast CNG seeds against all proteomes, using E-value cutoff
+# 		cd "${gold_dir}"/caenorhabditis_elegans/PRJNA13758/
+# 		blastp -query "${gold_out}"/${line}_blast_CNG.fa -db caenorhabditis_elegans.protein.db -out "${gold_out}"/${line}_rec.blastout -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
+# 	done;
+# done <"$species_gold"
 
 ### NON-GOLD FILARID GENOMES - Reciprocal BLAST of extracted sequences against C. elegans proteome
-while IFS= read -r line; do
-	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
-	  	curr_dir=$(dirname "${f}")
-		# blast CNG seeds against all proteomes, using E-value cutoff
-		cd "${gold_dir}"/caenorhabditis_elegans/PRJNA13758/
-		blastp -query "${ngf_out}"/${line}_blast_CNG.fa -db caenorhabditis_elegans.protein.db -out "${ngf_out}"/${line}_rec.blastout -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
-	done;
-done <"$species_ngf"
+# while IFS= read -r line; do
+# 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
+# 	  	curr_dir=$(dirname "${f}")
+# 		# blast CNG seeds against all proteomes, using E-value cutoff
+# 		cd "${gold_dir}"/caenorhabditis_elegans/PRJNA13758/
+# 		blastp -query "${ngf_out}"/${line}_blast_CNG.fa -db caenorhabditis_elegans.protein.db -out "${ngf_out}"/${line}_rec.blastout -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
+# 	done;
+# done <"$species_ngf"
 
 ### GOLD GENOMES - remove hits that aren't most similar to a CNG, extract sequences of surviving hits
-while IFS= read -r line; do
-	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
-		cat "${gold_out}"/${line}_rec.blastout | awk '{print $1 " " $2 " " $7}' | sort -k1,1 -k3,3g | sort -uk1,1 | awk '/Y76B12C.1.|C23H5.7.|F38E11.12.|F14H8.6.|ZC84.2.|F36F2.5./' | sort -k3 -g > "${gold_out}"/${line}_rblast_CNGhits.txt
-		cat "${gold_out}"/${line}_rblast_CNGhits.txt | awk '{print $1}' > "${gold_out}"/${line}_rblast_CNGhits_ids.txt
-		#Extract these sequences
-		curr_dir=$(dirname "${f}")
-		#echo ${curr_dir}
-		gunzip -c "${f}" > "${curr_dir}"/protein.tmp.fa
-		python "${seqextract_py}" "${gold_out}"/${line}_rblast_CNGhits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_rblast_CNG.fa
-		rm "${curr_dir}"/protein.tmp.fa
-	done;
-done <"$species_gold"
+# while IFS= read -r line; do
+# 	for f in "${gold_dir}"/${line}/**/*.protein.fa.gz ; do
+# 		cat "${gold_out}"/${line}_rec.blastout | awk '{print $1 " " $2 " " $7}' | sort -k1,1 -k3,3g | sort -uk1,1 | awk '/Y76B12C.1.|C23H5.7.|F38E11.12.|F14H8.6.|ZC84.2.|F36F2.5./' | sort -k3 -g > "${gold_out}"/${line}_rblast_CNGhits.txt
+# 		cat "${gold_out}"/${line}_rblast_CNGhits.txt | awk '{print $1}' > "${gold_out}"/${line}_rblast_CNGhits_ids.txt
+# 		#Extract these sequences
+# 		curr_dir=$(dirname "${f}")
+# 		#echo ${curr_dir}
+# 		gunzip -c "${f}" > "${curr_dir}"/protein.tmp.fa
+# 		python "${seqextract_py}" "${gold_out}"/${line}_rblast_CNGhits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/${line}_rblast_CNG.fa
+# 		rm "${curr_dir}"/protein.tmp.fa
+# 	done;
+# done <"$species_gold"
 
 ### NON-GOLD FILARID GENOMES - remove hits that aren't most similar to a CNG, extract sequences of surviving hits
+# while IFS= read -r line; do
+# 	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
+# 		cat "${ngf_out}"/${line}_rec.blastout | awk '{print $1 " " $2 " " $7}' | sort -k1,1 -k3,3g | sort -uk1,1 | awk '/Y76B12C.1.|C23H5.7.|F38E11.12.|F14H8.6.|ZC84.2.|F36F2.5./' | sort -k3 -g > "${ngf_out}"/${line}_rblast_CNGhits.txt
+# 		cat "${ngf_out}"/${line}_rblast_CNGhits.txt | awk '{print $1}' > "${ngf_out}"/${line}_rblast_CNGhits_ids.txt
+# 		#Extract these sequences
+# 		curr_dir=$(dirname "${f}")
+# 		#echo ${curr_dir}
+# 		gunzip -c "${f}" > "${curr_dir}"/protein.tmp.fa
+# 		python "${seqextract_py}" "${ngf_out}"/${line}_rblast_CNGhits_ids.txt "${curr_dir}"/protein.tmp.fa "${ngf_out}"/${line}_rblast_CNG.fa
+# 		rm "${curr_dir}"/protein.tmp.fa
+# 	done;
+# done <"$species_ngf"
+
+# ### GOLD GENOMES - Prepare tBLASTn DBs
+# while IFS= read -r line; do
+# 	for f in "${gold_dir}"/${line}/**/*.genomic.fa.gz ; do
+# 	  	curr_dir=$(dirname "${f}")
+# 	  	#echo "${curr_dir}"
+# 		gunzip -c "${f}" > "${curr_dir}"/${line}.genomic.fa
+# 		cd "${curr_dir}"
+# 		makeblastdb -dbtype nucl -in ${line}.genomic.fa -out ${line}.genomic.db
+# 	done;
+# done <"$species_gold"
+
+### NON-GOLD FILARID GENOMES - Prepare tBLASTn DBs
+# while IFS= read -r line; do
+# 	for f in "${ngf_dir}"/${line}/**/*.genomic.fa.gz ; do
+# 	  	curr_dir=$(dirname "${f}")
+# 	  	#echo "${curr_dir}"
+# 		gunzip -c "${f}" > "${curr_dir}"/${line}.genomic.fa
+# 		cd "${curr_dir}"
+# 		makeblastdb -dbtype nucl -in ${line}.genomic.fa -out ${line}.genomic.db
+# 	done;
+# done <"$species_ngf"
+
+### GOLD GENOMES - tBLASTn of C. elegans seeds against parasite genomes (to rule out possible mis-prediction of genes)
+# line = species name, iterate through gold genome species names
 while IFS= read -r line; do
-	for f in "${ngf_dir}"/${line}/**/*.protein.fa.gz ; do
-		cat "${ngf_out}"/${line}_rec.blastout | awk '{print $1 " " $2 " " $7}' | sort -k1,1 -k3,3g | sort -uk1,1 | awk '/Y76B12C.1.|C23H5.7.|F38E11.12.|F14H8.6.|ZC84.2.|F36F2.5./' | sort -k3 -g > "${ngf_out}"/${line}_rblast_CNGhits.txt
-		cat "${ngf_out}"/${line}_rblast_CNGhits.txt | awk '{print $1}' > "${ngf_out}"/${line}_rblast_CNGhits_ids.txt
-		#Extract these sequences
-		curr_dir=$(dirname "${f}")
-		#echo ${curr_dir}
-		gunzip -c "${f}" > "${curr_dir}"/protein.tmp.fa
-		python "${seqextract_py}" "${ngf_out}"/${line}_rblast_CNGhits_ids.txt "${curr_dir}"/protein.tmp.fa "${ngf_out}"/${line}_rblast_CNG.fa
-		rm "${curr_dir}"/protein.tmp.fa
-	done;
+  for f in "${gold_dir}"/${line}/**/*.genomic.fa.gz ; do
+    curr_dir=$(dirname "${f}")
+    # blast CNG seeds against all proteomes, using E-value cutoff
+    cd "${curr_dir}"
+    tblastn -query "${seeds}" -db ${line}.genomic.db -out "${gold_out}"/${line}.tblastn.out -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid sstart send pident ppos length evalue bitscore'
+  done;
+done <"$species_gold"
+
+### NON-GOLD FILARID GENOMES - tBLASTn of C. elegans seeds against parasite genomes (to rule out possible mis-prediction of genes)
+# line = species name, iterate through gold genome species names
+while IFS= read -r line; do
+  for f in "${ngf_dir}"/${line}/**/*.genomic.fa.gz ; do
+    curr_dir=$(dirname "${f}")
+    # blast CNG seeds against all proteomes, using E-value cutoff
+    cd "${curr_dir}"
+    tblastn -query "${seeds}" -db ${line}.genomic.db -out "${ngf_out}"/${line}.tblastn.out -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid sstart send pident ppos length evalue bitscore'
+  done;
 done <"$species_ngf"
