@@ -23,10 +23,6 @@ gold_out="${local_dir}/CNG/g_genomes"
 ngf_out="${local_dir}/CNG/ngf_genomes"
 # mkdir "${local_dir}/CNG/ngo_genomes"
 ngo_out="${local_dir}/CNG/ngo_genomes"
-# mkdir "${local_dir}/CNG/phylo"
-phylo_out="${local_dir}/CNG/phylo"
-# mkdir "${local_dir}/CNG/mcl"
-# mcl_out="${local_dir}/CNG/mcl"
 
 ##Auxillary Scripts
 # Extracting sequences provided list of sequence names and fasta file
@@ -197,22 +193,22 @@ CNG_HMM="${gh_dir}"/auxillary/CNG/cng.hmm
 
 ### GOLD GENOMES - tBLASTn of C. elegans seeds against parasite genomes (to rule out possible mis-prediction of genes)
 # line = species name, iterate through gold genome species names
-while IFS= read -r line; do
-  for f in "${gold_dir}"/${line}/**/*.genomic.fa.gz ; do
-    curr_dir=$(dirname "${f}")
-    # blast CNG seeds against all proteomes, using E-value cutoff
-    cd "${curr_dir}"
-    tblastn -query "${seeds}" -db ${line}.genomic.db -out "${gold_out}"/${line}.tblastn.out -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid sstart send pident ppos length evalue bitscore'
-  done;
-done <"$species_gold"
+# while IFS= read -r line; do
+#   for f in "${gold_dir}"/${line}/**/*.genomic.fa.gz ; do
+#     curr_dir=$(dirname "${f}")
+#     # blast CNG seeds against all proteomes, using E-value cutoff
+#     cd "${curr_dir}"
+#     tblastn -query "${seeds}" -db ${line}.genomic.db -out "${gold_out}"/${line}.tblastn.out -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid sstart send pident ppos length evalue bitscore'
+#   done;
+# done <"$species_gold"
 
 ### NON-GOLD FILARID GENOMES - tBLASTn of C. elegans seeds against parasite genomes (to rule out possible mis-prediction of genes)
 # line = species name, iterate through gold genome species names
-while IFS= read -r line; do
-  for f in "${ngf_dir}"/${line}/**/*.genomic.fa.gz ; do
-    curr_dir=$(dirname "${f}")
-    # blast CNG seeds against all proteomes, using E-value cutoff
-    cd "${curr_dir}"
-    tblastn -query "${seeds}" -db ${line}.genomic.db -out "${ngf_out}"/${line}.tblastn.out -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid sstart send pident ppos length evalue bitscore'
-  done;
-done <"$species_ngf"
+# while IFS= read -r line; do
+#   for f in "${ngf_dir}"/${line}/**/*.genomic.fa.gz ; do
+#     curr_dir=$(dirname "${f}")
+#     # blast CNG seeds against all proteomes, using E-value cutoff
+#     cd "${curr_dir}"
+#     tblastn -query "${seeds}" -db ${line}.genomic.db -out "${ngf_out}"/${line}.tblastn.out -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid sstart send pident ppos length evalue bitscore'
+#   done;
+# done <"$species_ngf"

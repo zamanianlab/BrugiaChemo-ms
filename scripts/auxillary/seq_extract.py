@@ -1,9 +1,6 @@
 #!/Users/njwheeler/software/miniconda3/bin/python
 
-# import collections
-# from collections import Counter
 from sys import argv
-# import re
 from Bio import SeqIO
 
 script, filename1, filename2, filename3 = argv
