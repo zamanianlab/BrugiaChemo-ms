@@ -212,3 +212,37 @@ CNG_HMM="${gh_dir}"/auxillary/CNG/cng.hmm
 #     tblastn -query "${seeds}" -db ${line}.genomic.db -out "${ngf_out}"/${line}.tblastn.out -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid sstart send pident ppos length evalue bitscore'
 #   done;
 # done <"$species_ngf"
+
+################################################################################################
+##################                                                            ##################
+##################                          Phylogenetics                     ##################
+##################                                                            ##################
+################################################################################################
+
+# mkdir "${local_dir}/CNG/phylo"
+phylo_dir="${local_dir}/CNG/phylo"
+
+# cp "$HOME/Box Sync/ZamanianLab/Data/Genomics/CNG/aa/"*.fa "${phylo_dir}"
+
+### Label each sequence with its species name
+# for f in "${phylo_dir}"/*.aa.fa ; do
+# 	python "${change_ID_py}" "$f" "$f".fa;
+# done
+
+# for f in "${phylo_dir}"/*.fa.fa ; do
+# 	mv "$f" "${f/.fa.fa/_label.fa}";
+# done
+
+### Align CNG sequences
+# cat "${phylo_dir}"/*_label.fa > "${phylo_dir}/CNG.fa"
+# einsi --thread 4 --reorder "${phylo_dir}"/CNG.fa > "${phylo_dir}"/CNG.aln
+
+### Trim alignments
+# trimal -in "${phylo_dir}/CNG.aln" -out "${phylo_dir}/CNG.trim.aln" -gt 0.75 -cons 2
+# trimal -gt 0.7 -in "${phylo_dir}/CNG.aln" -out "${phylo_dir}/CNG.trim.aln"
+# trimal -resoverlap 0.70 -seqoverlap 70 -in "${phylo_dir}/CNG.trim.aln" -out "${phylo_dir}/CNG.trim.filter.aln"
+
+### Bayesian inference
+mpirun -np 8 ~/install/MrBayes/src/mb "${phylo_dir}/CNG.mb.nxs"
+
+# Manually remove gap-heavy genes and duplicate isoforms, output as Nexus format, add MrBayes block
