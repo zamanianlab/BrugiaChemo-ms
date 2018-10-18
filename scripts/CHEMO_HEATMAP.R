@@ -1,4 +1,5 @@
 library(tidyverse)
+library(cowplot)
 
 setwd("~/Box Sync/GHdata/50HGI/ChemoR/phylo/ML/")
 
@@ -13,7 +14,7 @@ tree <- read_csv("family_clades.csv")
 # load in reference file matching species <-> clade
 reference <- read.csv("~/Box Sync/ZamanianLab/Data/Genomics/Phylogenetics/ChemoR/tree/clade_species_phylum.csv", header = FALSE) %>%
   rename(Species = V1, Clade = V2, Phylum = V3)
-species_info <- read.csv("~/Box Sync/GitHub/50HGI/auxillary/species_info.csv", header = TRUE) %>%
+species_info <- read.csv("~/GitHub/50HGI/auxillary/species_info.csv", header = TRUE) %>%
   select(-BioProject, -Classification)
 
 blast <- read_tsv("../ChemoR_parse.blastout", col_names = FALSE) %>%
@@ -60,41 +61,74 @@ species <- df.p$Full %>%
 df.p$Full <- species
 
 plot <- ggplot(df.p, aes(Full, Family)) +
-  geom_tile(aes(fill = Count_Norm)) +
-  facet_grid(Superfamily ~ Clade, scales = "free", space = "free_x") +
+  geom_tile(aes(fill = Count_Norm), height = 1, width = 1) +
+  facet_grid(Superfamily ~ Clade, scales = "free", space = "free") +
   labs(x = "Species", y = "Chemoreceptor Family") +
-  theme_bw(base_size = 16, base_family = "Helvetica") +
-  theme(panel.grid.major = element_line(colour = "white"),
-        panel.grid.minor = element_line(colour = "white"), 
+  # theme_bw(base_size = 16, base_family = "Helvetica") +
+  theme(panel.border = element_blank(),
+        panel.grid = element_blank(),
         panel.background = element_blank(),
+        panel.spacing.x = unit(0.25, "line"),
+        panel.spacing.y = unit(0.25, "line"),
+        axis.line = element_blank(),
         axis.text.x = element_text(size = 10, angle = 60, hjust = 1),
         strip.text = element_text(face = "bold")) +
-  scale_fill_viridis_c(name = "Normalized Gene Count", option = "plasma") +
+  scale_fill_gradient(name = "Normalized Receptor Count",low = "white", high = "palegreen4") +
+  # scale_fill_viridis_c(name = "Normalized Gene Count", option = "plasma") +
   NULL
-# plot
+plot
+
+save_plot("CHEMO_HEATMAP.pdf", plot, base_width = 10, base_height = 6)
 
 
-# change facet labels
-gtab <- ggplot_gtable(ggplot_build(plot))
-stript <- which(grepl('strip-t', gtab$layout$name))
-fillt <- c("#a361c7", "#58a865", "#c65c8a", "gray", "#9b9c3b", "#648ace", "#c98443", "palegreen", "#cb4f42")
-k <- 1
-for (i in stript) {
-  j <- which(grepl('rect', gtab$grobs[[i]]$grobs[[1]]$childrenOrder))
-  gtab$grobs[[i]]$grobs[[1]]$children[[j]]$gp$fill <- fillt[k]
-  k <- k+1
-}
-stripr <- which(grepl('strip-r', gtab$layout$name))
-fills <- c("gray", "#708cc9", "#c8615d", "#5fa271")
-k <- 1
-for (i in stripr) {
-  j <- which(grepl('rect', gtab$grobs[[i]]$grobs[[1]]$childrenOrder))
-  gtab$grobs[[i]]$grobs[[1]]$children[[j]]$gp$fill <- fills[k]
-  k <- k+1
-}
-grid::grid.draw(gtab)
+# # change facet labels
+# gtab <- ggplot_gtable(ggplot_build(plot))
+# stript <- which(grepl('strip-t', gtab$layout$name))
+# fillt <- c("#a361c7", "#58a865", "#c65c8a", "gray", "#9b9c3b", "#648ace", "#c98443", "palegreen", "#cb4f42")
+# k <- 1
+# for (i in stript) {
+#   j <- which(grepl('rect', gtab$grobs[[i]]$grobs[[1]]$childrenOrder))
+#   gtab$grobs[[i]]$grobs[[1]]$children[[j]]$gp$fill <- fillt[k]
+#   k <- k+1
+# }
+# stripr <- which(grepl('strip-r', gtab$layout$name))
+# fills <- c("gray", "#708cc9", "#c8615d", "#5fa271")
+# k <- 1
+# for (i in stripr) {
+#   j <- which(grepl('rect', gtab$grobs[[i]]$grobs[[1]]$childrenOrder))
+#   gtab$grobs[[i]]$grobs[[1]]$children[[j]]$gp$fill <- fills[k]
+#   k <- k+1
+# }
+# grid::grid.draw(gtab)
 
-ggsave("CHEMO_HEATMAP.pdf", gtab, width = 15, height = 15)
+# ggsave("CHEMO_HEATMAP.pdf", gtab, width = 15, height = 15)
+
+# bar plot
+df.b <- group_by(df.p, Species) %>%
+  summarise(Sum = sum(Count)) %>%
+  left_join(., species_info)
+
+bar <- ggplot(df.b, aes(x = Species, y = Sum)) +
+  geom_bar(aes(fill = Clade), stat = "identity", width = 1) + 
+  scale_fill_manual(limits = c("I", "IIIa", "IIIb", "IVa", "IVb", "Va", "Vb", "Vd", "Ve"), values = c("#a361c7", "#58a865", "#c65c8a", "gray", "#9b9c3b", "#648ace", "#c98443", "palegreen", "#cb4f42")) +
+  facet_grid(. ~ Clade, scales = "free", space = "free") +
+  labs(y = "Receptor Count") +
+  theme(panel.border = element_blank(),
+        panel.grid = element_blank(),
+        panel.background = element_blank(),
+        panel.spacing.x = unit(0.25, "line"),
+        panel.spacing.y = unit(0.25, "line"),
+        axis.line = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.title.x = element_blank(),
+        strip.text = element_blank(),
+        strip.background = element_blank(),
+        legend.position = "none") +
+  NULL
+bar
+
+save_plot("CHEMO_BARPLOT.pdf", bar, base_width = 10, base_height = 4)
 
 #########################################################################################################
 ######################                                                             ######################
