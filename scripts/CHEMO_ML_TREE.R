@@ -6,7 +6,7 @@ library(ggtree)
 library(tidyverse)
 library(geiger)
 
-setwd("~/Box Sync/ZamanianLab/Data/Genomics/Phylogenetics/ChemoR")
+setwd("~/Box/ZamanianLab/Data/Genomics/Phylogenetics/ChemoR/tree")
 
 # parse RAxML output
 raxml_file <- "RAxML_bipartitionsBranchLabels.final_ML"
@@ -46,7 +46,7 @@ t <- ggtree(raxml, size = 1.3,  layout = "circular", branch.length="none") #+
 
 node_labels <- t +
   geom_tiplab2(size = 2) +
-  geom_text2(aes(subset=!isTip, label=node), size = 2, hjust=-.3) +
+  geom_text2(aes(subset =! isTip, label = node), size = 2, hjust=-.3) +
   NULL
 
 # ggsave("node_labels.pdf", node_labels, width = 40, height = 40)
@@ -138,40 +138,40 @@ for(i in 1:length(celeg_clusters$node)){
 
 # superfamily hilighting
 t_ann <- t_ann + 
-  geom_cladelabel(node=2814, label = "", barsize = 5, color = "#5fa271", offset = 4) + #Str
-  geom_cladelabel(node=2003, label = "", barsize = 5, color = "#708cc9", offset = 4) + #Sra
+  geom_cladelabel(node=2814, label = "", barsize = 5, color = "black", offset = 2) + #Str
+  geom_cladelabel(node=2003, label = "", barsize = 5, color = "black", offset = 2) + #Sra
   
-  geom_cladelabel(node=2642, label = "", barsize = 5, color = "#c8615d", offset = 4) + #Srg
-  geom_cladelabel(node=3606, label = "", barsize = 5, color = "#c8615d", offset = 4) + #Srg
-  geom_cladelabel(node=2293, label = "", barsize = 5, color = "#c8615d", offset = 4) + #Srg
-  geom_cladelabel(node=3274, label = "", barsize = 5, color = "#c8615d", offset = 4) + #Srg
+  geom_cladelabel(node=2642, label = "", barsize = 5, color = "black", offset = 2) + #Srg
+  geom_cladelabel(node=3606, label = "", barsize = 5, color = "black", offset = 2) + #Srg
+  geom_cladelabel(node=2293, label = "", barsize = 5, color = "black", offset = 2) + #Srg
+  geom_cladelabel(node=3274, label = "", barsize = 5, color = "black", offset = 2) + #Srg
   
-  geom_cladelabel(node=3692, label = "", barsize = 5, color = "#88a83d", offset = 4) + #srsx
-  geom_cladelabel(node=2199, label = "", barsize = 5, color = "#9b63ca", offset = 4) + #srbc
-  geom_cladelabel(node=3784, label = "", barsize = 5, color = "#c55d93", offset = 4) + #srw
-  geom_cladelabel(node=2549, label = "", barsize = 5, color = "#c77332", offset = 4) + #srz
+  geom_cladelabel(node=3692, label = "", barsize = 5, color = "black", offset = 2) + #srsx
+  geom_cladelabel(node=2199, label = "", barsize = 5, color = "black", offset = 2) + #srbc
+  geom_cladelabel(node=3784, label = "", barsize = 5, color = "black", offset = 2) + #srw
+  geom_cladelabel(node=2549, label = "", barsize = 5, color = "black", offset = 2) + #srz
   NULL
 
 # filarid clusters
-t_ann <- t_ann + 
-  geom_cladelabel(node = 3779, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
-  geom_cladelabel(node = 3756, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
-  geom_cladelabel(node = 3707, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
-  geom_cladelabel(node = 3727, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
-  geom_cladelabel(node = 2202, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
-  geom_cladelabel(node = 2080, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
-  geom_cladelabel(node = 2119, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
-  geom_cladelabel(node = 2535, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
-  geom_cladelabel(node = 2496, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
-  geom_cladelabel(node = 2506, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
-  geom_cladelabel(node = 2310, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
-  geom_cladelabel(node = 2353, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
-  geom_cladelabel(node = 2312, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
-  # geom_cladelabel(node = 2317, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
-  # geom_cladelabel(node = 2323, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
-  geom_cladelabel(node = 3624, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
-  # geom_cladelabel(node = 2845, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
-  NULL
+# t_ann <- t_ann + 
+#   geom_cladelabel(node = 3779, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
+#   geom_cladelabel(node = 3756, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
+#   geom_cladelabel(node = 3707, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
+#   geom_cladelabel(node = 3727, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
+#   geom_cladelabel(node = 2202, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
+#   geom_cladelabel(node = 2080, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
+#   geom_cladelabel(node = 2119, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
+#   geom_cladelabel(node = 2535, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
+#   geom_cladelabel(node = 2496, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
+#   geom_cladelabel(node = 2506, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
+#   geom_cladelabel(node = 2310, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
+#   geom_cladelabel(node = 2353, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
+#   geom_cladelabel(node = 2312, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
+#   # geom_cladelabel(node = 2317, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
+#   # geom_cladelabel(node = 2323, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
+#   geom_cladelabel(node = 3624, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
+#   # geom_cladelabel(node = 2845, label = "", barsize = 5, color = "#c65c8a", offset = 1) +
+#   NULL
 
 # geom_tiplab2 uses column label by default, so copy whatever data you want to the label column
 t_ann$data <- t_ann$data %>%
@@ -181,16 +181,17 @@ t_ann$data <- t_ann$data %>%
 # final tree
 t_final <- t_ann +
   geom_tiplab2(size = 6, align = TRUE, linetype = 5, hjust = -0.25) +
-  geom_tippoint(aes(color = Clade), size = 5) +
-  geom_point2(aes(subset = celeg_family != ""), size = 8, shape = 21, fill = "yellow2") +
-  geom_label2(aes(na.rm = TRUE, label = BS, fill = BS)) +
-  labs(fill = "Bootstrap Support") +
+  geom_tippoint(aes(color = Clade), size = 6) +
+  geom_point2(aes(subset = celeg_family != ""), size = 15, shape = 21, fill = "yellow2") +
+  geom_label2(aes(na.rm = TRUE, label = BS, fill = BS), size = 15) +
+  labs(fill = "Nodal Support") +
   scale_fill_viridis_c(limits = c(0, 100)) + 
-  scale_color_manual(values = c(I = "#a361c7", IIIa = "#58a865", IIIb = "#c65c8a", IVb = "#9b9c3b", Va = "#648ace", Vb = "#c98443", Ve = "#cb4f42"))
+  scale_color_manual(values = c(I = "#a361c7", IIIa = "#58a865", IIIb = "#c65c8a", IVb = "#9b9c3b", Va = "#648ace", Vb = "#c98443", Ve = "#cb4f42")) +
+  theme(legend.position = "right") +
   NULL
 # t_final
 
-ggsave("CHEMO_ML_TREE.pdf", t_final, width = 40, height = 40)
+ggsave("CHEMO_ML_TREE.pdf", t_final, width = 40, height = 40, useDingbats = FALSE)
 
 # add node labels
 t_final_nodes <- t_final + geom_text2(aes(subset=!isTip, label = node), hjust = -0.3)

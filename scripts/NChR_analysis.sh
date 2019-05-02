@@ -1,12 +1,12 @@
 #!bin/bash
 
-### Define project directories
+### Preparation
 proj="50HGI"
 
 gh_dir="${GIT_PATH}"/"${proj}"
 local_dir="${GIT_DATA}"/"${proj}"
 
-# Species lists based on genome quality
+## Species lists based on genome quality
 species_gold="${gh_dir}"/auxillary/species_gold.txt
 species_ngf="${gh_dir}"/auxillary/species_nongold_filarids.txt
 species_ngo="${gh_dir}"/auxillary/species_nongold_other.txt
@@ -16,27 +16,28 @@ gold_dir="${local_dir}"/g_genomes
 ngf_dir="${local_dir}"/ngf_genomes
 ngo_dir="${local_dir}"/ngo_genomes
 
-### Define script output directories
-# mkdir "${local_dir}"/NChR/
-# mkdir "${local_dir}"/NChR/g_genomes
-# mkdir "${local_dir}"/NChR/ngf_genomes
-# mkdir "${local_dir}"/NChR/ngo_genomes
-# mkdir "${local_dir}"/NChR/phylo
-# mkdir "${local_dir}"/NChR/mcl
+## Define script output directories
+# mkdir "${local_dir}"/ChemoR/
+# mkdir "${local_dir}"/ChemoR/g_genomes
+# mkdir "${local_dir}"/ChemoR/ngf_genomes
+# mkdir "${local_dir}"/ChemoR/ngo_genomes
+# mkdir "${local_dir}"/ChemoR/phylo
+# mkdir "${local_dir}"/ChemoR/mcl
 
-gold_out="${local_dir}"/NChR/g_genomes
-ngo_out="${local_dir}"/NChR/ngo_genomes
-ngf_out="${local_dir}"/NChR/ngf_genomes
-phylo_out="${local_dir}"/NChR/phylo
-mcl_out="${local_dir}"/NChR/mcl
+gold_out="${local_dir}"/ChemoR/g_genomes
+ngo_out="${local_dir}"/ChemoR/ngo_genomes
+ngf_out="${local_dir}"/ChemoR/ngf_genomes
+phylo_out="${local_dir}"/ChemoR/phylo
+mcl_out="${local_dir}"/ChemoR/mcl
 
-##Auxillary Scripts
-# Extracting sequences provided list of sequence names and fasta file
+## Auxillary Scripts
+
+## Extracting sequences provided list of sequence names and fasta file
 seqextract_py="${gh_dir}"/scripts/auxillary/seq_extract.py
-# HMMTOP parsing script (filter based on TM range and produce sequences based on TM domains)
+## HMMTOP parsing script (filter based on TM range and produce sequences based on TM domains)
 HMMTOP_py="${gh_dir}"/scripts/auxillary/HMMTOP_extract.py
 HMMTOP_strict_py="${gh_dir}"/scripts/auxillary/HMMTOP_extract_strict.py
-# Adding species labels to FASTA IDs
+## Adding species labels to FASTA IDs
 change_ID_py="${gh_dir}"/scripts/auxillary/id_change.py
 trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 mafft_cmd="${gh_dir}"/scripts/auxillary/mafft
@@ -46,22 +47,22 @@ blastp_cmd="${gh_dir}"/scripts/auxillary/blastp
 
 ### Build HMMs
 
-## NChRs
-# cat "${gh_dir}"/auxillary/pfam_HMMs/GPCR/NChR/*hmm > "${gh_dir}"/auxillary/pfam_HMMs/GPCR/NChR/NChR.hmm
-# hmmpress "${gh_dir}"/auxillary/pfam_HMMs/GPCR/NChR/NChR.hmm
-NemChR_HMM="${gh_dir}"/auxillary/pfam_HMMs/GPCR/NChR/NChR.hmm
+## ChemoRs
+# cat "${gh_dir}"/auxillary/pfam_HMMs/GPCR/ChemoR/*hmm > "${gh_dir}"/auxillary/pfam_HMMs/GPCR/ChemoR/ChemoR.hmm
+# hmmpress "${gh_dir}"/auxillary/pfam_HMMs/GPCR/ChemoR/ChemoR.hmm
+NemChR_HMM="${gh_dir}"/auxillary/pfam_HMMs/GPCR/ChemoR/ChemoR.hmm
 
 ## GRAFS+
 # cat "${gh_dir}"/auxillary/pfam_HMMs/GPCR/Primary/*hmm > "${gh_dir}"/auxillary/pfam_HMMs/GPCR/Primary/GPCRfams.hmm
 # hmmpress "${gh_dir}"/auxillary/pfam_HMMs/GPCR/Primary/GPCRfams.hmm
 GRAFS_HMM="${gh_dir}"/auxillary/pfam_HMMs/GPCR/Primary/GPCRfams.hmm
 
-## Combined (GRAFS+ / NChR)
-# cat "${gh_dir}"/auxillary/pfam_HMMs/GPCR/Primary/GPCRfams.hmm "${gh_dir}"/auxillary/pfam_HMMs/GPCR/NChR/NChR.hmm > "${gh_dir}"/auxillary/pfam_HMMs/GPCR/GRAFS_NemChR.hmm
+## Combined (GRAFS+ / ChemoR)
+# cat "${gh_dir}"/auxillary/pfam_HMMs/GPCR/Primary/GPCRfams.hmm "${gh_dir}"/auxillary/pfam_HMMs/GPCR/ChemoR/ChemoR.hmm > "${gh_dir}"/auxillary/pfam_HMMs/GPCR/GRAFS_NemChR.hmm
 # hmmpress "${gh_dir}"/auxillary/pfam_HMMs/GPCR/GRAFS_NemChR.hmm
 GRAFS_NemChR_HMM="${gh_dir}"/auxillary/pfam_HMMs/GPCR/GRAFS_NemChR.hmm
 
-# Prepare Pfam-A HMM db
+## Prepare Pfam-A HMM db
 # mkdir "$local_dir/auxillary
 # mkdir "$local_dir/auxillary/HMMs
 # wget -nc -O "$local_dir/auxillary/HMMs/Pfam-A.hmm.gz" ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.g
@@ -70,13 +71,13 @@ GRAFS_NemChR_HMM="${gh_dir}"/auxillary/pfam_HMMs/GPCR/GRAFS_NemChR.hmm
 pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 
 
-################################################################################################################################
+############################################################################
 ###########																											 ###########
 ###########																											 ###########
-###########										ChemoR Identification												 ###########
+###########										ChemoR Identification							 ###########
 ###########																											 ###########
 ###########																											 ###########
-################################################################################################################################
+############################################################################
 
 
 ### GOLD GENOMES - mine for nematode chemo Rs
@@ -84,33 +85,33 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 # while IFS= read -r line; do
 # 	for f in "${gold_dir}"/"${line}"/**/*.protein.fa.gz ; do
 # 	  	curr_dir=$(dirname "${f}")
-# 	  	#echo "${curr_dir}"
+# 	  	# echo "${curr_dir}"
 # 		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
 
 # 		#HMMSEARCH all proteomes against db of All GPCR hmms
-# 		hmmsearch --tblout "${gold_out}"/"${line}"_hits.out --noali "${GRAFS_NemChR_HMM}" "${curr_dir}"/protein.tmp.fa 
+# 		hmmsearch --tblout "${gold_out}"/"${line}"_hits.out --noali "${GRAFS_NemChR_HMM}" "${curr_dir}"/protein.tmp.fa
 
 # 		rm "${curr_dir}"/protein.tmp.fa
 # 	done;
 # done <"$species_gold"
 
 # ## NON-GOLD FILARID GENOMES - mine for nematode chemo Rs
-# line = species name, iterate through gold genome species names
+## line = species name, iterate through gold genome species names
 # while IFS= read -r line; do
 # 	for f in "${ngf_dir}"/"${line}"/**/*.protein.fa.gz ; do
 # 	  	curr_dir=$(dirname "${f}")
-# 	  	#echo "${curr_dir}"
+# 	  	# echo "${curr_dir}"
 # 		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
 
 # 		#HMMSEARCH all proteomes against db of All GPCR hmms
-# 		hmmsearch --tblout "${ngf_out}"/"${line}"_hits.out --noali "${GRAFS_NemChR_HMM}" "${curr_dir}"/protein.tmp.fa 
+# 		hmmsearch --tblout "${ngf_out}"/"${line}"_hits.out --noali "${GRAFS_NemChR_HMM}" "${curr_dir}"/protein.tmp.fa
 
 # 		rm "${curr_dir}"/protein.tmp.fa
 # 	done;
 # done <"$species_ngf"
 
 
-### GOLD GENOMES - Parse hmm outputs to filter out those where first hit is not NChR hmm, extract sequences of surviving hits
+### GOLD GENOMES - Parse hmm outputs to filter out those where first hit is not ChemoR hmm, extract sequences of surviving hits
 # while IFS= read -r line; do
 # 	for f in "${gold_dir}"/"${line}"/**/*.protein.fa.gz ; do
 # 		cat "${gold_out}"/"${line}"_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '!/Frizzled|7tm_1|7tm_2|7tm_3|7tm_4|7tm_6|7tm_7/' | sort -k4 -g > "${gold_out}"/"${line}"_NChits.txt
@@ -124,7 +125,7 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 # 	done;
 # done <"$species_gold"
 
-# ## NON-GOLD FILARID GENOMES - Parse hmm outputs to filter out those where first hit is not NChR hmm, extract sequences of surviving hits
+# ## NON-GOLD FILARID GENOMES - Parse hmm outputs to filter out those where first hit is not ChemoR hmm, extract sequences of surviving hits
 # while IFS= read -r line; do
 # 	for f in "${ngf_dir}"/"${line}"/**/*.protein.fa.gz ; do
 # 		cat "${ngf_out}"/"${line}"_hits.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '!/Frizzled|7tm_1|7tm_2|7tm_3|7tm_4|7tm_6|7tm_7/' | sort -k4 -g > "${ngf_out}"/"${line}"_NChits.txt
@@ -137,6 +138,7 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 # 		rm "${curr_dir}"/protein.tmp.fa
 # 	done;
 # done <"$species_ngf"
+
 
 ### GOLD GENOMES - Reciprocal HMMSEARCH of extracted sequences against pfam-a
 # while IFS= read -r line; do
@@ -153,9 +155,9 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 # 		hmmsearch --tblout "${ngf_out}"/"${line}"_rHMM.out --noali "${pfam_HMM}" "${ngf_out}"/"${line}"_NC.fa
 # 	done;
 # done <"$species_ngf"
-		
 
-### GOLD GENOMES - Parse hmm outputs to remove sequences where first hit is not NChR, get list of surviving unique seq ids, extract sequences 
+
+### GOLD GENOMES - Parse hmm outputs to remove sequences where first hit is not ChemoR, get list of surviving unique seq ids, extract sequences
 # while IFS= read -r line; do
 # 	for f in "${gold_dir}"/"${line}"/**/*.protein.fa.gz ; do
 # 		cat "${gold_out}"/"${line}"_rHMM.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7TM_GPCR_S|Srg|Sre|Serpentine_r_xa/' | sort -k4 -g > "${gold_out}"/"${line}"_NChitsf.txt
@@ -168,7 +170,7 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 # 	done;
 # done <"$species_gold"
 
-### NON-GOLD FILARID GENOMES - Parse hmm outputs to remove sequences where first hit is not NChR, get list of surviving unique seq ids, extract sequences 
+### NON-GOLD FILARID GENOMES - Parse hmm outputs to remove sequences where first hit is not ChemoR, get list of surviving unique seq ids, extract sequences
 # while IFS= read -r line; do
 # 	for f in "${ngf_dir}"/"${line}"/**/*.protein.fa.gz ; do
 # 		cat "${ngf_out}"/"${line}"_rHMM.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7TM_GPCR_S|Srg|Sre|Serpentine_r_xa/' | sort -k4 -g > "${ngf_out}"/"${line}"_NChitsf.txt
@@ -180,6 +182,7 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 # 		grep -v -f "${ngf_out}"/"${line}"_NChitsf_ids.txt "${ngf_out}"/"${line}"_NChits_ids.txt > "${ngf_out}"/"${line}"_filtered1_ids.tx
 # 	done;
 # done <"$species_ngf"
+
 
 ### GOLD GENOMES - Parse hmm outputs for each species to get list of unique seq ids for R-A, R-P, G, F, A/S (can also use  if ($4 <= 1e-50) in awk)
 # while IFS= read -r line; do
@@ -232,22 +235,22 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 # done <"$species_ngf"
 
 ### GOLD GENOMES - Reciprocal blastp of extracted sequences against C. elegans
-# while IFS= read -r line; do
-# 	for f in "${gold_dir}"/"${line}"/**/*.protein.fa.gz ; do
-# 		#blast filtered NChRs against C. elegans proteome, using E-value cutoff
-# 		cd "${gold_dir}"/caenorhabditis_elegans/PRJNA13758/
-# 		"${blastp_cmd}" -query "${gold_out}"/"${line}"_NCf.fa -db caenorhabditis_elegans.protein.db -out "${gold_out}"/"${line}"_rec.blastout -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
-# 	done;
-# done <"$species_gold"
+while IFS= read -r line; do
+	for f in "${gold_dir}"/"${line}"/**/*.protein.fa.gz ; do
+		#blast filtered ChemoRs against C. elegans proteome, using E-value cutoff
+		cd "${gold_dir}"/caenorhabditis_elegans/PRJNA13758/
+		"${blastp_cmd}" -query "${gold_out}"/"${line}"_NCf.fa -db caenorhabditis_elegans.protein.db -out "${gold_out}"/"${line}"_rec.blastout -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
+	done;
+done <"$species_gold"
 
 ### NON-GOLD FILARID GENOMES - Reciprocal blastp of extracted sequences against C. elegans
-# while IFS= read -r line; do
-# 	for f in "${ngf_dir}"/"${line}"/**/*.protein.fa.gz ; do
-# 		#blast filtered NChRs against C. elegans proteome, using E-value cutoff
-# 		cd "${gold_dir}"/caenorhabditis_elegans/PRJNA13758/
-# 		"${blastp_cmd}" -query "${ngf_out}"/"${line}"_NCf.fa -db caenorhabditis_elegans.protein.db -out "${ngf_out}"/"${line}"_rec.blastout -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
-# 	done;
-# done <"$species_ngf"
+while IFS= read -r line; do
+	for f in "${ngf_dir}"/"${line}"/**/*.protein.fa.gz ; do
+		#blast filtered ChemoRs against C. elegans proteome, using E-value cutoff
+		cd "${gold_dir}"/caenorhabditis_elegans/PRJNA13758/
+		"${blastp_cmd}" -query "${ngf_out}"/"${line}"_NCf.fa -db caenorhabditis_elegans.protein.db -out "${ngf_out}"/"${line}"_rec.blastout -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
+	done;
+done <"$species_ngf"
 
 
 ### GOLD GENOMES - remove hits that aren't most similar to a C. elegans ChemoR, extract sequences of surviving hits
@@ -532,43 +535,12 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 # while IFS= read -r line; do
 # 	cd "${phylo_out}"/ML/families
 # 	cat "${phylo_out}"/ML/families/"${line}".trim.filter.aln | grep -P '>.*' | sed 's/>//' | sed '$a\' | python "${seqextract_py}" /dev/stdin "${local_dir}"/a_genomes/all.fa "${phylo_out}"/ML/families/"${line}".db.fa
-# 	"${makeblastdb_cmd}" -dbtype prot -in "${line}".db.fa -out "${line}".db 
+# 	"${makeblastdb_cmd}" -dbtype prot -in "${line}".db.fa -out "${line}".db
 # done <"$chemoR_families"
 
 ## for those that were removed, blast against families to see where they *would* be placed in tree, if they weren't filtered
-while IFS= read -r line; do
-	cat "${phylo_out}"/ML/families/"${line}".missing_ids.txt | sed 's/>//' | python "${seqextract_py}" /dev/stdin "${local_dir}"/a_genomes/all.fa "${phylo_out}"/ML/families/"${line}".missing.fa
-	cd "${phylo_out}"/ML/families/
-	"${blastp_cmd}" -query "${line}".missing.fa -db "${line}".db -out "${line}".missing.blastout -num_threads 4 -evalue 0.01 -max_target_seqs 1 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
-done <"$chemoR_families"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# while IFS= read -r line; do
+# 	cat "${phylo_out}"/ML/families/"${line}".missing_ids.txt | sed 's/>//' | python "${seqextract_py}" /dev/stdin "${local_dir}"/a_genomes/all.fa "${phylo_out}"/ML/families/"${line}".missing.fa
+# 	cd "${phylo_out}"/ML/families/
+# 	"${blastp_cmd}" -query "${line}".missing.fa -db "${line}".db -out "${line}".missing.blastout -num_threads 4 -evalue 0.01 -max_target_seqs 1 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
+# done <"$chemoR_families"

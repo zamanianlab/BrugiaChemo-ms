@@ -9,10 +9,11 @@ library(conflicted)
 
 setwd("~/Box Sync/ZamanianLab/Data/Genomics/Phylogenetics/TRP/")
 
-#read in tree
+# read in tree
 bayes_file <- "TRP.con.tre"
 bayes <- ape::read.nexus(bayes_file)
 bayes <- bayes[[1]]
+# drop duplicates
 bayes_drop <- drop.tip(bayes, c("celeg-B0212.5",
                                 "celeg-C05C12.3",
                                 "celeg-C29E6.2a",
@@ -42,24 +43,22 @@ unrooted <- ggtree(bayes_drop, branch.length = "none", layout = "circular") +
 # reroot with CUP-5 clade as outgroup
 bayes <- phytools::reroot(bayes_drop, 400)
 
-#load in reference file matching species <-> clade
+# load in reference file matching species <-> clade
 reference <- read.csv("clade_species_phylum.csv", header = FALSE)
 colnames(reference) <- c("Species", "Clade", "Phylum")
 
-#add species name to tip label, options to include: Species."-".Gene_ID."-".Clade."-".Phylum
+# add species name to tip label, options to include: Species."-".Gene_ID."-".Clade."-".Phylum
 tip_labels <- as.data.frame(bayes[]$tip.label) %>%
-  rename(tip_label = "bayes[]$tip.label")
-tip_labels <- tidyr::separate(tip_labels, tip_label, into = c("Species", "Gene_ID"), sep = "-", remove = TRUE, extra = "merge")
-tip_labels <- left_join(tip_labels, reference, by="Species")
-tip_labels <- tip_labels %>%
-  mutate(final_label = paste0(tip_labels$Species,"-",tip_labels$Gene_ID,"-",tip_labels$Clade)) %>%
-  select(-Phylum)
+  rename(tip_label = "bayes[]$tip.label") %>%
+  tidyr::separate(tip_label, into = c("Species", "Gene_ID"), sep = "-", remove = TRUE, extra = "merge") %>%
+  left_join(., reference, by = "Species") %>%
+  mutate(final_label = paste0(.$Species, "-", .$Gene_ID)) 
 
-#replace the original tip labels
+# replace the original tip labels
 bayes[]$tip.label <- tip_labels$final_label
 
 
-#Create a df containing internal node numbers and probs, as well as terminal node numbers and NA (for labels)
+# create a df containing internal node numbers and probs, as well as terminal node numbers and NA (for labels)
 node_prob <- data.frame(node = seq(length(tip_labels$final_label) + 1 , length(tip_labels$final_label) + bayes$Nnode), label = bayes$node.label)
 node_prob$label[node_prob$label == "Root"] <- NA
 node <- seq(1, length(tip_labels$final_label))
@@ -74,10 +73,10 @@ prob <- rbind(prob2, node_prob) %>%
 
 t <- ggtree(bayes, layout = "circular", branch.length="none") #+ geom_tiplab2(size = 2) + geom_text2(aes(subset=!isTip, label=node), size = 2, hjust=-.3)
 
-#attach annotation df to ggtree object
+# attach annotation df to ggtree object
 df <- tip_labels %>%
   mutate(label = final_label)
-df <- left_join(t$data, df, by="label")
+df <- left_join(t$data, df, by = "label")
 df <- select(df, -parent, -branch.length, -x, -y)
 
 # add point colors for each clade
@@ -88,7 +87,7 @@ t_ann$data <- t_ann$data %>%
   #mutate(final_label = label) #%>%
   mutate(label = ifelse(Clade == "IIIb", final_label, " "))
 
-#add support values to nodes (for manual selection of nodes)
+# add support values to nodes (for manual selection of nodes)
 tbs <- t %<+% prob + 
   geom_tiplab2() +
   # geom_text2(aes(subset=!isTip, label=node), hjust=-.3) + 
@@ -167,10 +166,12 @@ t_ann <- t_ann +
 # geom_tiplab2 uses column label by default, so copy whatever data you want to the label column
 t_ann$data <- t_ann$data %>%
   # mutate(final_label = label) %>%
-  mutate(label = ifelse(Clade == "IIIb",final_label, Species)) # Species + Gene_ID + Clade for clade III, species for all other clades
+  mutate(label = ifelse(Clade == "IIIb", Species, "")) # Species + Gene_ID for clade III, species for all other clades
+  NULL
 
 t_final <- t_ann %<+% prob3 + 
   geom_label2(aes(na.rm = TRUE, label = round(as.numeric(prob) * 100), fill = as.numeric(prob) * 100), size = 8) + 
+  geom_tiplab2(hjust = -1) +
   scale_fill_viridis_c(limits = c(0, 100)) + 
   geom_tippoint(aes(color=Clade), size = 6) +
   labs(fill = "Posterior Probability") +

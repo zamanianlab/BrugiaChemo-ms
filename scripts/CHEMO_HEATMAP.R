@@ -1,7 +1,7 @@
 library(tidyverse)
 library(cowplot)
 
-setwd("~/Box Sync/GHdata/50HGI/ChemoR/phylo/ML/")
+setwd("~/Box/GHdata/50HGI/ChemoR/phylo/ML/")
 
 #########################################################################################################
 ######################                                                             ######################
@@ -12,7 +12,7 @@ setwd("~/Box Sync/GHdata/50HGI/ChemoR/phylo/ML/")
 tree <- read_csv("family_clades.csv")
 
 # load in reference file matching species <-> clade
-reference <- read.csv("~/Box Sync/ZamanianLab/Data/Genomics/Phylogenetics/ChemoR/tree/clade_species_phylum.csv", header = FALSE) %>%
+reference <- read.csv("~/Box/ZamanianLab/Data/Genomics/Phylogenetics/ChemoR/tree/clade_species_phylum.csv", header = FALSE) %>%
   rename(Species = V1, Clade = V2, Phylum = V3)
 species_info <- read.csv("~/GitHub/50HGI/auxillary/species_info.csv", header = TRUE) %>%
   select(-BioProject, -Classification)
@@ -118,6 +118,7 @@ bar <- ggplot(df.b, aes(x = Species, y = Sum)) +
         panel.background = element_blank(),
         panel.spacing.x = unit(0.25, "line"),
         panel.spacing.y = unit(0.25, "line"),
+        axis.title.y = element_text(face = "bold"),
         axis.line = element_blank(),
         axis.text.x = element_blank(),
         axis.ticks.x = element_blank(),

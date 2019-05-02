@@ -124,16 +124,17 @@ t_ann <- t_ann +
 # geom_tiplab2 uses column label by default, so copy whatever data you want to the label column
 t_ann$data <- t_ann$data %>%
   # mutate(final_label = label) %>%
-  mutate(label = ifelse(Clade == "IIIb",final_label, Species)) # Species + Gene_ID + Clade for clade III, species for all other clades
+  mutate(label = ifelse(Clade == "IIIb", Species, "")) # Species + Gene_ID + Clade for clade III, species for all other clades
 
 t_final <- t_ann %<+% prob3 + 
   geom_label2(aes(na.rm = TRUE, label = round(as.numeric(prob) * 100), fill = as.numeric(prob) * 100), size = 8) + 
+  geom_tiplab2(hjust = -1) +
   scale_fill_viridis_c(limits = c(0, 100)) + 
   geom_tippoint(aes(color=Clade), size = 6) +
   labs(fill = "Posterior Probability") +
   theme(legend.position="right", legend.title = element_text(size = 40), legend.text = element_text(size = 35), legend.key.size = unit(2, "cm")) +
   NULL
-# t_final
+t_final
 
 
 ggsave("CNG_MB_TREE.pdf", t_final, width = 40, height = 40)
