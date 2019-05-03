@@ -88,16 +88,16 @@ seqextract_py="${gh_dir}"/scripts/auxillary/seq_extract.py
 
 ### Parse hmm outputs to filter out those where first hit is not ChemoR or 7tm_1 HMM, extract sequences of surviving hits
 # while IFS= read -r line; do
-# 	for f in "${genome_dir}"/"${line}"/**/*.protein.fa.gz ; do
-# 		cat "${out}"/"${line}"_1.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '!/Frizzled|7tm_2|7tm_3|7tm_4|7tm_6|7tm_7/' | sort -k4 -g > "${out}"/"${line}"_1.txt
-# 		cat "${out}"/"${line}"_1.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '!/Frizzled|7tm_2|7tm_3|7tm_4|7tm_6|7tm_7/' | sort -k4 -g | awk '{print $1}' > "${out}"/"${line}"_ids_1.txt
-# 		#Extract these sequences
-# 		curr_dir=$(dirname "${f}")
-# 		#echo "${curr_dir}"
-# 		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
-# 		python "${seqextract_py}" "${out}"/"${line}"_ids_1.txt "${curr_dir}"/protein.tmp.fa "${out}"/"${line}"_1.fa
-# 		rm "${curr_dir}"/protein.tmp.fa
-# 	done;
+#   for f in "${genome_dir}"/"${line}"/**/*.protein.fa.gz ; do
+#     cat "${out}"/"${line}"_1.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '!/Frizzled|7tm_2|7tm_3|7tm_4|7tm_6|7tm_7/' | sort -k4 -g > "${out}"/"${line}"_1.txt
+#     cat "${out}"/"${line}"_1.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '!/Frizzled|7tm_2|7tm_3|7tm_4|7tm_6|7tm_7/' | sort -k4 -g | awk '{print $1}' > "${out}"/"${line}"_1_ids.txt
+#     #Extract these sequences
+#     curr_dir=$(dirname "${f}")
+#     #echo "${curr_dir}"
+#     gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
+#     python "${seqextract_py}" "${out}"/"${line}"_1_ids.txt "${curr_dir}"/protein.tmp.fa "${out}"/"${line}"_1.fa
+#     rm "${curr_dir}"/protein.tmp.fa
+#   done;
 # done <"$species"
 
 
@@ -112,16 +112,16 @@ seqextract_py="${gh_dir}"/scripts/auxillary/seq_extract.py
 
 ### Parse hmm outputs to remove sequences where first hit is not ChemoR or 7tm_1 HMM, get list of surviving unique IDs, extract sequences
 # while IFS= read -r line; do
-# 	for f in "${genome_dir}"/"${line}"/**/*.protein.fa.gz ; do
-# 		cat "${out}"/"${line}"_2.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_1|7TM_GPCR_S|Srg|Sre|Serpentine_r_xa/' | sort -k4 -g > "${out}"/"${line}"_2.txt
-# 		cat "${out}"/"${line}"_2.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_1|7TM_GPCR_S|Srg|Sre|Serpentine_r_xa/' | sort -k4 -g  | awk '{print $1}' > "${out}"/"${line}"_ids_2.txt
-# 		curr_dir=$(dirname "${f}")
-#  		gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
-# 		python "${seqextract_py}" "${out}"/"${line}"_ids_2.txt "${curr_dir}"/protein.tmp.fa "${out}"/"${line}"_2.fa
-# 		rm "${curr_dir}"/protein.tmp.fa
+#   for f in "${genome_dir}"/"${line}"/**/*.protein.fa.gz ; do
+#     cat "${out}"/"${line}"_2.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_1|7TM_GPCR_S|Srg|Sre|Serpentine_r_xa/' | sort -k4 -g > "${out}"/"${line}"_2.txt
+#     cat "${out}"/"${line}"_2.out | awk '{print $1 " " $3 " " $4 " " $5}' | awk '!/#/' | sort -k1,1 -k4,4g | sort -uk1,1 | awk '/7tm_1|7TM_GPCR_S|Srg|Sre|Serpentine_r_xa/' | sort -k4 -g  | awk '{print $1}' > "${out}"/"${line}"_2_ids.txt
+#     curr_dir=$(dirname "${f}")
+#     gzcat "${f}" > "${curr_dir}"/protein.tmp.fa
+#     python "${seqextract_py}" "${out}"/"${line}"_2_ids.txt "${curr_dir}"/protein.tmp.fa "${out}"/"${line}"_2.fa
+#     rm "${curr_dir}"/protein.tmp.fa
 #     # compare the list from _1 to the list from _2 and write out the IDs that were removed
-# 		grep -v -f "${out}"/"${line}"_ids_2.txt "${out}"/"${line}"_ids_1.txt > "${out}"/"${line}"_filtered_2.txt
-# 	done;
+#     grep -v -f "${out}"/"${line}"_2_ids.txt "${out}"/"${line}"_1_ids.txt > "${out}"/"${line}"_2_filtered.txt
+#   done;
 # done <"$species"
 
 
@@ -164,34 +164,17 @@ seqextract_py="${gh_dir}"/scripts/auxillary/seq_extract.py
 ### Remove hits that aren't most similar to a C. elegans ChemoR, extract sequences of surviving hits
 while IFS= read -r line; do
   for f in "${genome_dir}"/"${line}"/**/*.protein.fa.gz ; do
-    cat "${out}"/"${line}"_3.out | awk '{print $1 " " $2 " " $7}' | sort -k1,1 -k3,3g | sort -uk1,1 | grep -wF -f "${gh_dir}"/auxillary/ChemoR/celegans_chemor_seqid.txt | sort -k3 -g > "${out}"/"${line}"_3.txt
-    cat "${out}"/"${line}"_3.txt | awk '{print $1}' > "${out}"/"${line}"_ids_3.txt
+    cat "${out}"/"${line}"_3.out | awk '{print $1 " " $2 " " $7}' | sort -k1,1 -k3,3g | sort -uk1,1 | grep -wF -f "${gh_dir}"/auxillary/ChemoR/simplemine_results.txt | sort -k3 -g > "${out}"/"${line}"_3.txt
+    cat "${out}"/"${line}"_3.txt | awk '{print $1}' > "${out}"/"${line}"_3_ids.txt
     ## Extract these sequences
     curr_dir=$(dirname "${f}")
     echo "${curr_dir}"
-    gzip -d -k "${f}" > "${curr_dir}"/protein.tmp.fa
-    python "${seqextract_py}" "${out}"/"${line}"_ids_3.txt "${curr_dir}"/protein.tmp.fa "${out}"/"${line}"_3.fa
+    gzcat -d -k "${f}" > "${curr_dir}"/protein.tmp.fa
+    python "${seqextract_py}" "${out}"/"${line}"_3_ids.txt "${curr_dir}"/protein.tmp.fa "${out}"/"${line}"_3.fa
     rm "${curr_dir}"/protein.tmp.fa
-    grep -v -f "${out}"/"${line}"_ids_3.txt "${out}"/"${line}"_ids_2.txt > "${out}"/"${line}"_filtered_3.txt
+    grep -v -f "${out}"/"${line}"_3_ids.txt "${out}"/"${line}"_2_ids.txt > "${out}"/"${line}"_3_filtered.txt
   done;
 done <"$species"
-
-### NON-GOLD FILARID GENOMES - remove hits that aren't most similar to a C. elegans ChemoR, extract sequences of surviving hits
-# while IFS= read -r line; do
-# 	for f in "${ngf_dir}"/"${line}"/**/*.protein.fa.gz ; do
-# 		cat "${ngf_out}"/"${line}"_rec.blastout | awk '{print $1 " " $2 " " $7}' | sort -k1,1 -k3,3g | sort -uk1,1 | grep -wF -f "${gold_out}"/caenorhabditis_elegans_NChitsf_ids.txt | sort -k3 -g > "${ngf_out}"/"${line}"_rblast_ChemoRhits.txt
-# 		cat "${ngf_out}"/"${line}"_rblast_ChemoRhits.txt | awk '{print $1}' > "${ngf_out}"/"${line}"_rblast_ChemoRhits_ids.txt
-# 		#Extract these sequences
-# 		curr_dir=$(dirname "${f}")
-# 		#echo "${curr_dir}"
-# 		zcat "${f}" > "${curr_dir}"/protein.tmp.fa
-# 		python "${seqextract_py}" "${ngf_out}"/"${line}"_rblast_ChemoRhits_ids.txt "${curr_dir}"/protein.tmp.fa "${ngf_out}"/"${line}"_rblast_ChemoR.fa
-# 		rm "${curr_dir}"/protein.tmp.fa
-# 		grep -v -f "${ngf_out}"/"${line}"_rblast_ChemoRhits_ids.txt "${ngf_out}"/"${line}"_NChitsf_ids.txt > "${ngf_out}"/"${line}"_filtered2_ids.txt
-# 	done;
-# done <"$species_ngf"
-
-### Double check filtered2 for filarids (filtered2_description.xlsx). Retain 8 of the 105 that were filtered; manually add to the ChemoRhits IDs and FASTA file
 
 ################################################################################################################################
 ###########																											 ###########
