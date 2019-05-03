@@ -8,7 +8,7 @@ local_dir="${GIT_DATA}"/"${proj}"
 
 ## Species list
 species="${gh_dir}"/auxillary/species.txt
-chemoR_families="${gh_dir}"/auxillary/chemoR_families.txt
+# chemoR_families="${gh_dir}"/auxillary/chemoR_families.txt
 
 genome_dir="${local_dir}"/genomes
 
@@ -18,40 +18,40 @@ genome_dir="${local_dir}"/genomes
 # mkdir "${local_dir}"/ChemoR/phylo
 
 out="${local_dir}"/ChemoR/output
-phylo_out="${local_dir}"/ChemoR/phylo
-mcl_out="${local_dir}"/ChemoR/mcl
+# phylo_out="${local_dir}"/ChemoR/phylo
+# mcl_out="${local_dir}"/ChemoR/mcl
 
 ## Auxillary Scripts
 ## extract sequences provided list of sequence names and fasta file
 seqextract_py="${gh_dir}"/scripts/auxillary/seq_extract.py
 ## HMMTOP parsing script (filter based on TM range and produce sequences based on TM domains)
-HMMTOP_py="${gh_dir}"/scripts/auxillary/HMMTOP_extract.py
-HMMTOP_strict_py="${gh_dir}"/scripts/auxillary/HMMTOP_extract_strict.py
+# HMMTOP_py="${gh_dir}"/scripts/auxillary/HMMTOP_extract.py
+# HMMTOP_strict_py="${gh_dir}"/scripts/auxillary/HMMTOP_extract_strict.py
 ## add species labels to FASTA IDs
-change_ID_py="${gh_dir}"/scripts/auxillary/id_change.py
+# change_ID_py="${gh_dir}"/scripts/auxillary/id_change.py
 ## misc
-trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
-mafft_cmd="${gh_dir}"/scripts/auxillary/mafft
-muscle_cmd="${gh_dir}"/scripts/auxillary/muscle
-makeblastdb_cmd="${gh_dir}"/scripts/auxillary/makeblastdb
-blastp_cmd="${gh_dir}"/scripts/auxillary/blastp
+# trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
+# mafft_cmd="${gh_dir}"/scripts/auxillary/mafft
+# muscle_cmd="${gh_dir}"/scripts/auxillary/muscle
+# makeblastdb_cmd="${gh_dir}"/scripts/auxillary/makeblastdb
+# blastp_cmd="${gh_dir}"/scripts/auxillary/blastp
 
 ### Build HMMs
 
 ## ChemoRs
 # cat "${gh_dir}"/auxillary/pfam_HMMs/GPCR/ChemoR/*hmm > "${gh_dir}"/auxillary/pfam_HMMs/GPCR/ChemoR/ChemoR.hmm
 # hmmpress "${gh_dir}"/auxillary/pfam_HMMs/GPCR/ChemoR/ChemoR.hmm
-ChemoR_HMM="${gh_dir}"/auxillary/pfam_HMMs/GPCR/ChemoR/ChemoR.hmm
+# ChemoR_HMM="${gh_dir}"/auxillary/pfam_HMMs/GPCR/ChemoR/ChemoR.hmm
 
 ## GRAFS+
 # cat "${gh_dir}"/auxillary/pfam_HMMs/GPCR/Primary/*hmm > "${gh_dir}"/auxillary/pfam_HMMs/GPCR/Primary/GPCRfams.hmm
 # hmmpress "${gh_dir}"/auxillary/pfam_HMMs/GPCR/Primary/GPCRfams.hmm
-GRAFS_HMM="${gh_dir}"/auxillary/pfam_HMMs/GPCR/Primary/GPCRfams.hmm
+# GRAFS_HMM="${gh_dir}"/auxillary/pfam_HMMs/GPCR/Primary/GPCRfams.hmm
 
 ## Combined (GRAFS+ / ChemoR)
 # cat "${gh_dir}"/auxillary/pfam_HMMs/GPCR/Primary/GPCRfams.hmm "${gh_dir}"/auxillary/pfam_HMMs/GPCR/ChemoR/ChemoR.hmm > "${gh_dir}"/auxillary/pfam_HMMs/GPCR/GRAFS_NemChR.hmm
 # hmmpress "${gh_dir}"/auxillary/pfam_HMMs/GPCR/GRAFS_NemChR.hmm
-GRAFS_ChemoR_HMM="${gh_dir}"/auxillary/pfam_HMMs/GPCR/GRAFS_ChemoR.hmm
+# GRAFS_ChemoR_HMM="${gh_dir}"/auxillary/pfam_HMMs/GPCR/GRAFS_ChemoR.hmm
 
 ## Prepare Pfam-A HMM db
 # mkdir "$local_dir/auxillary
@@ -59,7 +59,7 @@ GRAFS_ChemoR_HMM="${gh_dir}"/auxillary/pfam_HMMs/GPCR/GRAFS_ChemoR.hmm
 # wget -nc -O "$local_dir/auxillary/HMMs/Pfam-A.hmm.gz" ftp://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/Pfam-A.hmm.g
 # gzcat "$local_dir/auxillary/HMMs/Pfam-A.hmm.gz" > "$local_dir/auxillary/HMMs/Pfam-A.hmm
 # hmmpress "$local_dir/auxillary/HMMs/Pfam-A.hmm
-pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
+# pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 
 
 ############################################################################
@@ -152,38 +152,29 @@ pfam_HMM="${local_dir}"/auxillary/HMMs/Pfam-A.hmm
 
 
 ### Reciprocal blastp of extracted sequences against C. elegans
+# while IFS= read -r line; do
+#   for f in "${genome_dir}"/"${line}"/**/*.protein.fa.gz ; do
+#     # blast filtered ChemoRs against C. elegans proteome, using E-value cutoff
+#     cd "${genome_dir}"/caenorhabditis_elegans/PRJNA13758/
+#     blastp -query "${out}"/"${line}"_2.fa -db caenorhabditis_elegans.PRJNA13758.WBPS13.protein.fa -out "${out}"/"${line}"_3.out -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
+#   done;
+# done <"$species"
+
+
+### Remove hits that aren't most similar to a C. elegans ChemoR, extract sequences of surviving hits
 while IFS= read -r line; do
-	for f in "${genome_dir}"/"${line}"/**/*.protein.fa.gz ; do
-		# blast filtered ChemoRs against C. elegans proteome, using E-value cutoff
-		cd "${genome_dir}"/caenorhabditis_elegans/PRJNA13758/
-		blastp -query "${out}"/"${line}"_2.fa -db caenorhabditis_elegans.PRJNA13758.WBPS13.protein.fa -out "${out}"/"${line}"_3.out -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
-	done;
+  for f in "${genome_dir}"/"${line}"/**/*.protein.fa.gz ; do
+    cat "${out}"/"${line}"_3.out | awk '{print $1 " " $2 " " $7}' | sort -k1,1 -k3,3g | sort -uk1,1 | grep -wF -f "${gh_dir}"/auxillary/ChemoR/celegans_chemor_seqid.txt | sort -k3 -g > "${out}"/"${line}"_3.txt
+    cat "${out}"/"${line}"_3.txt | awk '{print $1}' > "${out}"/"${line}"_ids_3.txt
+    ## Extract these sequences
+    curr_dir=$(dirname "${f}")
+    echo "${curr_dir}"
+    gzip -d -k "${f}" > "${curr_dir}"/protein.tmp.fa
+    python "${seqextract_py}" "${out}"/"${line}"_ids_3.txt "${curr_dir}"/protein.tmp.fa "${out}"/"${line}"_3.fa
+    rm "${curr_dir}"/protein.tmp.fa
+    grep -v -f "${out}"/"${line}"_ids_3.txt "${out}"/"${line}"_ids_2.txt > "${out}"/"${line}"_filtered_3.txt
+  done;
 done <"$species"
-
-### NON-GOLD FILARID GENOMES - Reciprocal blastp of extracted sequences against C. elegans
-# while IFS= read -r line; do
-# 	for f in "${ngf_dir}"/"${line}"/**/*.protein.fa.gz ; do
-# 		#blast filtered ChemoRs against C. elegans proteome, using E-value cutoff
-# 		cd "${gold_dir}"/caenorhabditis_elegans/PRJNA13758/
-# 		"${blastp_cmd}" -query "${ngf_out}"/"${line}"_NCf.fa -db caenorhabditis_elegans.protein.db -out "${ngf_out}"/"${line}"_rec.blastout -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
-# 	done;
-# done <"$species_ngf"
-
-
-### GOLD GENOMES - remove hits that aren't most similar to a C. elegans ChemoR, extract sequences of surviving hits
-# while IFS= read -r line; do
-# 	for f in "${gold_dir}"/"${line}"/**/*.protein.fa.gz ; do
-# 		cat "${gold_out}"/"${line}"_rec.blastout | awk '{print $1 " " $2 " " $7}' | sort -k1,1 -k3,3g | sort -uk1,1 | grep -wF -f "${gold_out}"/caenorhabditis_elegans_NChitsf_ids.txt | sort -k3 -g > "${gold_out}"/"${line}"_rblast_ChemoRhits.txt
-# 		cat "${gold_out}"/"${line}"_rblast_ChemoRhits.txt | awk '{print $1}' > "${gold_out}"/"${line}"_rblast_ChemoRhits_ids.txt
-# 		#Extract these sequences
-# 		curr_dir=$(dirname "${f}")
-# 		#echo "${curr_dir}"
-# 		zcat "${f}" > "${curr_dir}"/protein.tmp.fa
-# 		python "${seqextract_py}" "${gold_out}"/"${line}"_rblast_ChemoRhits_ids.txt "${curr_dir}"/protein.tmp.fa "${gold_out}"/"${line}"_rblast_ChemoR.fa
-# 		rm "${curr_dir}"/protein.tmp.fa
-# 		grep -v -f "${gold_out}"/"${line}"_rblast_ChemoRhits_ids.txt "${gold_out}"/"${line}"_NChitsf_ids.txt > "${gold_out}"/"${line}"_filtered2_ids.txt
-# 	done;
-# done <"$species_gold"
 
 ### NON-GOLD FILARID GENOMES - remove hits that aren't most similar to a C. elegans ChemoR, extract sequences of surviving hits
 # while IFS= read -r line; do

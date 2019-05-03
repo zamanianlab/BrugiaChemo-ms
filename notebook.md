@@ -38,4 +38,4 @@ This notebook was began after much of the development of the ChemoR pipeline had
 - ran `sh WBP_download.sh` to update the genomes
 - deleted `g_genomes`, `ngf_genomes`, `f_genomes`, `ngo_genomes`, `a_genomes`, and `p_genomes`
 - keep `7tm_1` and ChemoR hits in the first `hmmsearch` and the reciprocal search
--
+- on line 164 in `ChemoR_analysis.sh`, the bit where the reciprocal BLAST output is compared to *C. elegans* ChemoRs
