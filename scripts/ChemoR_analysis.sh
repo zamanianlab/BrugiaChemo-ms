@@ -34,7 +34,7 @@ query_api="${gh_dir}"/scripts/auxillary/json_parser.py
 ## misc
 linearize="${gh_dir}"/scripts/auxillary/linearizefasta.awk
 # trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
-# mafft_cmd="${gh_dir}"/scripts/auxillary/mafft
+mafft_cmd="${gh_dir}"/scripts/auxillary/mafft
 # muscle_cmd="${gh_dir}"/scripts/auxillary/muscle
 # makeblastdb_cmd="${gh_dir}"/scripts/auxillary/makeblastdb
 # blastp_cmd="${gh_dir}"/scripts/auxillary/blastp
@@ -172,11 +172,15 @@ linearize="${gh_dir}"/scripts/auxillary/linearizefasta.awk
 ## in Sublime, remove transcript numbers (e.g. N.1) and put each isoform on a new line
 ## 2177 transcripts
 
+
 ### Remove hits that aren't most similar to a C. elegans ChemoR, extract sequences of surviving hits
 # while IFS= read -r line; do
 #   for f in "${genome_dir}"/"${line}"/**/*.protein.fa.gz ; do
+#     ## Find genes that had no hit at all
+#     cat "${out}"/"${line}"_3.out | awk '{print $1}' | grep -wFv -f - "${out}"/"${line}"_2_ids.txt > "${out}"/"${line}"_3_nohits.txt
+#     ## Find genes that had a significant hit to a C. elegans ChemoR
 #     cat "${out}"/"${line}"_3.out | awk '{print $1 " " $2 " " $7}' | sort -k1,1 -k3,3g | sort -uk1,1 | grep -wF -f "${gh_dir}"/auxillary/ChemoR/simplemine_results.txt | sort -k3 -g > "${out}"/"${line}"_3.txt
-#     cat "${out}"/"${line}"_3.txt | awk '{print $1}' > "${out}"/"${line}"_3_ids.txt
+#     cat "${out}"/"${line}"_3.txt | awk '{print $1}' | cat - "${out}"/"${line}"_3_nohits.txt > "${out}"/"${line}"_3_ids.txt
 #     ## Extract these sequences
 #     curr_dir=$(dirname "${f}")
 #     echo "${curr_dir}"
@@ -187,123 +191,130 @@ linearize="${gh_dir}"/scripts/auxillary/linearizefasta.awk
 #   done;
 # done <"$species"
 
-################################################################################################################################
+############################################################################
 ###########																											 ###########
 ###########																											 ###########
-###########												Phylogenetics												 ###########
+###########												Phylogenetics									 ###########
 ###########																											 ###########
 ###########																											 ###########
-################################################################################################################################
+############################################################################
 
 ### Copy sequence files to ChemoR/phylo directory
-while IFS= read -r line; do
-  for f in "${genome_dir}"/"${line}"/**/*.protein.fa.gz ; do
-    cp "${out}"/"${line}"_3.fa "${phylo_out}"/1/
-  done;
-done <"$species"
+# while IFS= read -r line; do
+#   for f in "${genome_dir}"/"${line}"/**/*.protein.fa.gz ; do
+#     cp "${out}"/"${line}"_3.fa "${phylo_out}"/1/
+#   done;
+# done <"$species"
 
 ## Label each sequence with its species name
-for f in "${phylo_out}"/1/*_3.fa ; do
-  python "${change_ID_py}" "$f";
-done
+# for f in "${phylo_out}"/1/*_3.fa ; do
+#   python "${change_ID_py}" "$f";
+# done
 
-### Choose one or more representatives from each clade (5826 sequences)
-cat "${phylo_out}"/1/trichinella_spiralis_3_label.fa \
-  "${phylo_out}"/1/romanomermis_culicivorax_3_label.fa \
-  "${phylo_out}"/1/syphacia_muris_3_label.fa \
-  "${phylo_out}"/1/ascaris_suum_3_label.fa \
-  "${phylo_out}"/1/toxocara_canis_3_label.fa  \
-  "${phylo_out}"/1/brugia_malayi_3_label.fa \
-  "${phylo_out}"/1/onchocerca_volvulus_3_label.fa \
-  "${phylo_out}"/1/strongyloides_ratti_3_label.fa \
-  "${phylo_out}"/1/rhabditophanes_kr3021_3_label.fa \
-  "${phylo_out}"/1/meloidogyne_hapla_3_label.fa \
-  "${phylo_out}"/1/panagrellus_redivivus_3_label.fa \
-  "${phylo_out}"/1/haemonchus_contortus_3_label.fa \
-  "${phylo_out}"/1/nippostrongylus_brasiliensis_3_label.fa \
-  "${phylo_out}"/1/angiostrongylus_cantonensis_3_label.fa \
-  "${phylo_out}"/1/dictyocaulus_viviparus_3_label.fa \
-  "${phylo_out}"/1/necator_americanus_3_label.fa \
-  "${phylo_out}"/1/ancylostoma_caninum_3_label.fa \
-  "${phylo_out}"/1/pristionchus_pacificus_3_label.fa \
-  "${phylo_out}"/1/caenorhabditis_elegans_3_label.fa > \ # change this
-"${phylo_out}"/2/down_sampled_1.fa
+### Choose one or more representatives from each clade (5354 sequences)
+# cat "${phylo_out}"/1/trichinella_spiralis_3_label.fa \
+  #   "${phylo_out}"/1/romanomermis_culicivorax_3_label.fa \
+  #   "${phylo_out}"/1/syphacia_muris_3_label.fa \
+  #   "${phylo_out}"/1/ascaris_suum_3_label.fa \
+  #   "${phylo_out}"/1/toxocara_canis_3_label.fa  \
+  #   "${phylo_out}"/1/brugia_malayi_3_label.fa \
+  #   "${phylo_out}"/1/onchocerca_volvulus_3_label.fa \
+  #   "${phylo_out}"/1/strongyloides_ratti_3_label.fa \
+  #   "${phylo_out}"/1/rhabditophanes_kr3021_3_label.fa \
+  #   "${phylo_out}"/1/meloidogyne_hapla_3_label.fa \
+  #   "${phylo_out}"/1/panagrellus_redivivus_3_label.fa \
+  #   "${phylo_out}"/1/haemonchus_contortus_3_label.fa \
+  #   "${phylo_out}"/1/nippostrongylus_brasiliensis_3_label.fa \
+  #   "${phylo_out}"/1/angiostrongylus_cantonensis_3_label.fa \
+  #   "${phylo_out}"/1/dictyocaulus_viviparus_3_label.fa \
+  #   "${phylo_out}"/1/necator_americanus_3_label.fa \
+  #   "${phylo_out}"/1/ancylostoma_caninum_3_label.fa \
+  #   "${phylo_out}"/1/pristionchus_pacificus_3_label.fa > \
+  # "${phylo_out}"/2/down_sampled_1.fa
 
 ## HMMTOP
-cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
-./hmmtop -if="${phylo_out}"/2/down_sampled_1.fa -of="${phylo_out}"/2/down_sampled_hmmtop_output.txt -sf=FAS
+# cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
+# ./hmmtop -if="${phylo_out}"/2/down_sampled_1.fa -of="${phylo_out}"/2/down_sampled_hmmtop_output.txt -sf=FAS
 
-### Parse HHMTOP output to get FASTA file of non-filarid sequences with exactly 7 TMs; extract entire sequence (2540 with 7 TMs, 1200 from Cele)
-python "${HMMTOP_strict_py}" "${phylo_out}"/2/down_sampled_hmmtop_output.txt "${phylo_out}"/2/down_sampled_1.fa "${phylo_out}"/2/down_sampled_2.fa
+### Parse HHMTOP output to get FASTA file of non-filarid sequences with exactly 7 TMs; extract entire sequence (1496 with 7 TMs)
+# python "${HMMTOP_strict_py}" "${phylo_out}"/2/down_sampled_hmmtop_output.txt "${phylo_out}"/2/down_sampled_1.fa "${phylo_out}"/2/down_sampled_2.fa
 
 ### prepare C. elegans ChemoR fasta file
-python "${seqextract_py}" "${gh_dir}"/auxillary/ChemoR/simplemine_results.txt "${genome_dir}"/caenorhabditis_elegans/PRJNA13758/caenorhabditis_elegans.PRJNA13758.WBPS13.protein.fa "${gh_dir}"/auxillary/ChemoR/simplemine_results.fa
-awk -f "${linearize}" < "${gh_dir}"/auxillary/ChemoR/simplemine_results.fa > "${gh_dir}"/auxillary/ChemoR/celeg_chemor.fa
+# python "${seqextract_py}" "${gh_dir}"/auxillary/ChemoR/simplemine_results.txt "${genome_dir}"/caenorhabditis_elegans/PRJNA13758/caenorhabditis_elegans.PRJNA13758.WBPS13.protein.fa "${gh_dir}"/auxillary/ChemoR/simplemine_results.fa
+# awk -f "${linearize}" < "${gh_dir}"/auxillary/ChemoR/simplemine_results.fa > "${gh_dir}"/auxillary/ChemoR/simplemine_results_linear.fa
+# sed -i -E 's/\t/\n/g' "${gh_dir}"/auxillary/ChemoR/simplemine_results_linear.fa
+
+### TM prediction
+# cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
+# ./hmmtop -if="${gh_dir}"/auxillary/ChemoR/simplemine_results_linear.fa -of="${gh_dir}"/auxillary/ChemoR/simplemine_results_hmmtop.txt -sf=FAS
+# python "${HMMTOP_strict_py}" "${gh_dir}"/auxillary/ChemoR/simplemine_results_hmmtop.txt "${gh_dir}"/auxillary/ChemoR/simplemine_results_linear.fa "${gh_dir}"/auxillary/ChemoR/simplemine_results_3.fa
+# awk -f "${linearize}" < "${gh_dir}"/auxillary/ChemoR/simplemine_results_3.fa > "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa
+# sed -i -E 's/\t/\n/g' "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa
 
 ### Create a separate fasta file for each family
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/sra/' > "${phylo_out}"/sra.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srab/' >"${phylo_out}"/srab.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srh/' > "${phylo_out}"/srh.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/str/' > "${phylo_out}"/str.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/sri/' > "${phylo_out}"/sri.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srd/' > "${phylo_out}"/srd.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srj/' > "${phylo_out}"/srj.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srm/' > "${phylo_out}"/srm.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srn/' > "${phylo_out}"/srn.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/sre/' > "${phylo_out}"/sre.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srb/' > "${phylo_out}"/srb.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srx/' > "${phylo_out}"/srx.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srt/' > "${phylo_out}"/srt.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srg/' > "${phylo_out}"/srg.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/sru/' > "${phylo_out}"/sru.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/sro/' > "${phylo_out}"/sro.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srv/' > "${phylo_out}"/srv.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srxa/' >"${phylo_out}"/srxa.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srw/' > "${phylo_out}"/srw.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srz/' > "${phylo_out}"/srz.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srbc/' >"${phylo_out}"/srbc.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srsx/' >"${phylo_out}"/srsx.celeg.fa
-# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srr/' > "${phylo_out}"/srr.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'sra' > "${phylo_out}"/3/sra.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srab' > "${phylo_out}"/3/srab.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srh' > "${phylo_out}"/3/srh.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'str' > "${phylo_out}"/3/str.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'sri' > "${phylo_out}"/3/sri.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srd' > "${phylo_out}"/3/srd.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srj' > "${phylo_out}"/3/srj.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srm' > "${phylo_out}"/3/srm.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srn' > "${phylo_out}"/3/srn.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'sre' > "${phylo_out}"/3/sre.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srb' > "${phylo_out}"/3/srb.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srx' > "${phylo_out}"/3/srx.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srt' > "${phylo_out}"/3/srt.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srg' > "${phylo_out}"/3/srg.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'sru' > "${phylo_out}"/3/sru.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'sro' > "${phylo_out}"/3/sro.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srv' > "${phylo_out}"/3/srv.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srxa' > "${phylo_out}"/3/srxa.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srw' > "${phylo_out}"/3/srw.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srz' > "${phylo_out}"/3/srz.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srbc' > "${phylo_out}"/3/srbc.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srsx' > "${phylo_out}"/3/srsx.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srr' > "${phylo_out}"/3/srr.celeg.fa
 
-# for f in "${phylo_out}"/s*.celeg.fa; do
-# 	cat "${f}" | tr '\t' '\n' > $f.fasta;
-# 	done
-# for f in "${phylo_out}"/*.fa.fasta ; do
-# 	mv "$f" "${f/.fa.fasta/.fa}";
-# 	done
+# for f in "${phylo_out}"/3/s*.celeg.fa; do
+#   sed -i 's/--//g' "$f";
+# done
 
 ### align family fasta files
-# for f in "${phylo_out}"/s*.celeg.fa; do "${mafft_cmd}" --auto "$f" > "$f.aln"; done
-# for f in "${phylo_out}"/*.fa.aln ; do
-# 	mv "$f" "${f/.fa.aln/.aln}";
-# 	done
+# for f in "${phylo_out}"/3/s*.celeg.fa; do
+#   "mafft" --auto "$f" > "$f.aln";
+# done
+
+# for f in "${phylo_out}"/3/*.fa.aln ; do
+#   mv "$f" "${f/.fa.aln/.aln}";
+# done
 
 ### align family profiles to each other, sequentially
-# muscle -profile -in1 "${phylo_out}"/sra.celeg.aln -in2 "${phylo_out}"/srab.celeg.aln -out "${phylo_out}"/2.aln
-# muscle -profile -in1 "${phylo_out}"/2.aln -in2 "${phylo_out}"/srh.celeg.aln -out "${phylo_out}"/3.aln
-# muscle -profile -in1 "${phylo_out}"/3.aln -in2 "${phylo_out}"/str.celeg.aln -out "${phylo_out}"/4.aln
-# muscle -profile -in1 "${phylo_out}"/4.aln -in2 "${phylo_out}"/sri.celeg.aln -out "${phylo_out}"/5.aln
-# muscle -profile -in1 "${phylo_out}"/5.aln -in2 "${phylo_out}"/srd.celeg.aln -out "${phylo_out}"/6.aln
-# muscle -profile -in1 "${phylo_out}"/6.aln -in2 "${phylo_out}"/srj.celeg.aln -out "${phylo_out}"/7.aln
-# muscle -profile -in1 "${phylo_out}"/7.aln -in2 "${phylo_out}"/sre.celeg.aln -out "${phylo_out}"/8.aln
-# muscle -profile -in1 "${phylo_out}"/8.aln -in2 "${phylo_out}"/srb.celeg.aln -out "${phylo_out}"/9.aln
-# muscle -profile -in1 "${phylo_out}"/9.aln -in2 "${phylo_out}"/srx.celeg.aln -out "${phylo_out}"/10.aln
-# muscle -profile -in1 "${phylo_out}"/10.aln -in2 "${phylo_out}"/srt.celeg.aln -out "${phylo_out}"/11.aln
-# muscle -profile -in1 "${phylo_out}"/11.aln -in2 "${phylo_out}"/srg.celeg.aln -out "${phylo_out}"/12.aln
-# muscle -profile -in1 "${phylo_out}"/12.aln -in2 "${phylo_out}"/sru.celeg.aln -out "${phylo_out}"/13.aln
-# muscle -profile -in1 "${phylo_out}"/13.aln -in2 "${phylo_out}"/srxa.celeg.aln -out "${phylo_out}"/14.aln
-# muscle -profile -in1 "${phylo_out}"/14.aln -in2 "${phylo_out}"/srw.celeg.aln -out "${phylo_out}"/15.aln
-# muscle -profile -in1 "${phylo_out}"/15.aln -in2 "${phylo_out}"/srz.celeg.aln -out "${phylo_out}"/16.aln
-# muscle -profile -in1 "${phylo_out}"/16.aln -in2 "${phylo_out}"/srbc.celeg.aln -out "${phylo_out}"/17.aln
-# muscle -profile -in1 "${phylo_out}"/17.aln -in2 "${phylo_out}"/srsx.celeg.aln -out "${phylo_out}"/18.aln
-# muscle -profile -in1 "${phylo_out}"/18.aln -in2 "${phylo_out}"/srv.celeg.aln -out "${phylo_out}"/19.aln
-
-#manually remove all celeg sequences from DS_non-filarid_TMfiltered2.fa
+# muscle -profile -in1 "${phylo_out}"/3/sra.celeg.aln -in2 "${phylo_out}"/3/srab.celeg.aln -out "${phylo_out}"/3/2.aln
+# muscle -profile -in1 "${phylo_out}"/3/2.aln -in2 "${phylo_out}"/3/srh.celeg.aln -out "${phylo_out}"/3/3.aln
+# muscle -profile -in1 "${phylo_out}"/3/3.aln -in2 "${phylo_out}"/3/str.celeg.aln -out "${phylo_out}"/3/4.aln
+# muscle -profile -in1 "${phylo_out}"/3/4.aln -in2 "${phylo_out}"/3/sri.celeg.aln -out "${phylo_out}"/3/5.aln
+# muscle -profile -in1 "${phylo_out}"/3/5.aln -in2 "${phylo_out}"/3/srd.celeg.aln -out "${phylo_out}"/3/6.aln
+# muscle -profile -in1 "${phylo_out}"/3/6.aln -in2 "${phylo_out}"/3/srj.celeg.aln -out "${phylo_out}"/3/7.aln
+# muscle -profile -in1 "${phylo_out}"/3/7.aln -in2 "${phylo_out}"/3/sre.celeg.aln -out "${phylo_out}"/3/8.aln
+# muscle -profile -in1 "${phylo_out}"/3/8.aln -in2 "${phylo_out}"/3/srb.celeg.aln -out "${phylo_out}"/3/9.aln
+# muscle -profile -in1 "${phylo_out}"/3/9.aln -in2 "${phylo_out}"/3/srx.celeg.aln -out "${phylo_out}"/3/10.aln
+# muscle -profile -in1 "${phylo_out}"/3/10.aln -in2 "${phylo_out}"/3/srt.celeg.aln -out "${phylo_out}"/3/11.aln
+# muscle -profile -in1 "${phylo_out}"/3/11.aln -in2 "${phylo_out}"/3/srg.celeg.aln -out "${phylo_out}"/3/12.aln
+# muscle -profile -in1 "${phylo_out}"/3/12.aln -in2 "${phylo_out}"/3/sru.celeg.aln -out "${phylo_out}"/3/13.aln
+# muscle -profile -in1 "${phylo_out}"/3/13.aln -in2 "${phylo_out}"/3/srxa.celeg.aln -out "${phylo_out}"/3/14.aln
+# muscle -profile -in1 "${phylo_out}"/3/14.aln -in2 "${phylo_out}"/3/srw.celeg.aln -out "${phylo_out}"/3/15.aln
+# muscle -profile -in1 "${phylo_out}"/3/15.aln -in2 "${phylo_out}"/3/srz.celeg.aln -out "${phylo_out}"/3/16.aln
+# muscle -profile -in1 "${phylo_out}"/3/16.aln -in2 "${phylo_out}"/3/srbc.celeg.aln -out "${phylo_out}"/3/17.aln
+# muscle -profile -in1 "${phylo_out}"/3/17.aln -in2 "${phylo_out}"/3/srsx.celeg.aln -out "${phylo_out}"/3/18.aln
+# muscle -profile -in1 "${phylo_out}"/3/18.aln -in2 "${phylo_out}"/3/srv.celeg.aln -out "${phylo_out}"/3/19.aln
+# muscle -profile -in1 "${phylo_out}"/3/19.aln -in2 "${phylo_out}"/3/srm.celeg.aln -out "${phylo_out}"/3/20.aln
+# muscle -profile -in1 "${phylo_out}"/3/20.aln -in2 "${phylo_out}"/3/srn.celeg.aln -out "${phylo_out}"/3/21.aln
+# muscle -profile -in1 "${phylo_out}"/3/21.aln -in2 "${phylo_out}"/3/sro.celeg.aln -out "${phylo_out}"/3/22.aln
+# muscle -profile -in1 "${phylo_out}"/3/22.aln -in2 "${phylo_out}"/3/srr.celeg.aln -out "${phylo_out}"/3/23.aln
 
 ### add non-C.elegans representatives to the alignment
-# "${mafft_cmd}" --reorder --thread 8 --addfull "${phylo_out}"/DS_non-filarid_TMfiltered2.fa --keeplength "${phylo_out}"/19.aln > "${phylo_out}"/non-filarid.aln
-### add filarid ChemoRs to the alignment
-# "${mafft_cmd}" --reorder --thread 8 --addfull "${phylo_out}"/DS_filarid.fa --keeplength "${phylo_out}"/non-filarid.aln > "${phylo_out}"/final.aln
+mafft --reorder --thread 8 --addfull "${phylo_out}"/2/down_sampled_2.fa --keeplength "${phylo_out}"/3/23.aln > "${phylo_out}"/4/ds_reps.aln
 ### trim and filter
 # "${trimal_cmd}" -gt 0.7 -in "${phylo_out}"/final.aln -out "${phylo_out}"/final.trim.aln
 # "${trimal_cmd}" -resoverlap 0.70 -seqoverlap 70 -in "${phylo_out}"/final.trim.aln -out "${phylo_out}"/final.trim.filter.aln

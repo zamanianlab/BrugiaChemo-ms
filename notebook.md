@@ -73,4 +73,6 @@ Ways to get a better curated list:
 - began the Phylognetics block of `ChemoR_analysis.sh`
 - edited `id_change.py` so that I don't have to rename files after it ran
 - realized that I missed the srj family when curating the stock *C. elegans* ChemoR list, so added those to `celegans_chemor.csv` and repopulated `celegans_chemor_paralogues_geneid.txt` and `simplemine_results.txt`
-- check no known annotation
+- need to fix the 3rd filter so that genes without a significant hit to *C. elegans* ChemoRs are **not** removed
+  - for example, "Bm17545" doesn't have a significant hit but it is likely a srsx receptor
+  - **fixed**
