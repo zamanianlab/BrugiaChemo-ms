@@ -167,10 +167,10 @@ linearize="${gh_dir}"/scripts/auxillary/linearizefasta.awk
 ### Run json_parser.py to populate list of C. elegans ChemoR paralogs to use a comparison for the reciprocal BLAST output
 # python "${query_api}"
 ## use WormBase SimpleMine to convert Gene_IDs to Sequence_IDs (becauase BLASTp uses Sequence_IDs)
-  ## upload list of Gene_IDs that result from the above command
-  ## choose "allow duplicate genes" and "Transcript"
-  ## in Sublime, remove transcript numbers (e.g. N.1) and put each isoform on a new line
-  ## 2177 transcripts
+## upload list of Gene_IDs that result from the above command
+## choose "allow duplicate genes" and "Transcript"
+## in Sublime, remove transcript numbers (e.g. N.1) and put each isoform on a new line
+## 2177 transcripts
 
 ### Remove hits that aren't most similar to a C. elegans ChemoR, extract sequences of surviving hits
 # while IFS= read -r line; do
@@ -209,25 +209,25 @@ done
 
 ### Choose one or more representatives from each clade (5826 sequences)
 cat "${phylo_out}"/1/trichinella_spiralis_3_label.fa \
-    "${phylo_out}"/1/romanomermis_culicivorax_3_label.fa \
-    "${phylo_out}"/1/syphacia_muris_3_label.fa \
-    "${phylo_out}"/1/ascaris_suum_3_label.fa \
-    "${phylo_out}"/1/toxocara_canis_3_label.fa  \
-    "${phylo_out}"/1/brugia_malayi_3_label.fa \
-    "${phylo_out}"/1/onchocerca_volvulus_3_label.fa \
-    "${phylo_out}"/1/strongyloides_ratti_3_label.fa \
-    "${phylo_out}"/1/rhabditophanes_kr3021_3_label.fa \
-    "${phylo_out}"/1/meloidogyne_hapla_3_label.fa \
-    "${phylo_out}"/1/panagrellus_redivivus_3_label.fa \
-    "${phylo_out}"/1/haemonchus_contortus_3_label.fa \
-    "${phylo_out}"/1/nippostrongylus_brasiliensis_3_label.fa \
-    "${phylo_out}"/1/angiostrongylus_cantonensis_3_label.fa \
-    "${phylo_out}"/1/dictyocaulus_viviparus_3_label.fa \
-    "${phylo_out}"/1/necator_americanus_3_label.fa \
-    "${phylo_out}"/1/ancylostoma_caninum_3_label.fa \
-    "${phylo_out}"/1/pristionchus_pacificus_3_label.fa \
-    "${phylo_out}"/1/caenorhabditis_elegans_3_label.fa > \
-    "${phylo_out}"/2/down_sampled_1.fa
+  "${phylo_out}"/1/romanomermis_culicivorax_3_label.fa \
+  "${phylo_out}"/1/syphacia_muris_3_label.fa \
+  "${phylo_out}"/1/ascaris_suum_3_label.fa \
+  "${phylo_out}"/1/toxocara_canis_3_label.fa  \
+  "${phylo_out}"/1/brugia_malayi_3_label.fa \
+  "${phylo_out}"/1/onchocerca_volvulus_3_label.fa \
+  "${phylo_out}"/1/strongyloides_ratti_3_label.fa \
+  "${phylo_out}"/1/rhabditophanes_kr3021_3_label.fa \
+  "${phylo_out}"/1/meloidogyne_hapla_3_label.fa \
+  "${phylo_out}"/1/panagrellus_redivivus_3_label.fa \
+  "${phylo_out}"/1/haemonchus_contortus_3_label.fa \
+  "${phylo_out}"/1/nippostrongylus_brasiliensis_3_label.fa \
+  "${phylo_out}"/1/angiostrongylus_cantonensis_3_label.fa \
+  "${phylo_out}"/1/dictyocaulus_viviparus_3_label.fa \
+  "${phylo_out}"/1/necator_americanus_3_label.fa \
+  "${phylo_out}"/1/ancylostoma_caninum_3_label.fa \
+  "${phylo_out}"/1/pristionchus_pacificus_3_label.fa \
+  "${phylo_out}"/1/caenorhabditis_elegans_3_label.fa > \ # change this
+"${phylo_out}"/2/down_sampled_1.fa
 
 ## HMMTOP
 cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
