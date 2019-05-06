@@ -18,18 +18,21 @@ genome_dir="${local_dir}"/genomes
 # mkdir "${local_dir}"/ChemoR/phylo
 
 out="${local_dir}"/ChemoR/output
-# phylo_out="${local_dir}"/ChemoR/phylo
+phylo_out="${local_dir}"/ChemoR/phylo
 # mcl_out="${local_dir}"/ChemoR/mcl
 
 ## Auxillary Scripts
 ## extract sequences provided list of sequence names and fasta file
 seqextract_py="${gh_dir}"/scripts/auxillary/seq_extract.py
 ## HMMTOP parsing script (filter based on TM range and produce sequences based on TM domains)
-# HMMTOP_py="${gh_dir}"/scripts/auxillary/HMMTOP_extract.py
-# HMMTOP_strict_py="${gh_dir}"/scripts/auxillary/HMMTOP_extract_strict.py
+HMMTOP_py="${gh_dir}"/scripts/auxillary/HMMTOP_extract.py
+HMMTOP_strict_py="${gh_dir}"/scripts/auxillary/HMMTOP_extract_strict.py
 ## add species labels to FASTA IDs
-# change_ID_py="${gh_dir}"/scripts/auxillary/id_change.py
+change_ID_py="${gh_dir}"/scripts/auxillary/id_change.py
+## query WormBase ParaSite API to get paralogues
+query_api="${gh_dir}"/scripts/auxillary/json_parser.py
 ## misc
+linearize="${gh_dir}"/scripts/auxillary/linearizefasta.awk
 # trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 # mafft_cmd="${gh_dir}"/scripts/auxillary/mafft
 # muscle_cmd="${gh_dir}"/scripts/auxillary/muscle
@@ -161,20 +164,28 @@ seqextract_py="${gh_dir}"/scripts/auxillary/seq_extract.py
 # done <"$species"
 
 
+### Run json_parser.py to populate list of C. elegans ChemoR paralogs to use a comparison for the reciprocal BLAST output
+# python "${query_api}"
+## use WormBase SimpleMine to convert Gene_IDs to Sequence_IDs (becauase BLASTp uses Sequence_IDs)
+  ## upload list of Gene_IDs that result from the above command
+  ## choose "allow duplicate genes" and "Transcript"
+  ## in Sublime, remove transcript numbers (e.g. N.1) and put each isoform on a new line
+  ## 2177 transcripts
+
 ### Remove hits that aren't most similar to a C. elegans ChemoR, extract sequences of surviving hits
-while IFS= read -r line; do
-  for f in "${genome_dir}"/"${line}"/**/*.protein.fa.gz ; do
-    cat "${out}"/"${line}"_3.out | awk '{print $1 " " $2 " " $7}' | sort -k1,1 -k3,3g | sort -uk1,1 | grep -wF -f "${gh_dir}"/auxillary/ChemoR/simplemine_results.txt | sort -k3 -g > "${out}"/"${line}"_3.txt
-    cat "${out}"/"${line}"_3.txt | awk '{print $1}' > "${out}"/"${line}"_3_ids.txt
-    ## Extract these sequences
-    curr_dir=$(dirname "${f}")
-    echo "${curr_dir}"
-    gzcat -d -k "${f}" > "${curr_dir}"/protein.tmp.fa
-    python "${seqextract_py}" "${out}"/"${line}"_3_ids.txt "${curr_dir}"/protein.tmp.fa "${out}"/"${line}"_3.fa
-    rm "${curr_dir}"/protein.tmp.fa
-    grep -v -f "${out}"/"${line}"_3_ids.txt "${out}"/"${line}"_2_ids.txt > "${out}"/"${line}"_3_filtered.txt
-  done;
-done <"$species"
+# while IFS= read -r line; do
+#   for f in "${genome_dir}"/"${line}"/**/*.protein.fa.gz ; do
+#     cat "${out}"/"${line}"_3.out | awk '{print $1 " " $2 " " $7}' | sort -k1,1 -k3,3g | sort -uk1,1 | grep -wF -f "${gh_dir}"/auxillary/ChemoR/simplemine_results.txt | sort -k3 -g > "${out}"/"${line}"_3.txt
+#     cat "${out}"/"${line}"_3.txt | awk '{print $1}' > "${out}"/"${line}"_3_ids.txt
+#     ## Extract these sequences
+#     curr_dir=$(dirname "${f}")
+#     echo "${curr_dir}"
+#     gzcat -d -k "${f}" > "${curr_dir}"/protein.tmp.fa
+#     python "${seqextract_py}" "${out}"/"${line}"_3_ids.txt "${curr_dir}"/protein.tmp.fa "${out}"/"${line}"_3.fa
+#     rm "${curr_dir}"/protein.tmp.fa
+#     grep -v -f "${out}"/"${line}"_3_ids.txt "${out}"/"${line}"_2_ids.txt > "${out}"/"${line}"_3_filtered.txt
+#   done;
+# done <"$species"
 
 ################################################################################################################################
 ###########																											 ###########
@@ -184,46 +195,50 @@ done <"$species"
 ###########																											 ###########
 ################################################################################################################################
 
-### GOLD GENOMES - Copy sequence files to ../phylo/NemChR directory
-# while IFS= read -r line; do
-# 	for f in "${gold_dir}"/"${line}"/**/*.protein.fa.gz ; do
-# 		cp "${gold_out}"/"${line}"_rblast_ChemoR.fa "${phylo_out}"
-# 	done;
-# done <"$species_gold"
+### Copy sequence files to ChemoR/phylo directory
+while IFS= read -r line; do
+  for f in "${genome_dir}"/"${line}"/**/*.protein.fa.gz ; do
+    cp "${out}"/"${line}"_3.fa "${phylo_out}"/1/
+  done;
+done <"$species"
 
-### NON-GOLD FILARID GENOMES - Copy sequence files to ../phylo/NemChR directory
-# while IFS= read -r line; do
-# 	for f in "${ngf_dir}"/"${line}"/**/*.protein.fa.gz ; do
-# 		cp "${ngf_out}"/"${line}"_rblast_ChemoR.fa "${phylo_out}"
-# 	done;
-# done <"$species_ngf"
+## Label each sequence with its species name
+for f in "${phylo_out}"/1/*_3.fa ; do
+  python "${change_ID_py}" "$f";
+done
 
-### Label each sequence with its species name
-# for f in "${phylo_out}"/*_rblast_ChemoR.fa ; do
-# 	python "${change_ID_py}" "$f" "$f".fa;
-# done
-
-# for f in "${phylo_out}"/*.fa.fa ; do
-# 	mv "$f" "${f/.fa.fa/_label.fa}";
-# done
-
-### Choose one or more representatives from each non-filarid clade and concatenate (can add outgroups if wanted)
-# cat "${phylo_out}"/caenorhabditis_elegans_rblast_ChemoR_label.fa "${phylo_out}"/necator_americanus_rblast_ChemoR_label.fa "${phylo_out}"/haemonchus_contortus_rblast_ChemoR_label.fa "${phylo_out}"/strongyloides_ratti_rblast_ChemoR_label.fa "${phylo_out}"/trichinella_spiralis_rblast_ChemoR_label.fa "${phylo_out}"/toxocara_canis_rblast_ChemoR_label.fa > "${phylo_out}"/DS_non-filarid.fa
-# cat "${phylo_out}"/brugia_pahangi_rblast_ChemoR_label.fa "${phylo_out}"/wuchereria_bancrofti_rblast_ChemoR_label.fa "${phylo_out}"/onchocerca_ochengi_rblast_ChemoR_label.fa "${phylo_out}"/brugia_timori_rblast_ChemoR_label.fa "${phylo_out}"/dirofilaria_immitis_rblast_ChemoR_label.fa  "${phylo_out}"/brugia_malayi_rblast_ChemoR_label.fa "${phylo_out}"/loa_loa_rblast_ChemoR_label.fa "${phylo_out}"/onchocerca_volvulus_rblast_ChemoR_label.fa  > "${phylo_out}"/DS_filarid.fa
-
-# Join files
-# cat "${phylo_out}"/DS_filarid.fa "${phylo_out}"/DS_non-filarid.fa > "${phylo_out}"/DS_NC.fa
+### Choose one or more representatives from each clade (5826 sequences)
+cat "${phylo_out}"/1/trichinella_spiralis_3_label.fa \
+    "${phylo_out}"/1/romanomermis_culicivorax_3_label.fa \
+    "${phylo_out}"/1/syphacia_muris_3_label.fa \
+    "${phylo_out}"/1/ascaris_suum_3_label.fa \
+    "${phylo_out}"/1/toxocara_canis_3_label.fa  \
+    "${phylo_out}"/1/brugia_malayi_3_label.fa \
+    "${phylo_out}"/1/onchocerca_volvulus_3_label.fa \
+    "${phylo_out}"/1/strongyloides_ratti_3_label.fa \
+    "${phylo_out}"/1/rhabditophanes_kr3021_3_label.fa \
+    "${phylo_out}"/1/meloidogyne_hapla_3_label.fa \
+    "${phylo_out}"/1/panagrellus_redivivus_3_label.fa \
+    "${phylo_out}"/1/haemonchus_contortus_3_label.fa \
+    "${phylo_out}"/1/nippostrongylus_brasiliensis_3_label.fa \
+    "${phylo_out}"/1/angiostrongylus_cantonensis_3_label.fa \
+    "${phylo_out}"/1/dictyocaulus_viviparus_3_label.fa \
+    "${phylo_out}"/1/necator_americanus_3_label.fa \
+    "${phylo_out}"/1/ancylostoma_caninum_3_label.fa \
+    "${phylo_out}"/1/pristionchus_pacificus_3_label.fa \
+    "${phylo_out}"/1/caenorhabditis_elegans_3_label.fa > \
+    "${phylo_out}"/2/down_sampled_1.fa
 
 ## HMMTOP
-# cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
-# ./hmmtop -if="${phylo_out}"/DS_non-filarid.fa -of="${phylo_out}"/DS_non-filarid_hmmtop_output.txt -sf=FAS
-# ./hmmtop -if="${phylo_out}"/DS_filarid.fa -of="${phylo_out}"/DS_filarid_hmmtop_output.txt -sf=FAS
+cd "${gh_dir}"/scripts/auxillary/hmmtop_2.1/
+./hmmtop -if="${phylo_out}"/2/down_sampled_1.fa -of="${phylo_out}"/2/down_sampled_hmmtop_output.txt -sf=FAS
 
-### Parse HHMTOP output to get FASTA file of non-filarid sequences with exactly 7 TMs; extract entire sequence,; don't filter filarids
-# python "${HMMTOP_strict_py}" "${phylo_out}"/DS_non-filarid_hmmtop_output.txt "${phylo_out}"/DS_non-filarid.fa "${phylo_out}"/DS_non-filarid_TMfiltered.fa
+### Parse HHMTOP output to get FASTA file of non-filarid sequences with exactly 7 TMs; extract entire sequence (2540 with 7 TMs, 1200 from Cele)
+python "${HMMTOP_strict_py}" "${phylo_out}"/2/down_sampled_hmmtop_output.txt "${phylo_out}"/2/down_sampled_1.fa "${phylo_out}"/2/down_sampled_2.fa
 
-### prepare C. elegans ChemoR fasta file from ___________
-# awk '/^>/ {printf("%s%s\n",(N>0?"\n":"),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${local_dir}"/auxillary/12915_2008_195_MOESM33_ESM.fast" > "${phylo_out}"/BMC.celeg.fasta
+### prepare C. elegans ChemoR fasta file
+python "${seqextract_py}" "${gh_dir}"/auxillary/ChemoR/simplemine_results.txt "${genome_dir}"/caenorhabditis_elegans/PRJNA13758/caenorhabditis_elegans.PRJNA13758.WBPS13.protein.fa "${gh_dir}"/auxillary/ChemoR/simplemine_results.fa
+awk -f "${linearize}" < "${gh_dir}"/auxillary/ChemoR/simplemine_results.fa > "${gh_dir}"/auxillary/ChemoR/celeg_chemor.fa
 
 ### Create a separate fasta file for each family
 # cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/sra/' > "${phylo_out}"/sra.celeg.fa
@@ -241,6 +256,7 @@ done <"$species"
 # cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srt/' > "${phylo_out}"/srt.celeg.fa
 # cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srg/' > "${phylo_out}"/srg.celeg.fa
 # cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/sru/' > "${phylo_out}"/sru.celeg.fa
+# cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/sro/' > "${phylo_out}"/sro.celeg.fa
 # cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srv/' > "${phylo_out}"/srv.celeg.fa
 # cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srxa/' >"${phylo_out}"/srxa.celeg.fa
 # cat "${phylo_out}"/BMC.celeg.fasta | awk '/>.*$/ { printf("%s\t", $0); next } 1' | awk '/srw/' > "${phylo_out}"/srw.celeg.fa

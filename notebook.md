@@ -67,3 +67,9 @@ Ways to get a better curated list:
 - turned this into a Python script: `json_parser.py`
 - de-duplicated *C. elegans* ChemoR sequences are at `"~/GitHub/50HGI/auxillary/ChemoR/simplemine_results.txt`
 - **confirm the maintenance of true positives**
+
+#### 2019-05-06
+
+- began the Phylognetics block of `ChemoR_analysis.sh`
+- edited `id_change.py` so that I don't have to rename files after it ran
+- realized that I missed the srj family when curating the stock *C. elegans* ChemoR list, so added those to `celegans_chemor.csv` and repopulated `celegans_chemor_paralogues_geneid.txt` and `simplemine_results.txt`
