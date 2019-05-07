@@ -76,3 +76,23 @@ Ways to get a better curated list:
 - need to fix the 3rd filter so that genes without a significant hit to *C. elegans* ChemoRs are **not** removed
   - for example, "Bm17545" doesn't have a significant hit but it is likely a srsx receptor
   - **fixed**
+
+#### 2019-05-07
+
+- seems to be some issues with the default `sed` used across computers
+  - gnu-sed may be used on the iMac at the lab
+    - yes, that is the issue (using `gsed` worked)
+- `mafft` comments:
+      To keep the alignment length, 42305 letters were DELETED.
+      To know the positions of deleted letters, rerun the same command with the --mapout option.
+
+      Strategy:
+      Multi-INS-full (Not tested.)
+      ?
+
+      If unsure which option to use, try 'mafft --auto input > output'.
+      For more information, see 'mafft --help', 'mafft --man' and the mafft page.
+
+      The default gap scoring scheme has been changed in version 7.110 (2013 Oct).
+      It tends to insert more gaps into gap-rich regions than previous versions.
+      To disable this change, add the --leavegappyregion option.

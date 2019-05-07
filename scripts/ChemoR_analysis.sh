@@ -33,7 +33,7 @@ change_ID_py="${gh_dir}"/scripts/auxillary/id_change.py
 query_api="${gh_dir}"/scripts/auxillary/json_parser.py
 ## misc
 linearize="${gh_dir}"/scripts/auxillary/linearizefasta.awk
-# trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
+trimal_cmd="${gh_dir}"/scripts/auxillary/trimal/source/./trimal
 mafft_cmd="${gh_dir}"/scripts/auxillary/mafft
 # muscle_cmd="${gh_dir}"/scripts/auxillary/muscle
 # makeblastdb_cmd="${gh_dir}"/scripts/auxillary/makeblastdb
@@ -249,36 +249,35 @@ mafft_cmd="${gh_dir}"/scripts/auxillary/mafft
 # ./hmmtop -if="${gh_dir}"/auxillary/ChemoR/simplemine_results_linear.fa -of="${gh_dir}"/auxillary/ChemoR/simplemine_results_hmmtop.txt -sf=FAS
 # python "${HMMTOP_strict_py}" "${gh_dir}"/auxillary/ChemoR/simplemine_results_hmmtop.txt "${gh_dir}"/auxillary/ChemoR/simplemine_results_linear.fa "${gh_dir}"/auxillary/ChemoR/simplemine_results_3.fa
 # awk -f "${linearize}" < "${gh_dir}"/auxillary/ChemoR/simplemine_results_3.fa > "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa
-# sed -i -E 's/\t/\n/g' "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa
+# gsed -i -E 's/\t/\n/g' "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa
+# gsed -i -E 's/^>/>cele-/g' "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa
+# mv "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa
+
 
 ### Create a separate fasta file for each family
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'sra' > "${phylo_out}"/3/sra.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srab' > "${phylo_out}"/3/srab.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srh' > "${phylo_out}"/3/srh.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'str' > "${phylo_out}"/3/str.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'sri' > "${phylo_out}"/3/sri.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srd' > "${phylo_out}"/3/srd.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srj' > "${phylo_out}"/3/srj.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srm' > "${phylo_out}"/3/srm.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srn' > "${phylo_out}"/3/srn.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'sre' > "${phylo_out}"/3/sre.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srb' > "${phylo_out}"/3/srb.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srx' > "${phylo_out}"/3/srx.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srt' > "${phylo_out}"/3/srt.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srg' > "${phylo_out}"/3/srg.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'sru' > "${phylo_out}"/3/sru.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'sro' > "${phylo_out}"/3/sro.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srv' > "${phylo_out}"/3/srv.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srxa' > "${phylo_out}"/3/srxa.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srw' > "${phylo_out}"/3/srw.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srz' > "${phylo_out}"/3/srz.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srbc' > "${phylo_out}"/3/srbc.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srsx' > "${phylo_out}"/3/srsx.celeg.fa
-# cat "${gh_dir}"/auxillary/ChemoR/simplemine_results_4.fa | grep -wF -A1 'srr' > "${phylo_out}"/3/srr.celeg.fa
-
-# for f in "${phylo_out}"/3/s*.celeg.fa; do
-#   sed -i 's/--//g' "$f";
-# done
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'sra' > "${phylo_out}"/3/sra.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'srab' > "${phylo_out}"/3/srab.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'srh' > "${phylo_out}"/3/srh.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'str' > "${phylo_out}"/3/str.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'sri' > "${phylo_out}"/3/sri.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'srd' > "${phylo_out}"/3/srd.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'srj' > "${phylo_out}"/3/srj.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'srm' > "${phylo_out}"/3/srm.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'srn' > "${phylo_out}"/3/srn.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'sre' > "${phylo_out}"/3/sre.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'srb' > "${phylo_out}"/3/srb.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'srx' > "${phylo_out}"/3/srx.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'srt' > "${phylo_out}"/3/srt.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'srg' > "${phylo_out}"/3/srg.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'sru' > "${phylo_out}"/3/sru.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'sro' > "${phylo_out}"/3/sro.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'srv' > "${phylo_out}"/3/srv.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'srxa' > "${phylo_out}"/3/srxa.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'srw' > "${phylo_out}"/3/srw.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'srz' > "${phylo_out}"/3/srz.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'srbc' > "${phylo_out}"/3/srbc.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'srsx' > "${phylo_out}"/3/srsx.celeg.fa
+# cat "${gh_dir}"/auxillary/ChemoR/caenorhabditis_elegans_curated.fa | grep -wF -A1 'srr' > "${phylo_out}"/3/srr.celeg.fa
 
 ### align family fasta files
 # for f in "${phylo_out}"/3/s*.celeg.fa; do
@@ -314,22 +313,20 @@ mafft_cmd="${gh_dir}"/scripts/auxillary/mafft
 # muscle -profile -in1 "${phylo_out}"/3/22.aln -in2 "${phylo_out}"/3/srr.celeg.aln -out "${phylo_out}"/3/23.aln
 
 ### add non-C.elegans representatives to the alignment
-mafft --reorder --thread 8 --addfull "${phylo_out}"/2/down_sampled_2.fa --keeplength "${phylo_out}"/3/23.aln > "${phylo_out}"/4/ds_reps.aln
+# mafft --reorder --thread 8 --addfull "${phylo_out}"/2/down_sampled_2.fa --keeplength "${phylo_out}"/3/23.aln > "${phylo_out}"/4/ds_reps.aln
 ### trim and filter
-# "${trimal_cmd}" -gt 0.7 -in "${phylo_out}"/final.aln -out "${phylo_out}"/final.trim.aln
-# "${trimal_cmd}" -resoverlap 0.70 -seqoverlap 70 -in "${phylo_out}"/final.trim.aln -out "${phylo_out}"/final.trim.filter.aln
-### Change to single-line FASTA
-# awk '/^>/ {printf("%s%s\n",(N>0?"\n":"),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/final.trim.aln > "${phylo_out}"/final.trim-single.aln
-# awk '/^>/ {printf("%s%s\n",(N>0?"\n":"),$0);N++;next;} {printf("%s",$0);} END {printf("\n");}' < "${phylo_out}"/final.trim.filter.aln | sed '/^$/d' > "${phylo_out}"/final.trim.filter-single.aln
+# "${trimal_cmd}" -gt 0.7 -in "${phylo_out}"/4/ds_reps.aln -out "${phylo_out}"/4/ds_reps_2.aln
+# "${trimal_cmd}" -resoverlap 0.70 -seqoverlap 70 -in "${phylo_out}"/4/ds_reps_2.aln -out "${phylo_out}"/4/ds_reps_3.aln
+# ### Change to single-line FASTA
+# awk -f "${linearize}" < "${phylo_out}"/4/ds_reps_2.aln > "${phylo_out}"/4/ds_reps_2_linear.aln
+# awk -f "${linearize}" < "${phylo_out}"/4/ds_reps_3.aln | sed '/^$/d' > "${phylo_out}"/4/ds_reps_3_linear.aln
 ### Get IDs and compare lists
-# cat "${phylo_out}"/final.trim-single.aln | tr '\t' '\n' | awk 'NR%2==1' > "${phylo_out}"/trimmed_ids.txt
-# cat "${phylo_out}"/final.trim.filter-single.aln | tr '\t' '\n' | awk 'NR%2==1' > "${phylo_out}"/filtered_ids.txt
-# grep -v -f "${phylo_out}"/filtered_ids.txt "${phylo_out}"/trimmed_ids.txt > "${phylo_out}"/missing_ids.txt
-# cat "${phylo_out}"/final.trim.filter.aln | sed 's/ce|/celeg-/' > "${phylo_out}"/final.trim.filter2.align
-# mv "${phylo_out}"/final.trim.filter2.align "${phylo_out}"/final.trim.filter.aln
+# cat "${phylo_out}"/4/ds_reps_2_linear.aln | tr '\t' '\n' | awk 'NR%2==1' > "${phylo_out}"/4/ds_reps_2_ids.txt
+# cat "${phylo_out}"/4/ds_reps_3_linear.aln | tr '\t' '\n' | awk 'NR%2==1' > "${phylo_out}"/4/ds_reps_3_ids.txt
+# grep -v -f "${phylo_out}"/4/ds_reps_3_ids.txt "${phylo_out}"/4/ds_reps_2_ids.txt > "${phylo_out}"/4/ds_reps_3_filtered.txt
 
 ### ML tree on server
-# /home/BIOTECH/zamanian/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -T 4 -f a -x 12345 -p 12345 -# 100 -m PROTGAMMAVT -s final.trim.filter.aln -n final_ML
+/home/BIOTECH/zamanian/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -T 4 -f a -x 12345 -p 12345 -# 100 -m PROTGAMMAVT -s /home/BIOTECH/zamanian/GHdata/50HGI/ChemoR/phylo/4/ds_reps_3.aln -n /home/BIOTECH/zamanian/GHdata/50HGI/ChemoR/phylo/5/ml_tree_1
 
 
 ################################################################################################################################
