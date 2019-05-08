@@ -1,4 +1,4 @@
-#!bin/bash
+#!/bin/bash
 
 ### Preparation
 proj="50HGI"
@@ -327,7 +327,10 @@ mafft_cmd="${gh_dir}"/scripts/auxillary/mafft
 
 ### ML tree on server
 /home/BIOTECH/zamanian/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -T 4 -f a -x 12345 -p 12345 -# 100 -m PROTGAMMAVT -s /home/BIOTECH/zamanian/GHdata/50HGI/ChemoR/phylo/4/ds_reps_3.aln -n /home/BIOTECH/zamanian/GHdata/50HGI/ChemoR/phylo/5/ml_tree_1
-
+raxml-ng --parse --msa ../4/ds_reps_3.aln --model VT+G --prefix tree_1
+# started at 2019-05-07 11:34 AM
+raxml-ng --all --msa tree_1.raxml.rba --model VT+G --prefix tree_1 --seed 2 --threads 5 --bs-metric fbp,tbe
+iqtree -s ../4/ds_reps_3.aln -nt 4 -alrt 1000 -bb 1000
 
 ################################################################################################################################
 ###########																											 ###########

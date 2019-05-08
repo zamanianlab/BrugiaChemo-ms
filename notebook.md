@@ -77,7 +77,7 @@ Ways to get a better curated list:
   - for example, "Bm17545" doesn't have a significant hit but it is likely a srsx receptor
   - **fixed**
 
-#### 2019-05-07
+#### 2019-05-07s
 
 - seems to be some issues with the default `sed` used across computers
   - gnu-sed may be used on the iMac at the lab
@@ -96,3 +96,29 @@ Ways to get a better curated list:
       The default gap scoring scheme has been changed in version 7.110 (2013 Oct).
       It tends to insert more gaps into gap-rich regions than previous versions.
       To disable this change, add the --leavegappyregion option.
+- began tree inference using IQ-TREE and RAxML-NG
+  - IQ-TREE command:
+    `iqtree -s ../4/ds_reps_3.aln -nt 4 -alrt 1000 -bb 1000`
+    -Options:
+      `-s` = path to alignment file
+      `-nt` = number of CPUs
+      `-alrt` = run the SH-aLRT ultrafast bootstrap (approximate likelihood-ratio test)
+      `-bb` = run 1000 ultrafast bootstraps (which are compared by the aLRT)
+  - RAxML-NG commands:
+    `# check alignment`
+    `raxml-ng --parse --msa ../4/ds_reps_3.aln --model VT+G --prefix tree_1`
+      `--parse` = check alignment for errors and compress MSA to binary
+      `--model VT+G` = VT model with gamma distribution of rate heterogeneity
+    `# run ML inference`
+    `raxml-ng --all --msa tree_1.raxml.rba --model VT+G --prefix tree_1 --seed 2 --threads 5 --bs-metric fbp,tbe`
+      `--seed` = set seed for reproducibility
+      `--bs-metric` = use FBP (Felsenstein boostrap proportions) and TBE (transfer bootstrap expectation) metrics for compsarison of bootstrapped trees
+
+#### 2019-05-08
+
+- both IQ-TREE and RAxML-NG are running
+- IQ-TREE selected the VT+F+R10 model
+  - General ‘Variable Time’ matrix (Muller and Vingron, 2004)
+  - Empirical base frequencies
+  - FreeRate model; not necessarily gamma-distributed, split into 10 categories
+- it's good that the model selected by IQ-TREE is very similar to the model I chose for RAxML-NG
