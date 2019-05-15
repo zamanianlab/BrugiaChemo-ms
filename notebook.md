@@ -122,3 +122,10 @@ Ways to get a better curated list:
   - Empirical base frequencies
   - FreeRate model; not necessarily gamma-distributed, split into 10 categories
 - it's good that the model selected by IQ-TREE is very similar to the model I chose for RAxML-NG
+
+#### 2019-05-15
+
+- RAxML-ng was taking too long, so I quit it
+- using the IQTREE output going forward
+- after finishing tree annotation, I ensured the output of `tree_clades.csv` included **all** the original taxa
+- next I will make a BLAST database from this annotated file, and BLAST all sequences not included in the tree against that DB
