@@ -129,3 +129,7 @@ Ways to get a better curated list:
 - using the IQTREE output going forward
 - after finishing tree annotation, I ensured the output of `tree_clades.csv` included **all** the original taxa
 - next I will make a BLAST database from this annotated file, and BLAST all sequences not included in the tree against that DB
+
+#### 2019-05-15
+
+- made blast database of iqtree/tree_clades.csv

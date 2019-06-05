@@ -326,11 +326,11 @@ mafft_cmd="${gh_dir}"/scripts/auxillary/mafft
 # grep -v -f "${phylo_out}"/4/ds_reps_3_ids.txt "${phylo_out}"/4/ds_reps_2_ids.txt > "${phylo_out}"/4/ds_reps_3_filtered.txt
 
 ### ML tree on server
-/home/BIOTECH/zamanian/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -T 4 -f a -x 12345 -p 12345 -# 100 -m PROTGAMMAVT -s /home/BIOTECH/zamanian/GHdata/50HGI/ChemoR/phylo/4/ds_reps_3.aln -n /home/BIOTECH/zamanian/GHdata/50HGI/ChemoR/phylo/5/ml_tree_1
-raxml-ng --parse --msa ../4/ds_reps_3.aln --model VT+G --prefix tree_1
+# /home/BIOTECH/zamanian/install/standard-RAxML/raxmlHPC-PTHREADS-SSE3 -T 4 -f a -x 12345 -p 12345 -# 100 -m PROTGAMMAVT -s /home/BIOTECH/zamanian/GHdata/50HGI/ChemoR/phylo/4/ds_reps_3.aln -n /home/BIOTECH/zamanian/GHdata/50HGI/ChemoR/phylo/5/ml_tree_1
+# raxml-ng --parse --msa ../4/ds_reps_3.aln --model VT+G --prefix tree_1
 # started at 2019-05-07 11:34 AM
-raxml-ng --all --msa tree_1.raxml.rba --model VT+G --prefix tree_1 --seed 2 --threads 5 --bs-metric fbp,tbe
-iqtree -s ../4/ds_reps_3.aln -nt 4 -alrt 1000 -bb 1000
+# raxml-ng --all --msa tree_1.raxml.rba --model VT+G --prefix tree_1 --seed 2 --threads 5 --bs-metric fbp,tbe
+# iqtree -s ../4/ds_reps_3.aln -nt 4 -alrt 1000 -bb 1000
 
 ################################################################################################################################
 ###########																											 ###########
@@ -341,9 +341,10 @@ iqtree -s ../4/ds_reps_3.aln -nt 4 -alrt 1000 -bb 1000
 ################################################################################################################################
 
 
-# python "${seqextract_py}" "${phylo_out}"/ML/family_clades_ids.txt "${local_dir}"/p_genomes/phylo.fa "${phylo_out}"/ML/family_clades.fa
-## manually edit to remove protein names (eg. srw-25) and species abbreviations
-# auxillary/makeblastdb  -dbtype prot -in "${phylo_out}"/ML/family_clades.fa -out "${phylo_out}"/ML/family_clades.db
+# find -name '*.protein.gz' -exec gzip -d {}
+# find -name '*protein.fa' -type f | xargs cat > all_protein.fa
+# python "${seqextract_py}" /Users/njwheeler/Box/ZamanianLab/Data/Genomics/ChemoR/phylo/iqtree/tree_clades_ids.txt "${local_dir}"/genomes/all_protein.fa /Users/njwheeler/Box/ZamanianLab/Data/Genomics/ChemoR/phylo/iqtree/tree_clades.fa
+makeblastdb  -dbtype prot -in /Users/njwheeler/Box/ZamanianLab/Data/Genomics/ChemoR/phylo/iqtree/tree_clades.fa -out /Users/njwheeler/Box/ZamanianLab/Data/Genomics/ChemoR/phylo/iqtree/tree_clades.db
 
 ### Label each sequence with its species name
 # for f in "${gold_out}"/*_rblast_ChemoR.fa ; do
