@@ -17,7 +17,7 @@ def headerchange(file):
         base = path.name
         stem = path.stem
         genus, species = base.split("_", 1)
-        label = genus[0] + species[0:3]
+        label = genus[0] + species[0:4]
         records = SeqIO.parse(original, 'fasta')
         for record in records:
             # print record.id

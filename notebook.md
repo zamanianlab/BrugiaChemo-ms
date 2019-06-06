@@ -130,6 +130,14 @@ Ways to get a better curated list:
 - after finishing tree annotation, I ensured the output of `tree_clades.csv` included **all** the original taxa
 - next I will make a BLAST database from this annotated file, and BLAST all sequences not included in the tree against that DB
 
-#### 2019-05-15
+#### 2019-06-05
 
 - made blast database of iqtree/tree_clades.csv
+
+#### 2019-06-06
+
+- BLASTP against tree DB
+- a problem: awhile back I decided to label sequences with 4 characters of genus+species instead of 5, and I updated `id_change.py` accordingly. I did not realize that "acan" would then be the abbreviation for two species. I now need to create a liftover file that will replace all instances of the 4 character label with the original 5 character label (excluding Loa loa), and for A. caninum and A. cantonensis, this will need to incorporate the Transcript_IDs
+  - I think I will manually replace the "acan" ID's in `ds_reps_3.aln.contree`, regenerate `tree_clades.csv`, and update `species_info.csv` and `clade_species_phylum.csv` accordingly
+  - I also have to update the label FASTA files for these two species
+    - NOTE: id_change.py will not be consistent with my actual labeled FASTA

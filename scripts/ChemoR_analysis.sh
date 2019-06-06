@@ -343,46 +343,27 @@ mafft_cmd="${gh_dir}"/scripts/auxillary/mafft
 
 # find -name '*.protein.gz' -exec gzip -d {}
 # find -name '*protein.fa' -type f | xargs cat > all_protein.fa
-# python "${seqextract_py}" /Users/njwheeler/Box/ZamanianLab/Data/Genomics/ChemoR/phylo/iqtree/tree_clades_ids.txt "${local_dir}"/genomes/all_protein.fa /Users/njwheeler/Box/ZamanianLab/Data/Genomics/ChemoR/phylo/iqtree/tree_clades.fa
-makeblastdb  -dbtype prot -in /Users/njwheeler/Box/ZamanianLab/Data/Genomics/ChemoR/phylo/iqtree/tree_clades.fa -out /Users/njwheeler/Box/ZamanianLab/Data/Genomics/ChemoR/phylo/iqtree/tree_clades.db
+# cat "${phylo_out}"/6/tree_clades.csv | awk -F , '{print $3}' | sed 's/"//g' | tail -n +2 > "${phylo_out}"/6/tree_clades_ids.txt
+# python "${seqextract_py}" "${phylo_out}"/6/tree_clades_ids.txt "${local_dir}"/genomes/all_protein.fa "${phylo_out}"/6/tree_clades.fa
+# makeblastdb  -dbtype prot -in "${phylo_out}"/6/tree_clades.fa -out "${phylo_out}"/6/tree_clades.db
 
-### Label each sequence with its species name
-# for f in "${gold_out}"/*_rblast_ChemoR.fa ; do
-# 	python "${change_ID_py}" "$f" "$f".fa;
-# done
-
-# for f in "${gold_out}"/*.fa.fa ; do
-# 	mv "$f" "${f/.fa.fa/_label.fa}";
-# done
-
-### Label each sequence with its species name
-# for f in "${ngf_out}"/*_rblast_ChemoR.fa ; do
-# 	python "${change_ID_py}" "$f" "$f".fa;
-# done
-
-# for f in "${ngf_out}"/*.fa.fa ; d
-# 	mv "$f" "${f/.fa.fa/_label.fa}";
-# done
-
-
-### GOLD GENOMES - BLAST species not included in original tree against families
+### BLAST species not included in original tree against families
 # while IFS= read -r line; do
-# 	for f in "${gold_dir}"/"${line}"/**/*.protein.fa.gz ; do
-# 		cd "${phylo_out}"/ML/
-# 		"${blastp_cmd}" -query "${gold_out}"/"${line}"_rblast_ChemoR_label.fa -db family_clades.db -out "${gold_out}"/"${line}"_ChemoR_family.blastout -num_threads 4 -evalue 0.01 -max_target_seqs 1 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
+# 	for f in "${genome_dir}"/"${line}"/**/*.protein.fa.gz ; do
+# 		cd "${phylo_out}"/6/
+# 		blastp -query "${phylo_out}"/1/"${line}"_3_label.fa -db tree_clades.db -out "${phylo_out}"/6/"${line}".blastout -num_threads 4 -evalue 0.01 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
 # 	done;
-# done <"$species_gold"
+# done <"$species"
 
-### NON-GOLD FILARID - BLAST species not included in original tree against families
+### filter BLAST results
 # while IFS= read -r line; do
-# 	for f in "${ngf_dir}"/"${line}"/**/*.protein.fa.gz ; do
-# 		cd "${phylo_out}"/ML/
-# 		"${blastp_cmd}" -query "${ngf_out}"/"${line}"_rblast_ChemoR_label.fa -db family_clades.db -out "${ngf_out}"/"${line}"_ChemoR_family.blastout -num_threads 4 -evalue 0.01 -max_target_seqs 1 -outfmt '6 qseqid sseqid pident ppos length mismatch evalue bitscore'
-# 	done;
-# done <"$species_ngf"
+# 	for f in "${genome_dir}"/"${line}"/**/*.protein.fa.gz ; do
+#     cat "${phylo_out}"/6/"${line}".blastout | sort -k1,1 -k7,7g | sort -uk1,1 > "${phylo_out}"/6/"${line}"_2.blastout
+#   done;
+# done <"$species"
 
 ## concatenate blast results and remove self to self HSPs
-# cat "${gold_out}"/*_ChemoR_family.blastout "${ngf_out}"/*_ChemoR_family.blastout | sed 's/-/\t/' | awk '$2!=$3' | sed 's/lloa_/lloa/g' > "${phylo_out}"/ChemoR_parse.blastout
+# cat "${phylo_out}"/6/*_2.blastout | sed 's/-/\t/' | awk '$2!=$3' > "${phylo_out}"/6/ChemoR.blastout
 
 ################################################################################################################################
 ###########																											 ###########
