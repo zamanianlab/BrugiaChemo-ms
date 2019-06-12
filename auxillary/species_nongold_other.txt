@@ -1,4 +1,0 @@
-caenorhabditis_briggsae
-ancylostoma_duodenale
-strongyloides_stercoralis
-ascaris_lumbricoides
