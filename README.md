@@ -31,7 +31,7 @@ For this repo to be cloned/forked and reproduced properly, the local variables `
 
 ## Description of scripts in `R/`:
 
-
+This directory contains a subdirectory for each gene family (chemoreceptors, CNGs, and TRPs), which contains R scripts for plotting trees and other figures where appropriate. Supplementary data used to create figures are held in `data` and output plots are written to `plots`.
 
 ## Description of files in `auxillary/`:
 
