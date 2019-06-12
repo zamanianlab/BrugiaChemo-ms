@@ -1,7 +1,7 @@
  #!bin/bash
 
 ### Define project directories
-proj="50HGI"
+proj="BrugiaChemo-ms"
 
 gh_dir="$GIT_PATH/${proj}"
 local_dir="$GIT_DATA/${proj}"
@@ -260,7 +260,7 @@ mpirun -np 4 ~/install/MrBayes/src/mb "${phylo_out}"/TRPf.nxs
 
 ## blast all vs all
 # cd "${mcl_out}"
-# "${make_db}" -dbtype prot -in All_TRPf_outgroup.fa -out All_TRPf_outgroup  
+# "${make_db}" -dbtype prot -in All_TRPf_outgroup.fa -out All_TRPf_outgroup
 # "${blast}" -db All_TRPf_outgroup -query All_TRPf_outgroup.fa -out blastall.out -evalue 0.01 -outfmt 6
 ## prepare for MCL
 # cut -f 1,2,11 blastall.out > blastall.abc
@@ -279,14 +279,3 @@ mpirun -np 4 ~/install/MrBayes/src/mb "${phylo_out}"/TRPf.nxs
 # "${mcxdump}" -icl out.blastall.mci.I60 -tabr blastall.tab -o dump.blastall.mci.I60
 
 # python "${prepCSV_py}" "${mcl_out}"/dump.blastall.mci.I12 "${mcl_out}"/clusters.csv
-
-
-
-
-
-
-
-
-
-
-

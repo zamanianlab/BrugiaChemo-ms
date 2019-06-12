@@ -3,7 +3,23 @@ This repository contains all the Bash, Python, and R scripts necessary to reprod
 
 ## Description of scripts in `bash/`:
 
-All Bash scripts use a convention
+All Bash scripts use a convention for organizing data in local directories outside of GitHub version control. In our local `.bash_profile`, we add the following two lines to define local variables:
+
+```bash
+export GIT_PATH="$HOME/GitHub"
+export GIT_DATA="$HOME/Box/GHdata"
+```
+
+In the header of each Bash script, we define `proj` as the repo name and reference to the GitHub repo as well as a local directory into which the GitHub repo will write out all resulting files, for example:
+
+```bash
+proj="BrugiaChemo-ms"
+
+gh_dir="${GIT_PATH}"/"${proj}"
+local_dir="${GIT_DATA}"/"${proj}"
+```
+
+For this repo to be cloned/forked and reproduced properly, the local variables `GIT_DATA` and `GIT_PATH` will need to be defined according to the user's organization.
 
 **CNG_analysis.sh**: Bash script of all command line programs and parameters used for cyclic-nucleotide gated channel gene identification and annotation.
 

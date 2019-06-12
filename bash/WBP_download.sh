@@ -1,7 +1,7 @@
 #!bin/bash
 
 ### Preparation
-proj="50HGI"
+proj="BrugiaChemo-ms"
 
 gh_dir="${GIT_PATH}"/"${proj}"
 local_dir="${GIT_DATA}"/"${proj}"
