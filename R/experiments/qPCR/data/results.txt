@@ -1,0 +1,97 @@
+Well	Sample Name	Target Name	Task	Reporter	Quencher	Ct	Ct Mean	Cт SD	Quantity	Quantity Mean	Quantity SD	Automatic Ct Threshold	Ct Threshold	Automatic Baseline	Baseline Start	Baseline End	Tm1	Tm2	Tm3	Comments	AMPNC	HIGHSD
+A1	Bp L3 FRESH	GAPDH	UNKNOWN	SYBR	None	27.6847	26.2413	1.3003				true	0.1159	true	3	23	78.2697				N	Y
+A2	Bp L3 FRESH	GAPDH	UNKNOWN	SYBR	None	27.7712	26.2413	1.3003				true	0.1159	true	3	23	78.5129				N	Y
+A3	Bp L3 RT 4 HR	GAPDH	UNKNOWN	SYBR	None	25.8154	26.181	3.3643				true	0.1159	true	3	21	79.8968				N	Y
+A4	Bp L3 RT 4 HR	GAPDH	UNKNOWN	SYBR	None	25.9109	26.181	3.3643				true	0.1159	true	3	22	80.1336				N	Y
+A5	Bp L3 37C 4 HR	GAPDH	UNKNOWN	SYBR	None	27.0508	24.7754	1.9258				true	0.1159	true	3	23	78.9334				N	Y
+A6	Bp L3 37C 4 HR	GAPDH	UNKNOWN	SYBR	None	27.101	24.7754	1.9258				true	0.1159	true	3	23	79.1677				N	Y
+A7	Bp L3 FRESH	GAPDH	UNKNOWN	SYBR	None	26.0764	26.2413	1.3003				true	0.1159	true	3	22	79.2744				N	Y
+A8	Bp L3 FRESH	GAPDH	UNKNOWN	SYBR	None	26.2619	26.2413	1.3003				true	0.1159	true	3	22	80.7822				N	Y
+A9	Bp L3 RT 4 HR	GAPDH	UNKNOWN	SYBR	None	30.0705	26.181	3.3643				true	0.1159	true	3	25	80.8922				N	Y
+A10	Bp L3 RT 4 HR	GAPDH	UNKNOWN	SYBR	None	30.1117	26.181	3.3643				true	0.1159	true	3	25	81.129				N	Y
+A11	Bp L3 37C 4 HR	GAPDH	UNKNOWN	SYBR	None	24.4756	24.7754	1.9258				true	0.1159	true	3	20	77.4205				N	Y
+A12	Bp L3 37C 4 HR	GAPDH	UNKNOWN	SYBR	None	24.4029	24.7754	1.9258				true	0.1159	true	3	20	78.9263				N	Y
+B1	Bp L3 FRESH	GAPDH	UNKNOWN	SYBR	None	24.8404	26.2413	1.3003				true	0.1159	true	3	20	78.2836				N	Y
+B2	Bp L3 FRESH	GAPDH	UNKNOWN	SYBR	None	24.8133	26.2413	1.3003				true	0.1159	true	3	20	79.7741				N	Y
+B3	Bp L3 RT 4 HR	GAPDH	UNKNOWN	SYBR	None	22.5681	26.181	3.3643				true	0.1159	true	3	18	78.6371				N	Y
+B4	Bp L3 RT 4 HR	GAPDH	UNKNOWN	SYBR	None	22.6096	26.181	3.3643				true	0.1159	true	3	18	78.8461				N	Y
+B5	Bp L3 37C 4 HR	GAPDH	UNKNOWN	SYBR	None	22.8865	24.7754	1.9258				true	0.1159	true	3	19	78.9473				N	Y
+B6	Bp L3 37C 4 HR	GAPDH	UNKNOWN	SYBR	None	22.7356	24.7754	1.9258				true	0.1159	true	3	18	79.1537				N	Y
+B7	Bp L3 FRESH	OSM-9	UNKNOWN	SYBR	None	30.7067	29.4707	1.2942				true	0.0643	true	3	27	80.5619				N	Y
+B8	Bp L3 FRESH	OSM-9	UNKNOWN	SYBR	None	31.0747	29.4707	1.2942				true	0.0643	true	3	27	79.4947				N	Y
+B9	Bp L3 RT 4 HR	OSM-9	UNKNOWN	SYBR	None	29.1435	30.3542	4.6305				true	0.0643	true	3	24	79.634				N	Y
+B10	Bp L3 RT 4 HR	OSM-9	UNKNOWN	SYBR	None	28.9333	30.3542	4.6305				true	0.0643	true	3	25	81.1151				N	Y
+B11	Bp L3 37C 4 HR	OSM-9	UNKNOWN	SYBR	None	30.1095	28.122	1.6675				true	0.0643	true	3	27	79.9597				N	Y
+B12	Bp L3 37C 4 HR	OSM-9	UNKNOWN	SYBR	None	29.8208	28.122	1.6675				true	0.0643	true	3	26	80.1751				N	Y
+C1	Bp L3 FRESH	OSM-9	UNKNOWN	SYBR	None	29.5232	29.4707	1.2942				true	0.0643	true	3	26	78.2919				N	Y
+C2	Bp L3 FRESH	OSM-9	UNKNOWN	SYBR	None	29.498	29.4707	1.2942				true	0.0643	true	3	26	79.7657				N	Y
+C3	Bp L3 RT 4 HR	OSM-9	UNKNOWN	SYBR	None	37.0006	30.3542	4.6305				true	0.0643	true	3	33	78.6455				N	Y
+C4	Bp L3 RT 4 HR	OSM-9	UNKNOWN	SYBR	None	35.0246	30.3542	4.6305				true	0.0643	true	3	31	78.8378				N	Y
+C5	Bp L3 37C 4 HR	OSM-9	UNKNOWN	SYBR	None	28.0477	28.122	1.6675				true	0.0643	true	3	24	80.2284				N	Y
+C6	Bp L3 37C 4 HR	OSM-9	UNKNOWN	SYBR	None	28.2517	28.122	1.6675				true	0.0643	true	3	24	80.4181				N	Y
+C7	Bp L3 FRESH	OSM-9	UNKNOWN	SYBR	None	27.9449	29.4707	1.2942				true	0.0643	true	3	24	79.2966				N	Y
+C8	Bp L3 FRESH	OSM-9	UNKNOWN	SYBR	None	28.0768	29.4707	1.2942				true	0.0643	true	3	25	79.4864				N	Y
+C9	Bp L3 RT 4 HR	OSM-9	UNKNOWN	SYBR	None	26.1092	30.3542	4.6305				true	0.0643	true	3	22	79.6423				N	Y
+C10	Bp L3 RT 4 HR	OSM-9	UNKNOWN	SYBR	None	25.914	30.3542	4.6305				true	0.0643	true	3	22	79.8346				N	Y
+C11	Bp L3 37C 4 HR	OSM-9	UNKNOWN	SYBR	None	26.4016	28.122	1.6675				true	0.0643	true	3	22	79.968				N	Y
+C12	Bp L3 37C 4 HR	OSM-9	UNKNOWN	SYBR	None	26.1009	28.122	1.6675				true	0.0643	true	3	23	81.4448				N	Y
+D1	Bp L3 FRESH	TAX-4	UNKNOWN	SYBR	None	30.7217	30.4267	0.3274				true	0.1379	true	3	26	78.3001				N	N
+D2	Bp L3 FRESH	TAX-4	UNKNOWN	SYBR	None	30.6414	30.4267	0.3274				true	0.1379	true	3	26	79.7576				N	N
+D3	Bp L3 RT 4 HR	TAX-4	UNKNOWN	SYBR	None	30.2267	30.0536	0.4876				true	0.1379	true	3	25	77.3882				N	N
+D4	Bp L3 RT 4 HR	TAX-4	UNKNOWN	SYBR	None	30.3161	30.0536	0.4876				true	0.1379	true	3	26	77.5642				N	N
+D5	Bp L3 37C 4 HR	TAX-4	UNKNOWN	SYBR	None	29.9689	29.9998	0.1213				true	0.1379	true	3	25	76.4357				N	N
+D6	Bp L3 37C 4 HR	TAX-4	UNKNOWN	SYBR	None	30.0791	29.9998	0.1213				true	0.1379	true	3	26	77.8732				N	N
+D7	Bp L3 FRESH	TAX-4	UNKNOWN	SYBR	None	30.6838	30.4267	0.3274				true	0.1379	true	3	25	76.7758				N	N
+D8	Bp L3 FRESH	TAX-4	UNKNOWN	SYBR	None	30.4747	30.4267	0.3274				true	0.1379	true	3	25	78.2137				N	N
+D9	Bp L3 RT 4 HR	TAX-4	UNKNOWN	SYBR	None	30.3169	30.0536	0.4876				true	0.1379	true	3	25	77.1219				N	N
+D10	Bp L3 RT 4 HR	TAX-4	UNKNOWN	SYBR	None	30.5767	30.0536	0.4876				true	0.1379	true	3	25	78.5622				N	N
+D11	Bp L3 37C 4 HR	TAX-4	UNKNOWN	SYBR	None	30.1377	29.9998	0.1213				true	0.1379	true	3	25	78.7135				N	N
+D12	Bp L3 37C 4 HR	TAX-4	UNKNOWN	SYBR	None	30.0873	29.9998	0.1213				true	0.1379	true	3	25	77.6333				N	N
+E1	Bp L3 FRESH	TAX-4	UNKNOWN	SYBR	None	30.0555	30.4267	0.3274				true	0.1379	true	3	25	79.5833				N	N
+E2	Bp L3 FRESH	TAX-4	UNKNOWN	SYBR	None	29.9831	30.4267	0.3274				true	0.1379	true	3	25	77.2059				N	N
+E3	Bp L3 RT 4 HR	TAX-4	UNKNOWN	SYBR	None	29.4505	30.0536	0.4876				true	0.1379	true	3	25	77.3963				N	N
+E4	Bp L3 RT 4 HR	TAX-4	UNKNOWN	SYBR	None	29.4344	30.0536	0.4876				true	0.1379	true	3	25	76.2906				N	N
+E5	Bp L3 37C 4 HR	TAX-4	UNKNOWN	SYBR	None	29.8962	29.9998	0.1213				true	0.1379	true	3	25	77.7079				N	N
+E6	Bp L3 37C 4 HR	TAX-4	UNKNOWN	SYBR	None	29.8299	29.9998	0.1213				true	0.1379	true	3	25	77.8651				N	N
+E7		GAPDH	NTC	SYBR	None	Undetermined						true	0.1159	true	3	39	61.2473				N	N
+E8		OSM-9	NTC	SYBR	None	Undetermined						true	0.0643	true	3	39	61.4044				N	N
+E9		TAX-4	NTC	SYBR	None	29.7832	29.7832					true	0.1379	true	3	25	78.3943				Y	N
+E10																					N	N
+E11																					N	N
+E12																					N	N
+F1																					N	N
+F2																					N	N
+F3																					N	N
+F4																					N	N
+F5																					N	N
+F6																					N	N
+F7																					N	N
+F8																					N	N
+F9																					N	N
+F10																					N	N
+F11																					N	N
+F12																					N	N
+G1																					N	N
+G2																					N	N
+G3																					N	N
+G4																					N	N
+G5																					N	N
+G6																					N	N
+G7																					N	N
+G8																					N	N
+G9																					N	N
+G10																					N	N
+G11																					N	N
+G12																					N	N
+H1																					N	N
+H2																					N	N
+H3																					N	N
+H4																					N	N
+H5																					N	N
+H6																					N	N
+H7																					N	N
+H8																					N	N
+H9																					N	N
+H10																					N	N
+H11																					N	N
+H12																					N	N
