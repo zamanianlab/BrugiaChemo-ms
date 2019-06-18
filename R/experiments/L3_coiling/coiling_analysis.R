@@ -85,7 +85,7 @@ plot <- ggplot(tidy.data, aes(x = as.character(DEC), y = Score, group = DEC)) +
   # ) +
   scale_y_continuous(limits = c(0, 8), breaks = c(0, 1, 2, 3, 4, 5)) +
   facet_grid(rows = vars(Hours)) +
-  labs(x = "Drug Concentration (uM)", y = "Coiling Score") +
+  labs(x = "NAM (µM)", y = "Coiling Score") +
   theme_minimal(base_size = 16, base_family = "Helvetica") +
   theme(
     axis.text.x = element_text(face = "bold", size = 10, angle = 45, vjust = .5),
@@ -100,17 +100,22 @@ plot <- ggplot(tidy.data, aes(x = as.character(DEC), y = Score, group = DEC)) +
     legend.position = "none"
   ) +
   NULL
-# plot
+plot
 
 
 # Final plot --------------------------------------------------------------
 
-coiled <- image_read(here("data", "coiled.tif"))
+timeline <- image_read_pdf(here("data", "timeline.pdf"))
+timeline.plot <- ggdraw() + draw_image(timeline)
+coiled <- image_read_pdf(here("data", "coiled.pdf"))
 coiled.plot <- ggdraw() + draw_image(coiled)
-uncoiled <- image_read(here("data", "uncoiled.tif"))
+uncoiled <- image_read_pdf(here("data", "uncoiled.pdf"))
 uncoiled.plot <- ggdraw() + draw_image(uncoiled)
 
-images <- plot_grid(coiled.plot, uncoiled.plot, align = "v", axis = "lr", nrow = 2, scale = 0.9, labels = c("A", "B"))
+images <- plot_grid(NULL, coiled.plot, uncoiled.plot, NULL, 
+                    align = "v", axis = "lr", 
+                    nrow = 4, rel_heights = c(0.05, 1, 1, 0.2), scale = 1.05, 
+                    labels = c("", "", "", ""), hjust = 0.5)
 
-final.plot <- plot_grid(NULL, images, plot, nrow = 1, align = "h", axis = "lr", rel_widths = c(0.2, 1, 1), labels = c("", "", "C"))
-save_plot(here("plots", "Fig5.pdf"), final.plot, base_width = 6, base_height = 5)
+final.plot <- plot_grid(timeline.plot, NULL, images, NULL, plot, nrow = 1, align = "h", axis = "lr", rel_widths = c(1, 0.1, 0.75, 0.055, 1.25), labels = c("A", "B", "", "", "C"))
+save_plot(here("plots", "Fig5.pdf"), final.plot, base_width = 9, base_height = 6)
