@@ -100,22 +100,6 @@ plot <- ggplot(tidy.data, aes(x = as.character(DEC), y = Score, group = DEC)) +
     legend.position = "none"
   ) +
   NULL
-plot
+# plot
 
-
-# Final plot --------------------------------------------------------------
-
-timeline <- image_read_pdf(here("data", "timeline.pdf"))
-timeline.plot <- ggdraw() + draw_image(timeline)
-coiled <- image_read_pdf(here("data", "coiled.pdf"))
-coiled.plot <- ggdraw() + draw_image(coiled)
-uncoiled <- image_read_pdf(here("data", "uncoiled.pdf"))
-uncoiled.plot <- ggdraw() + draw_image(uncoiled)
-
-images <- plot_grid(NULL, coiled.plot, uncoiled.plot, NULL, 
-                    align = "v", axis = "lr", 
-                    nrow = 4, rel_heights = c(0.05, 1, 1, 0.2), scale = 1.05, 
-                    labels = c("", "", "", ""), hjust = 0.5)
-
-final.plot <- plot_grid(timeline.plot, NULL, images, NULL, plot, nrow = 1, align = "h", axis = "lr", rel_widths = c(1, 0.1, 0.75, 0.055, 1.25), labels = c("A", "B", "", "", "C"))
-save_plot(here("plots", "Fig5.pdf"), final.plot, base_width = 9, base_height = 6)
+save_plot(here("plots", "Fig5C.pdf"), plot, base_width = 3, base_height = 6)

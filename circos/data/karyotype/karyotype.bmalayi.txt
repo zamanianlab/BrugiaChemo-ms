@@ -1,0 +1,6 @@
+chr - bm1 BmI 1 14701151 bm
+chr - bm2 BmII 1 14214749 bm
+chr - bm3 BmIII 1 13951302 bm
+chr - bm4 BmIV 1 13467244 bm
+chr - bmX BmX 1 24943668 bm
+chr - bm007 Bm007 1 880453 bm
