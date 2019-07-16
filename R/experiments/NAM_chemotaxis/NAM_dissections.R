@@ -174,7 +174,7 @@ density.plot <- ggplot(total.data, aes(x = Total, y = Concentration)) +
     legend.position = "bottom",
     legend.title = element_text(face = "bold", size = 11),
     legend.text = element_text(size = 10)) +
-  labs(x = "Total L3s per Mosquito", y = "Treatment") +
+  labs(x = "Total L3s per Mosquito", y = "NAM (mM)") +
   NULL
 density.plot
 

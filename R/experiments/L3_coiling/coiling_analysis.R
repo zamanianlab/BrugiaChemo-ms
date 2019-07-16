@@ -100,6 +100,6 @@ plot <- ggplot(tidy.data, aes(x = as.character(DEC), y = Score, group = DEC)) +
     legend.position = "none"
   ) +
   NULL
-# plot
+plot
 
 save_plot(here("plots", "Fig5C.pdf"), plot, base_width = 3, base_height = 6)
