@@ -19,6 +19,14 @@ species_info <- read_delim(here("../../auxillary", "species_info.csv"),
                            delim = ",") %>%
   select(-BioProject)
 
+# load in N50 values for each genome assembly
+n50 <- read_delim(here("data", "species_N50.csv"),
+                  delim = ",",
+                  col_names = TRUE) %>%
+  mutate(Species = str_replace(Species, "(^.)(.*_)", "\\1. ")) %>%
+  mutate(Species = str_replace(Species, "(^.)", toupper)) %>%
+  rename(Full = Species)
+
 # get blast results, which blasted predicted ChemoRs from species not included in the tree against
 # the ChemoRs included in the tree
 blast <- read_delim(here("data", "ChemoR.blastout"),
@@ -146,7 +154,8 @@ type <- left_join(dedup.p, life.history) %>%
   group_by(Species, Type, Full) %>%
   summarise(Total = sum(Count)) %>%
   ungroup() %>%
-  mutate(Type = factor(Type, levels = c("Free-Living", "Plant-Parasitic", "Facultative", "Skin-Penetrating", "Ingested Larvae", "Ingested Egg", "Vector Transmitted", "Host-Contained")))
+  mutate(Type = factor(Type, levels = c("Free-Living", "Plant-Parasitic", "Facultative", "Skin-Penetrating", "Ingested Larvae", "Ingested Egg", "Vector Transmitted", "Host-Contained"))) %>%
+  left_join(., n50, by = "Full")
 
 rect <- as.data.frame(unique(type$Type)) %>%
   mutate(fill = seq(1, 7, 1)) %>%
@@ -266,6 +275,42 @@ type.plot <- ggplot(type, aes(x = Type)) +
 # saveRDS(type.plot, here("data", "type.plot"))
 
 save_plot(here("plots", "Fig1C_raw.pdf"), type.plot, base_width = 14, base_height = 10)
+
+n50_rho_test <- cor.test(type$N50, log2(type$Total), data = type, method = "spearman")
+n50_estimate <- n50_rho_test$estimate
+n50_p <- n50_rho_test$p.value
+
+n50.plot <- ggplot(type, aes(x = scales::rescale(N50, c(0, 1)))) +
+  geom_abline(slope = n50_estimate, intercept = 7, linetype = 18, alpha = 0.75, size = 0.5) +
+  geom_label_repel(aes(label = Full, y = log2(Total)), fill = "white", position = pos,
+                   size = 3, label.size = 0.2, segment.size = 0.2, fontface = "italic") + # two labels so that only the box fill is transparent
+  geom_point(aes(y = log2(Total), color = Type), size = 4, position = pos) +
+  annotate("text", x = 0.9, y = 11, label = expression(paste(rho, " = ", 0.182)), size = 4, fontface = "bold", hjust = 0) +
+  annotate("text", x = 0.9, y = 10.3, label = expression(paste("p", " = ", 0.268)), size = 4, fontface = "bold", hjust = 0) +
+  ylim(1.75, 11.25) +
+  scale_color_viridis_d() +
+  labs(x = "Scaled N50", y = expression(paste("log"[2], "(Total Chemoreceptors)"))) +
+  theme_minimal(base_size = 16, base_family = "Helvetica") +
+  theme(panel.spacing.x = unit(0.25, "line"),
+        panel.spacing.y = unit(0.25, "line"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.line.x = element_line(color="black", size = 0.25),
+        axis.line.y = element_line(color="black", size = 0.25),
+        axis.title.x  = element_text(face = "bold", size = 12),
+        axis.title.y  = element_text(face = "bold", angle = 90, size = 12),
+        axis.text.x = element_text(size = 9.5, face = "bold", angle = 35, hjust = 1),
+        axis.text.y = element_text(face = "bold", size = 9),
+        strip.text = element_text(face = "bold"),
+        axis.ticks.x = element_blank(),
+        legend.title = element_text(face = "bold", size = 12),
+        legend.text = element_text(size = 10)) +
+  NULL
+n50.plot
+
+save_plot(here("plots", "S2_Figure.pdf"), n50.plot, base_width = 10, base_height = 6)
 
 # Export family assignments provided from the tree and BLAST --------------
 

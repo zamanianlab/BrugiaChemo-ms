@@ -186,7 +186,7 @@ HTseq_supp <- plot_grid(MFplot + theme(plot.margin = unit(c(0.8,0.8, 0.8, 0.8), 
                    nrow=2, rel_heights = c(2.5,1), labels = c('A','B'))
 HTseq_supp
 
-ggsave(here("plots", "S2_Figure.tiff"), HTseq_supp, width = 12, height =7, units = "in")
+ggsave(here("plots", "S3_Figure.tiff"), HTseq_supp, width = 12, height =7, units = "in")
 
 
 
