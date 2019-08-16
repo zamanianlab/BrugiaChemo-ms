@@ -8,13 +8,17 @@ from concurrent.futures import ThreadPoolExecutor
 # script, filename = argv
 
 
+# WormBase ParaSite REST API documentation: https://parasite.wormbase.org/rest-13/documentation/info/homology_symbol
 def fetch(session, id):
     paralogues = []
     print(id)
 
+    # define the server
     server = "https://parasite.wormbase.org"
+    # define the server extension and choose the condensed format with the paralogue type
     ext = "/rest-13/homology/symbol/caenorhabditis_elegans_PRJNA13758/" + \
         id + "?format=condensed;type=paralogues"
+    # get the JSON response and decode the architecture to get the "id" entry; append to the list of paralogues and write it to files
     with session.get(server + ext, headers={"Content-Type": "application/json", "Accept": ""}) as response:
         decoded = response.json()
         for entry in decoded["data"][0]["homologies"]:
@@ -28,6 +32,9 @@ def fetch(session, id):
             f.write(paralogue + "\n")
 
 
+# for asynchronous server requests
+# written using https://hackernoon.com/how-to-run-asynchronous-web-requests-in-parallel-with-python-3-5-without-aiohttp-264dc0f8546
+# as a tutorial
 async def get_data_async():
 
     filename = "/Users/njwheeler/GitHub/50HGI/auxillary/ChemoR/celegans_chemor_geneid.txt"
@@ -81,6 +88,3 @@ def main():
 
 
 main()
-
-# written using https://hackernoon.com/how-to-run-asynchronous-web-requests-in-parallel-with-python-3-5-without-aiohttp-264dc0f8546
-# as a tutorial
