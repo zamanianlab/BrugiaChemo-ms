@@ -60,7 +60,7 @@ dr.plot <- ggplot(dplyr::filter(feeding.dr, Dose != 0), aes(x = Dose, y = Propor
   geom_vline(xintercept = 5, linetype = 2, color = "firebrick1", size = 0.5, alpha = 0.7) +
   geom_vline(xintercept = 25, linetype = 2, color = "firebrick4", size = 0.5, alpha = 0.7) +
   geom_point() + 
-  scale_x_log10(breaks = c(10^-4, 10^-2, 1, 5, 25, 100), labels = c(0.0001, 0.01, 1, 5, 25, 100)) +
+  scale_x_log10(breaks = c(0, 0.00005, 0.0005, 0.005, 0.05, 0.5, 5, 50, 250), labels = c(0, 0.00005, 0.0005, 0.005, 0.05, 0.5, 5, 50, 250)) +
   theme(
     axis.text.x = element_text(face = "bold", size = 10, angle = 45, hjust = 1),
     axis.text.y = element_text(face = "bold", size = 9),
