@@ -31,7 +31,7 @@ gtf <- bind_rows(bm.gtf, ce.gtf) %>%
 bm.chemoR <- read_csv("~/Box/ZamanianLab/Data/Genomics/ChemoR/list/brugia_malayi_ids.txt", col_names = c("Transcript_ID"))
 ce.chemoR <- read_csv("~/Box/ZamanianLab/Data/Genomics/ChemoR/list/caenorhabditis_elegans_ids.txt", col_names = c("Transcript_ID"))
 all.chemoR <- bind_rows(bm.chemoR, ce.chemoR) %>%
-  left_join(., read_delim("~/Box/ZamanianLab/Data/Genomics/ChemoR/phylo/family_assignment.csv", delim = ",", col_names = TRUE)) %>%
+  left_join(., read_delim("../R/ChemoR/data/family_assignment.csv", delim = ",", col_names = TRUE)) %>%
   filter(Species != 0)
 
 # Highlights --------------------------------------------------------------
@@ -79,7 +79,7 @@ highlights.expand <- expand %>%
 # Heatmaps ----------------------------------------------------------------
 
 # read in RNAseq data
-rnaseq <- read_delim("RNAseq.data.csv", delim = ",", col_names = TRUE)
+rnaseq <- read_delim(here("data", "RNAseq.data.csv"), delim = ",", col_names = TRUE)
 
 # add GTF metadata to RNAseq daata
 chemoR.RNAseq <- filter(all.chemoR, Species == "brugia_malayi") %>% 
@@ -103,6 +103,14 @@ heatmaps <- select(chemoR.RNAseq, Circos.Chrom, Chromosome, Start, Stop, Mean_Ex
   arrange(Start) %>%
   select(Circos.Chrom, Heatmap.Start, Heatmap.Stop, Mean_Expression, Sample_Name) %>%
   mutate(Mean_Expression = log2(Mean_Expression + 1))
+
+legend <- plot(cowplot::get_legend(ggplot(heatmaps) + geom_tile(aes(x = Sample_Name, y = Heatmap.Start, height = Heatmap.Stop - Heatmap.Start, fill = Mean_Expression)) +
+  scale_fill_gradientn(colors = RColorBrewer::brewer.pal(n = 9, name = "Purples")) +
+  labs(fill = "Log2(Transcripts Per Million)") +
+  theme(legend.title = element_text(face = "bold", size = 12),
+        legend.text = element_text(face = "bold", size = 10))
+  )
+  )
 
 # Connectors --------------------------------------------------------------
 # make connectors from the ideogram highlights to the first heatmap
