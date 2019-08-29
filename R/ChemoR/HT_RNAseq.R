@@ -51,7 +51,14 @@ RNAsamples.HT.UGA <- rbind(temp, temp2)
 ChemoR_list <- read.csv(here("data", "family_assignment.csv"), header = TRUE)
 ChemoR_list <- ChemoR_list %>%
   filter(Species == "brugia_malayi") %>%
-  select(-Species)
+  select(-Species) %>%
+  bind_rows(tribble(~Transcript_ID, ~Family, ~Superfamily,
+                    "Bm1711", "OSM-9", "TRP",
+                    "Bm7343", "TAX-4", "CNG",
+                    "Bm8294", "OCR-1/2", "TRP",
+                    "Bm14098", "OCR-1/2", "TRP",
+                    "Bm5691a", "OCR-1/2", "TRP",
+                    "Bm3873", "TAX-2", "CNG")) # manually add TRPs and CNGs 
 gene_list <- as.character(ChemoR_list$Transcript_ID)
 genecount <- as.integer(length(gene_list))
 
@@ -84,7 +91,8 @@ RNAsamples.MF.2 <- RNAsamples.MF %>%
   group_by(Gene_ID) %>%
   distinct(Gene_ID, .keep_all = TRUE) %>%
   mutate(Max = max(AF, AM)) %>%
-  filter((AF + AM) > 1) # total TPM greater than one
+  filter((AF + AM) > 1) %>% # total TPM greater than one 
+  mutate(Superfamily = factor(Superfamily, levels = c("Solo", "Sra", "Srg", "Str", "TRP", "CNG")))
 
 
 MFplot <- ggplot(RNAsamples.MF.2) +
@@ -94,6 +102,7 @@ MFplot <- ggplot(RNAsamples.MF.2) +
   # geom_hline(aes(yintercept=5.6), linetype="solid", colour = "black", size = 0.5) +
   # geom_hline(aes(yintercept=-3.5), linetype="solid", colour = "black", size = 0.5) +
   geom_hline(aes(yintercept = 0), linetype = "dashed", colour = "grey37", size = 0.5) +
+  scale_x_discrete(limits = c("",  "Solo", "Sra", "Srg", "Str", "TRP", "CNG")) +
   scale_y_continuous(breaks = c(-3, -2, -1, 0, 1, 2, 3, 4, 5)) +
   theme(
     axis.title.x = element_blank(),
@@ -160,7 +169,8 @@ RNAsamples.HT <- RNAsamples.HT %>%
   mutate(FC = (H + 0.1) / (T + 0.1)) %>%
   group_by(Gene_ID) %>%
   distinct(Gene_ID, .keep_all = TRUE) %>%
-  mutate(Max = max(H, T)) # %>%
+  mutate(Max = max(H, T)) %>%
+  mutate(Superfamily = factor(Superfamily, levels = c("Solo", "Sra", "Srg", "Str", "TRP", "CNG")))
 # filter((H+T) > 1) #total TPM less than one
 
 HTplot <- ggplot(RNAsamples.HT) +
@@ -197,7 +207,8 @@ HTplot <- ggplot(RNAsamples.HT) +
     legend.text = element_text(size = 10),
     legend.title = element_text(size = 10)
   ) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  NULL
 HTplot
 
 
@@ -213,7 +224,7 @@ HTseq_supp <- plot_grid(MFplot + theme(plot.margin = unit(c(0.8, 0.8, 0.8, 0.8),
 )
 HTseq_supp
 
-# ggsave(here("plots", "S3_Figure.tiff"), HTseq_supp, width = 12, height =7, units = "in")
+ggsave(here("plots", "S3_Figure.tiff"), HTseq_supp, width = 12, height =7, units = "in")
 
 
 
@@ -228,7 +239,8 @@ RNAsamples.cluster <- RNAsamples.HT.UGA %>%
   filter(Transcript_ID %in% gene_list) %>%
   group_by(Transcript_ID, Stage, Location) %>%
   distinct(.keep_all = TRUE) %>%
-  ungroup()
+  ungroup() %>%
+  filter(!Transcript_ID %in% c("Bm1711", "Bm7343"))
 
 # Select relevant columns, filter by min expression, spread data
 RNAsamples.cluster <- RNAsamples.cluster %>%
@@ -313,7 +325,7 @@ family.map <- ggplot(pd, aes(x = id2, y = row)) +
     legend.title = element_text(face = "bold", size = 9)
   ) +
   NULL
-family.map
+# family.map
 
 # saveRDS(family.map, "~/Box/ZamanianLab/Manuscripts/2019-ChemoR/v3-PBIOrevisions/Figs/Fig2/family.map")
 
@@ -334,7 +346,7 @@ heatmap <- ggplot(pd, aes(id2, variable)) +
     legend.title = element_text(face = "bold", size = 9)
   ) +
   NULL
-# heatmap
+heatmap
 
 # saveRDS(heatmap, "~/Box/ZamanianLab/Manuscripts/2019-ChemoR/v3-PBIOrevisions/Figs/Fig2/heatmap.plot")
 
