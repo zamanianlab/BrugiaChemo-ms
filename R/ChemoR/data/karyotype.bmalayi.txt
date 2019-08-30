@@ -1,0 +1,7 @@
+1 BmI 14701151 brugia_malayi
+2 BmII 14214749 brugia_malayi
+3 BmIII 13951302 brugia_malayi
+4 BmIV 13467244 brugia_malayi
+X BmX 24943668 brugia_malayi
+007 Bm007 880453 brugia_malayi
+023 Bm023 57541 brugia_malayi

@@ -1,0 +1,6 @@
+1 CeI 15072434 caenorhabditis_elegans
+2 CeII 15279421 caenorhabditis_elegans
+3 CeIII 13783801 caenorhabditis_elegans
+4 CeIV 17493829 caenorhabditis_elegans
+5 CeV 20924180 caenorhabditis_elegans
+X CeX 17718942 caenorhabditis_elegans
