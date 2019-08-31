@@ -180,7 +180,36 @@ rnaseq_plot <-
             aes(label = Label, x = x, y = Order),
             fontface = "bold",
             size = 4) +
-  scale_fill_viridis_c(option = "magma", name = "Log2(TPM)") +
+  scale_fill_gradient(low = "white", high = "black", name = "Log2(TPM)") 
+rnaseq_plot
+
+# add rectangles and labels
+rectangles <- select(expand, Number, Species, Length, Chunk.Stop) %>%
+  filter(Species == "brugia_malayi", !Number %in% c("007", "023")) %>%
+  group_by(Number) %>%
+  summarize(xmax = max(Chunk.Stop)) %>%
+  mutate(xmin = 0)
+  
+# host labels
+host_labels <- tibble(Label = c("Vector Stage", "Human Stage", "Vector Stage"),
+                      y = c(0.65, 0.45, 0.095),
+                      Number = c(3, 3, 3),
+                      x = c(9800000, 9800000, 9800000))
+
+final_plot <- rnaseq_plot +
+  geom_rect(data = rectangles, 
+            aes(xmin = xmin, xmax = xmax),
+            ymin = 0.55, ymax = 0.75, color = "steelblue", size = 1, fill = NA, linetype = 2) +
+  geom_rect(data = rectangles, 
+            aes(xmin = xmin, xmax = xmax),
+            ymin = 0.35, ymax = 0.54, color = "steelblue", size = 1, fill = NA) +
+  geom_rect(data = rectangles, 
+            aes(xmin = xmin, xmax = xmax),
+            ymin = -0.25, ymax = 0.34, color = "steelblue", size = 1, fill = NA, linetype = 2) +
+  geom_text(data = host_labels, 
+            aes(x = x, y = y, label = Label),
+            fontface = "bold",
+            size = 3.9) +
   theme_minimal(base_size = 16, base_family = "Helvetica") +
   labs(x = "Chromosome", y = "") +
   theme(
@@ -192,9 +221,9 @@ rnaseq_plot <-
     legend.text = element_text(face = "bold", size = 10),
     legend.title = element_text(face = "bold", size = 12)) +
   NULL
-# rnaseq_plot
+# final_plot
 
-save_plot(here("plots", "Fig2.pdf"), rnaseq_plot, base_height = 6, base_width = 12)
+save_plot(here("plots", "Fig2.pdf"), final_plot, base_height = 6, base_width = 12)
 
 
 
