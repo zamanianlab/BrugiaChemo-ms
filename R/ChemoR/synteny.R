@@ -14,7 +14,7 @@ ce.karyotype <- read_delim(here("data", "karyotype.celegans.txt"), delim = " ", 
 karyotype <- bind_rows(bm.karyotype, ce.karyotype) %>%
   mutate(Number = factor(Number, levels = c("1", "2", "3", "4", "5", "X", "007", "023"))) %>%
   mutate(Species = factor(Species)) %>%
-  mutate(Order = case_when(
+  mutate(Species.Order = case_when(
     Species == "caenorhabditis_elegans" ~ 2,
     Species == "brugia_malayi" ~ 1,
   ))
@@ -23,22 +23,22 @@ karyotype <- bind_rows(bm.karyotype, ce.karyotype) %>%
 bm.gtf <- read_csv(here("data", "brugia_malayi_prot_table.txt"), col_names = FALSE)
 ce.gtf <- read_csv(here("data", "caenorhabditis_elegans_prot_table.txt"), col_names = FALSE)
 
-gtf <- bind_rows(bm.gtf, ce.gtf) %>%
+chemor.gtf <- bind_rows(bm.gtf, ce.gtf) %>%
   select(-X4, Chromosome = X1, Start = X2, Stop = X3, Gene_ID = X5, Transcript_ID = X6) %>%
   mutate(Transcript_ID = str_remove(Transcript_ID, "\\.[0-9]$"
   ))
 
-bm.chemoR <- read_csv(here("data", "brugia_malayi_ids.txt"), col_names = c("Transcript_ID"))
-ce.chemoR <- read_csv(here("data", "caenorhabditis_elegans_ids.txt"), col_names = c("Transcript_ID"))
-all.chemoR <- bind_rows(bm.chemoR, ce.chemoR) %>%
+bm.chemor <- read_csv(here("data", "brugia_malayi_ids.txt"), col_names = c("Transcript_ID"))
+ce.chemor <- read_csv(here("data", "caenorhabditis_elegans_ids.txt"), col_names = c("Transcript_ID"))
+all.chemor <- bind_rows(bm.chemor, ce.chemor) %>%
   left_join(., read_csv(here("data", "family_assignment.csv"), col_names = TRUE)) %>%
   filter(Species != 0) %>%
-  mutate(Species = factor(Species))
+  mutate(Species = factor(Species)) %>%
+  left_join(gtf)
 
 # Highlights --------------------------------------------------------------
 # read in chemoR data and get start/stop coordinates
-all.chemoR <- left_join(all.chemoR, gtf) %>%
-  mutate(Length = Stop - Start) %>%
+all.chemor <- mutate(all.chemor, Length = Stop - Start) %>%
   arrange(Gene_ID, desc(Length)) %>%
   distinct(Gene_ID, .keep_all = TRUE) %>% # remove isoforms
   mutate(Number = case_when(
@@ -56,7 +56,7 @@ all.chemoR <- left_join(all.chemoR, gtf) %>%
     Chromosome == "Bm_007" ~ "007",
     Chromosome == "Bm_023" ~ "023"
   )) %>%
-  mutate(Order = case_when(
+  mutate(Species.Order = case_when(
     Species == "caenorhabditis_elegans" ~ 2,
     Species == "brugia_malayi" ~ 1,
   ))
@@ -64,79 +64,79 @@ all.chemoR <- left_join(all.chemoR, gtf) %>%
 # first row --> chromosomes with highlights
 
 chromosome_plot <- ggplot() +
-  geom_rect(data = filter(all.chemoR, !Number %in% c("007", "023")), 
-            aes(xmin = Start - 50000, 
-                xmax = Stop + 50000, 
-                ymin = Order, 
-                ymax = Order + 0.75), 
+  geom_rect(data = filter(all.chemor, !Number %in% c("007", "023")),
+            aes(xmin = (Start - 50000) / 1000000,
+                xmax = (Stop + 50000) / 1000000,
+                ymin = Species.Order,
+                ymax = Species.Order + 0.75),
             fill = "black") +
   geom_rect(data = filter(karyotype, !Number %in% c("007", "023")),
             aes(xmin = 0, 
-                xmax = Length,
-                ymin = Order,
-                ymax = Order + 0.75),
+                xmax = Length / 1000000,
+                ymin = Species.Order,
+                ymax = Species.Order + 0.75),
             alpha = 0.25, color = "black") +
   facet_grid(cols = vars(Number), scales = "free") +
   NULL
-# chromosome_plot
+chromosome_plot
 
 # second row --> superfamily colors
 
 # get a list of chromosomes and calculate chunks so that each gene will have equidistant area and the heatmap will span the entire chromosome/ideogram
-chromosomes <- all.chemoR %>%
+chromosomes <- all.chemor %>%
   group_by(Chromosome) %>%
   mutate(n = n()) %>%
   distinct(Chromosome, .keep_all = TRUE) %>%
   select(Species, Chromosome, Number, n) %>%
   left_join(., karyotype, by = c("Species", "Number")) %>%
-  filter(Length != 0) %>%
-  mutate(Chunk = ifelse(Length / n > 3000000, 2000000, Length / n)) %>%
-  select(Chromosome, Chunk, Length)
+  rename(Chromosome.Length = Length) %>%
+  filter(Chromosome.Length != 0) %>%
+  mutate(Chunk = ifelse(Chromosome.Length / n > 3000000, 2000000, Chromosome.Length / n)) %>%
+  select(Chromosome, Chunk, Chromosome.Length)
 
-expand <- all.chemoR %>%
-  select(Species, Order, Chromosome, Number, Start, Stop, Superfamily) %>%
+all.chemor <- all.chemor %>%
+  # select(Species, Order, Chromosome, Number, Start, Stop, Superfamily) %>%
   arrange(Chromosome, Start) %>%
-  left_join(., chromosomes) %>%
+  left_join(., chromosomes, by = "Chromosome") %>%
   mutate(Chunk = floor(Chunk)) %>%
   group_by(Chromosome) %>%
   mutate(Chunk.Stop = accumulate(.x = Chunk, `+`)) %>%
   mutate(Chunk.Start = Chunk.Stop - Chunk + 1) %>%
   ungroup()
 
-sf.colors <- tibble(Superfamily = c("Sra", "Srg", "Str", "Solo"),
-                    Color = c("red", "blue", "green", "orange"))  
+# sf.colors <- tibble(Superfamily = c("Sra", "Srg", "Str", "Solo"),
+#                     Color = c("red", "blue", "green", "orange"))  
 
 superfamily_plot <- chromosome_plot +
-  geom_rect(data = filter(expand, Species == "brugia_malayi", !Number %in% c("007", "023")),
-            aes(xmin = Chunk.Start, 
-                xmax = Chunk.Stop,
-                ymin = Order - 0.025, 
-                ymax = Order - 0.225, 
+  geom_rect(data = filter(all.chemor, Species == "brugia_malayi", !Number %in% c("007", "023")),
+            aes(xmin = Chunk.Start / 1000000, 
+                xmax = Chunk.Stop / 1000000,
+                ymin = Species.Order - 0.025, 
+                ymax = Species.Order - 0.225, 
                 fill = Superfamily), color = "black", size = 0.5) +
-  geom_rect(data = filter(expand, Species == "caenorhabditis_elegans"),
-            aes(xmin = Chunk.Start, 
-                xmax = Chunk.Stop, 
-                ymin = Order - 0.025, 
-                ymax = Order - 0.225, 
+  geom_rect(data = filter(all.chemor, Species == "caenorhabditis_elegans"),
+            aes(xmin = Chunk.Start / 1000000, 
+                xmax = Chunk.Stop / 1000000, 
+                ymin = Species.Order - 0.025, 
+                ymax = Species.Order - 0.225, 
                 fill = Superfamily,
                 color = Superfamily)) +
   scale_fill_viridis_d() +
   scale_color_viridis_d() +
-  scale_x_continuous(labels = scales::scientific, breaks = c(5000000, 10000000, 15000000, 20000000, 25000000)) +
+  # scale_x_continuous(labels = scales::scientific, breaks = c(5000000, 10000000, 15000000, 20000000, 25000000)) +
   NULL
-# superfamily_plot
-
+superfamily_plot
 
 # following rows --> staged RNA-seq
 rnaseq <- read_csv(here("data", "RNAseq.data.csv"), col_names = TRUE)
 
 # add GTF metadata to RNAseq daata
-chemoR.RNAseq <- filter(all.chemoR, Species == "brugia_malayi") %>% 
+chemor.rnaseq <- filter(all.chemor, Species == "brugia_malayi") %>% 
   left_join(., rnaseq)
 
 # merge with RNAseq data and get rid of extraneous columns
-heatmaps <- left_join(filter(expand, Species == "brugia_malayi"), chemoR.RNAseq, by = c("Chromosome", "Start", "Stop")) %>%
-  select(Chromosome, Number = Number.x, Chunk.Start, Chunk.Stop, Mean_Expression, Sample_Name) %>%
+heatmaps <- chemor.rnaseq %>%
+  select(Chromosome, Number, Chunk.Start, Chunk.Stop, Mean_Expression, Sample_Name) %>%
   mutate(Mean_Expression = log2(Mean_Expression + 1)) %>%
   mutate(Order = case_when(
     Sample_Name == "E" ~ 0.75,
@@ -171,20 +171,20 @@ rnaseq_plot <-
   superfamily_plot +
   ggnewscale::new_scale_fill() +
   geom_rect(data = filter(heatmaps, !Number %in% c("007", "023")), 
-            aes(xmin = Chunk.Start,
-                xmax = Chunk.Stop,
+            aes(xmin = Chunk.Start / 1000000,
+                xmax = Chunk.Stop / 1000000,
                 ymin = Order,
                 ymax = Order - 0.1, 
                 fill = Mean_Expression)) +
   geom_text(data = text_labels, 
-            aes(label = Label, x = x, y = Order),
+            aes(label = Label, x = x / 1000000, y = Order),
             fontface = "bold",
             size = 4) +
   scale_fill_gradient(low = "white", high = "black", name = "Log2(TPM)") 
 rnaseq_plot
 
 # add rectangles and labels
-rectangles <- select(expand, Number, Species, Length, Chunk.Stop) %>%
+rectangles <- select(all.chemor, Number, Species, Length, Chunk.Stop) %>%
   filter(Species == "brugia_malayi", !Number %in% c("007", "023")) %>%
   group_by(Number) %>%
   summarize(xmax = max(Chunk.Stop)) %>%
@@ -198,20 +198,20 @@ host_labels <- tibble(Label = c("Vector Stage", "Human Stage", "Vector Stage"),
 
 final_plot <- rnaseq_plot +
   geom_rect(data = rectangles, 
-            aes(xmin = xmin, xmax = xmax),
+            aes(xmin = xmin / 1000000, xmax = xmax / 1000000),
             ymin = 0.55, ymax = 0.75, color = "steelblue", size = 1, fill = NA, linetype = 2) +
   geom_rect(data = rectangles, 
-            aes(xmin = xmin, xmax = xmax),
+            aes(xmin = xmin / 1000000, xmax = xmax / 1000000),
             ymin = 0.35, ymax = 0.54, color = "steelblue", size = 1, fill = NA) +
   geom_rect(data = rectangles, 
-            aes(xmin = xmin, xmax = xmax),
+            aes(xmin = xmin / 1000000, xmax = xmax / 1000000),
             ymin = -0.25, ymax = 0.34, color = "steelblue", size = 1, fill = NA, linetype = 2) +
   geom_text(data = host_labels, 
-            aes(x = x, y = y, label = Label),
+            aes(x = x / 1000000, y = y, label = Label),
             fontface = "bold",
             size = 3.9) +
   theme_minimal(base_size = 16, base_family = "Helvetica") +
-  labs(x = "Chromosome", y = "") +
+  labs(x = "Chromosome (Mb)", y = "") +
   theme(
     axis.text.x = element_text(face = "bold", size = 10, angle = 45, hjust = 1),
     axis.text.y = element_blank(),
@@ -221,7 +221,7 @@ final_plot <- rnaseq_plot +
     legend.text = element_text(face = "bold", size = 10),
     legend.title = element_text(face = "bold", size = 12)) +
   NULL
-# final_plot
+final_plot
 
 save_plot(here("plots", "Fig2.pdf"), final_plot, base_height = 6, base_width = 12)
 
