@@ -34,7 +34,7 @@ all.chemor <- bind_rows(bm.chemor, ce.chemor) %>%
   left_join(., read_csv(here("data", "family_assignment.csv"), col_names = TRUE)) %>%
   filter(Species != 0) %>%
   mutate(Species = factor(Species)) %>%
-  left_join(gtf)
+  left_join(chemor.gtf)
 
 # Highlights --------------------------------------------------------------
 # read in chemoR data and get start/stop coordinates
@@ -64,21 +64,22 @@ all.chemor <- mutate(all.chemor, Length = Stop - Start) %>%
 # first row --> chromosomes with highlights
 
 chromosome_plot <- ggplot() +
-  geom_rect(data = filter(all.chemor, !Number %in% c("007", "023")),
-            aes(xmin = (Start - 50000) / 1000000,
-                xmax = (Stop + 50000) / 1000000,
-                ymin = Species.Order,
-                ymax = Species.Order + 0.75),
-            fill = "black") +
   geom_rect(data = filter(karyotype, !Number %in% c("007", "023")),
             aes(xmin = 0, 
                 xmax = Length / 1000000,
-                ymin = Species.Order,
-                ymax = Species.Order + 0.75),
-            alpha = 0.25, color = "black") +
+                ymin = Species.Order + 0.1,
+                ymax = Species.Order + 0.35),
+            fill = "white",
+            color = "black") +
+  geom_rect(data = filter(all.chemor, !Number %in% c("007", "023")),
+            aes(xmin = (Start - 50000) / 1000000,
+                xmax = (Stop + 50000) / 1000000,
+                ymin = Species.Order + 0.1,
+                ymax = Species.Order + 0.35),
+            fill = "black") +
   facet_grid(cols = vars(Number), scales = "free") +
   NULL
-chromosome_plot
+# chromosome_plot
 
 # second row --> superfamily colors
 
@@ -114,6 +115,12 @@ superfamily_plot <- chromosome_plot +
                 ymin = Species.Order - 0.025, 
                 ymax = Species.Order - 0.225, 
                 fill = Superfamily), color = "black", size = 0.5) +
+  geom_segment(data = filter(all.chemor, Species == "brugia_malayi", !Number %in% c("007", "023")),
+               aes(x = (Start + Stop) / 2000000,
+                   xend = (Chunk.Start + Chunk.Stop) / 2000000,
+                   y = Species.Order + 0.1,
+                   yend = Species.Order - 0.025),
+               size = 0.35) +
   geom_rect(data = filter(all.chemor, Species == "caenorhabditis_elegans"),
             aes(xmin = Chunk.Start / 1000000, 
                 xmax = Chunk.Stop / 1000000, 
@@ -125,12 +132,12 @@ superfamily_plot <- chromosome_plot +
   scale_color_viridis_d() +
   # scale_x_continuous(labels = scales::scientific, breaks = c(5000000, 10000000, 15000000, 20000000, 25000000)) +
   NULL
-superfamily_plot
+# superfamily_plot
 
 # following rows --> staged RNA-seq
 rnaseq <- read_csv(here("data", "RNAseq.data.csv"), col_names = TRUE)
 
-# add GTF metadata to RNAseq daata
+# add GTF metadata to RNAseq data
 chemor.rnaseq <- filter(all.chemor, Species == "brugia_malayi") %>% 
   left_join(., rnaseq)
 
@@ -183,6 +190,82 @@ rnaseq_plot <-
   scale_fill_gradient(low = "white", high = "black", name = "Log2(TPM)") 
 rnaseq_plot
 
+# following rows --> head/tail RNA-seq
+rnaseq <- read_csv(here("data", "RNAseq.data.csv"), col_names = TRUE)
+
+# add GTF metadata to RNAseq data
+chemor.rnaseq <- filter(all.chemor, Species == "brugia_malayi") %>% 
+  left_join(., rnaseq)
+
+#### LOAD HT EXPRESSION FILE
+load(here("data", "RNAsamples_HT.Rda"))
+RNAsamples.HT <- RNAsamples.melt
+
+#### LOAD UGA EXPRESSION FILE
+load(here("data", "RNAsamples_UGA.Rda"))
+RNAsamples.UGA <- RNAsamples.melt
+
+#### FILTER for TPM (gene-specific measurements)
+RNAsamples.HT <- RNAsamples.HT %>%
+  filter(Metric == "TPM_g")
+RNAsamples.UGA <- RNAsamples.UGA %>%
+  filter(Metric == "TPM_g") %>%
+  filter(Condition == "CON", Stage != "MF") %>%
+  group_by(Transcript_ID, Stage) %>%
+  summarize(Whole_Expression = mean(Expression)) # whole-body expression
+
+RNAsamples.HT.UGA <- inner_join(RNAsamples.HT, RNAsamples.UGA)
+
+# Made new dataframe of just whole body and re-merge (so that UGA data gets own line)
+temp <- RNAsamples.HT.UGA %>%
+  mutate(Expression = Whole_Expression) %>%
+  select(-Whole_Expression) %>%
+  mutate(Location = "WB") %>%
+  mutate(SID = ifelse(grepl("Bm-F-Head", SID), "Bm-F-WB", SID)) %>%
+  mutate(SID = ifelse(grepl("Bm-M-Head", SID), "Bm-M-WB", SID)) %>%
+  mutate(SID = ifelse(grepl("Bm-M-Tail", SID), "Bm-M-WB", SID)) %>%
+  group_by(Transcript_ID, SID) %>%
+  distinct(.keep_all = True) %>%
+  ungroup()
+temp2 <- RNAsamples.HT.UGA %>% select(-Whole_Expression)
+RNAsamples.HT.UGA <- rbind(temp, temp2) %>%
+  select(Transcript_ID, Gene_ID, SID, Metric, Expression, Sample_Name = Stage, Location) %>%
+  filter(Metric == "TPM_g")
+
+ht.rnaseq <- filter(RNAsamples.HT.UGA, Gene_ID %in% all.chemor$Gene_ID, Location != "WB") %>%
+  left_join(., distinct(select(chemor.rnaseq, Number, Gene_ID, Chunk.Start, Chunk.Stop))) %>%
+  mutate(Mean_Expression = log2(Expression + 1)) %>%
+  mutate(Order = case_when(
+    SID == "Bm-F-Head" ~ -0.3,
+    SID == "Bm-M-Head" ~ -0.4,
+    SID == "Bm-M-Tail" ~ -0.5
+  )) %>%
+  filter(!is.na(Mean_Expression))
+
+ht_labels <- distinct(ht.rnaseq, SID, Order) %>%
+  mutate(Number = 5, x = 10000000, Order = Order - 0.05) %>%
+  mutate(Label = case_when(
+    SID == "Bm-F-Head" ~ "Female Head",
+    SID == "Bm-M-Head" ~ "Male Head",
+    SID == "Bm-M-Tail" ~ "Male Tale"
+  )) 
+
+ht_plot <- 
+  rnaseq_plot +
+  ggnewscale::new_scale_fill() +
+  geom_rect(data = filter(ht.rnaseq, !Number %in% c("007", "023")),
+            aes(xmin = Chunk.Start / 1000000,
+                xmax = Chunk.Stop / 1000000,
+                ymin = Order,
+                ymax = Order - 0.1, 
+                fill = Mean_Expression)) +
+  geom_text(data = ht_labels, 
+            aes(label = Label, x = x / 1000000, y = Order),
+            fontface = "bold",
+            size = 4) +
+  scale_fill_viridis_c(option = "plasma", name = "Log2(TPM)") 
+# ht_plot
+
 # add rectangles and labels
 rectangles <- select(all.chemor, Number, Species, Length, Chunk.Stop) %>%
   filter(Species == "brugia_malayi", !Number %in% c("007", "023")) %>%
@@ -196,32 +279,44 @@ host_labels <- tibble(Label = c("Vector Stage", "Human Stage", "Vector Stage"),
                       Number = c(3, 3, 3),
                       x = c(9800000, 9800000, 9800000))
 
-final_plot <- rnaseq_plot +
-  geom_rect(data = rectangles, 
+species_labels <- tibble(Label = c("C. elegans", "B. malayi"),
+                         y = c(2.05, 1.05),
+                         Number = c(1, 1),
+                         x = c(-1500000, -1500000))
+
+final_plot <- ht_plot +
+  geom_hline(yintercept = 0.5455, color = "grey", size = 0.5, linetype = 2) +
+  geom_hline(yintercept = 0.3545, color = "grey", size = 0.5, linetype = 2) +
+  geom_rect(data = rectangles,
             aes(xmin = xmin / 1000000, xmax = xmax / 1000000),
-            ymin = 0.55, ymax = 0.75, color = "steelblue", size = 1, fill = NA, linetype = 2) +
-  geom_rect(data = rectangles, 
+            ymin = -0.25, ymax = 0.75, color = "black", fill = NA, size = 0.5) +
+  geom_rect(data = rectangles,
             aes(xmin = xmin / 1000000, xmax = xmax / 1000000),
-            ymin = 0.35, ymax = 0.54, color = "steelblue", size = 1, fill = NA) +
-  geom_rect(data = rectangles, 
-            aes(xmin = xmin / 1000000, xmax = xmax / 1000000),
-            ymin = -0.25, ymax = 0.34, color = "steelblue", size = 1, fill = NA, linetype = 2) +
+            ymin = -0.3, ymax = -0.6, color = "black", fill = NA, size = 0.5) +
+  # geom_rect(data = rectangles, 
+  #           aes(xmin = xmin / 1000000, xmax = xmax / 1000000),
+  #           ymin = -0.25, ymax = 0.34, color = "steelblue", size = 1, fill = NA, linetype = 2) +
   geom_text(data = host_labels, 
             aes(x = x / 1000000, y = y, label = Label),
             fontface = "bold",
             size = 3.9) +
+  geom_text(data = species_labels,
+            aes(x = x / 1000000, y = y, label = Label),
+            fontface = "bold.italic",
+            size = 3.9,
+            angle = 90) +
   theme_minimal(base_size = 16, base_family = "Helvetica") +
   labs(x = "Chromosome (Mb)", y = "") +
   theme(
-    axis.text.x = element_text(face = "bold", size = 10, angle = 45, hjust = 1),
+    axis.text.x = element_text(face = "bold", size = 10, vjust = 113),
     axis.text.y = element_blank(),
-    axis.title.x = element_text(face = "bold", size = 12),
+    axis.title.x = element_text(face = "bold", size = 12, vjust = 105),
     strip.text.x = element_text(face = "bold", size = 20),
     panel.grid = element_blank(),
     legend.text = element_text(face = "bold", size = 10),
     legend.title = element_text(face = "bold", size = 12)) +
   NULL
-final_plot
+# final_plot
 
 save_plot(here("plots", "Fig2.pdf"), final_plot, base_height = 6, base_width = 12)
 
