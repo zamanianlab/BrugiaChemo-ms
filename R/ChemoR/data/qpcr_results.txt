@@ -1,0 +1,105 @@
+* Block Type = 96well
+* Chemistry = SYBR_GREEN
+* Experiment File Name = D:\Documents and Settings\Talaat\Desktop\Zamanian\Nic\20191023.eds
+* Experiment Run End Time = 2019-10-23 13:53:42 PM CDT
+* Instrument Type = steponeplus
+* Passive Reference = ROX
+
+[Results]
+Well	Sample Name	Target Name	Task	Reporter	Quencher	Cт	Cт Mean	Cт SD	Quantity	Quantity Mean	Quantity SD	Automatic Ct Threshold	Ct Threshold	Automatic Baseline	Baseline Start	Baseline End	Tm1	Tm2	Tm3	Comments	HIGHSD	EXPFAIL
+A1	N2	OSM-9	UNKNOWN	SYBR	None	Undetermined						true	0.2541	true	3	39	60.1896				N	Y
+A2	N2	OSM-9	UNKNOWN	SYBR	None	Undetermined						true	0.2541	true	3	39	60.4328				N	Y
+A3	CX10	OSM-9	UNKNOWN	SYBR	None	Undetermined						true	0.2541	true	3	39	60.5362				N	Y
+A4	CX10	OSM-9	UNKNOWN	SYBR	None	Undetermined						true	0.2541	true	3	39	60.773				N	Y
+A5	ZAM13A	OSM-9	UNKNOWN	SYBR	None	23.8641	23.8779	0.0195				true	0.2541	true	3	18	80.6004				N	N
+A6	ZAM13A	OSM-9	UNKNOWN	SYBR	None	23.8917	23.8779	0.0195				true	0.2541	true	3	18	79.4643				N	N
+A7	ZAM13B	OSM-9	UNKNOWN	SYBR	None	24.4596	24.4447	0.0211				true	0.2541	true	3	18	79.5698				N	N
+A8	ZAM13B	OSM-9	UNKNOWN	SYBR	None	24.4298	24.4447	0.0211				true	0.2541	true	3	18	81.1754				N	N
+A9	ZAM13C	OSM-9	UNKNOWN	SYBR	None	23.4404	23.4714	0.0439				true	0.2541	true	3	17	79.9169				N	N
+A10	ZAM13C	OSM-9	UNKNOWN	SYBR	None	23.5024	23.4714	0.0439				true	0.2541	true	3	17	80.1537				N	N
+A11																					N	N
+A12																					N	N
+B1																					N	N
+B2																					N	N
+B3																					N	N
+B4																					N	N
+B5	ZAM17A	OSM-9	UNKNOWN	SYBR	None	29.1582	29.1884	0.0427				true	0.2541	true	3	24	79.2439				N	N
+B6	ZAM17A	OSM-9	UNKNOWN	SYBR	None	29.2187	29.1884	0.0427				true	0.2541	true	3	23	80.8207				N	N
+B7	ZAM17B	OSM-9	UNKNOWN	SYBR	None	26.9218	26.9112	0.015				true	0.2541	true	3	21	80.9551				N	N
+B8	ZAM17B	OSM-9	UNKNOWN	SYBR	None	26.9006	26.9112	0.015				true	0.2541	true	3	21	79.7901				N	N
+B9	ZAM17C	OSM-9	UNKNOWN	SYBR	None	27.3564	27.5089	0.2157				true	0.2541	true	3	21	79.9309				N	N
+B10	ZAM17C	OSM-9	UNKNOWN	SYBR	None	27.6614	27.5089	0.2157				true	0.2541	true	3	22	81.5158				N	N
+B11																					N	N
+B12																					N	N
+C1	N2	TAX-4	UNKNOWN	SYBR	None	Undetermined						true	0.1533	true	3	39	60.2118				N	Y
+C2	N2	TAX-4	UNKNOWN	SYBR	None	Undetermined						true	0.1533	true	3	39	60.4105				N	Y
+C3	PR678	TAX-4	UNKNOWN	SYBR	None	Undetermined						true	0.1533	true	3	39	60.5585				N	Y
+C4	PR678	TAX-4	UNKNOWN	SYBR	None	Undetermined						true	0.1533	true	3	39	62.0463				N	Y
+C5	ZAM14A	TAX-4	UNKNOWN	SYBR	None	27.0342	26.9766	0.0815				true	0.1533	true	3	22	76.5563				N	N
+C6	ZAM14A	TAX-4	UNKNOWN	SYBR	None	26.919	26.9766	0.0815				true	0.1533	true	3	22	76.746				N	N
+C7	ZAM14B	TAX-4	UNKNOWN	SYBR	None	34.835	34.3828	0.6396				true	0.1533	true	3	30	76.893				Y	N
+C8	ZAM14B	TAX-4	UNKNOWN	SYBR	None	33.9305	34.3828	0.6396				true	0.1533	true	3	29	77.0828				Y	N
+C9	ZAM14C	TAX-4	UNKNOWN	SYBR	None	26.1635	26.1297	0.0477				true	0.1533	true	3	21	78.5959				N	N
+C10	ZAM14C	TAX-4	UNKNOWN	SYBR	None	26.096	26.1297	0.0477				true	0.1533	true	3	21	78.7883				N	N
+C11																					N	N
+C12																					N	N
+D1	N2	OCR-1/2a	UNKNOWN	SYBR	None	Undetermined						true	0.0086	true	3	39	60.22				N	Y
+D2	N2	OCR-1/2a	UNKNOWN	SYBR	None	Undetermined						true	0.0086	true	3	39	61.6914				N	Y
+D3	CX10	OCR-1/2a	UNKNOWN	SYBR	None	Undetermined						true	0.0086	true	3	39	61.8621				N	Y
+D4	CX10	OCR-1/2a	UNKNOWN	SYBR	None	Undetermined						true	0.0086	true	3	39	60.7426				N	Y
+D5	ZAM17A	OCR-1/2a	UNKNOWN	SYBR	None	37.4526	37.198	0.36				true	0.0086	true	3	35	77.9124				N	N
+D6	ZAM17A	OCR-1/2a	UNKNOWN	SYBR	None	36.9435	37.198	0.36				true	0.0086	true	3	35	78.0859				N	N
+D7	ZAM17B	OCR-1/2a	UNKNOWN	SYBR	None	34.303	34.3025	0.0007				true	0.0086	true	3	33	78.2507				N	N
+D8	ZAM17B	OCR-1/2a	UNKNOWN	SYBR	None	34.302	34.3025	0.0007				true	0.0086	true	3	33	77.0746				N	N
+D9	ZAM17C	OCR-1/2a	UNKNOWN	SYBR	None	34.2842	33.9054	0.5357				true	0.0086	true	3	32	78.6041				Y	N
+D10	ZAM17C	OCR-1/2a	UNKNOWN	SYBR	None	33.5266	33.9054	0.5357				true	0.0086	true	3	32	78.7801				Y	N
+D11																					N	N
+D12																					N	N
+E1	N2	Y45F10D.4	UNKNOWN	SYBR	None	24.1917	24.1814	0.0146				true	0.4765	true	3	17	82.6404				N	N
+E2	N2	Y45F10D.4	UNKNOWN	SYBR	None	24.171	24.1814	0.0146				true	0.4765	true	3	17	81.475				N	N
+E3	CX10	Y45F10D.4	UNKNOWN	SYBR	None	23.9545	23.9329	0.0305				true	0.4765	true	3	17	81.6915				N	N
+E4	CX10	Y45F10D.4	UNKNOWN	SYBR	None	23.9114	23.9329	0.0305				true	0.4765	true	3	17	81.8512				N	N
+E5	PR678	Y45F10D.4	UNKNOWN	SYBR	None	23.654	23.5352	0.1679				true	0.4765	true	3	16	82.0093				N	N
+E6	PR678	Y45F10D.4	UNKNOWN	SYBR	None	23.4165	23.5352	0.1679				true	0.4765	true	3	17	82.1664				N	N
+E7	ZAM13A	Y45F10D.4	UNKNOWN	SYBR	None	23.9636	24.0018	0.054				true	0.4765	true	3	17	83.6758				N	N
+E8	ZAM13A	Y45F10D.4	UNKNOWN	SYBR	None	24.04	24.0018	0.054				true	0.4765	true	3	17	83.8329				N	N
+E9	ZAM13B	Y45F10D.4	UNKNOWN	SYBR	None	24.1266	24.1413	0.0208				true	0.4765	true	3	17	84.0282				N	N
+E10	ZAM13B	Y45F10D.4	UNKNOWN	SYBR	None	24.1559	24.1413	0.0208				true	0.4765	true	3	17	82.8672				N	N
+E11																					N	N
+E12																					N	N
+F1	ZAM13C	Y45F10D.4	UNKNOWN	SYBR	None	23.716	23.7243	0.0117				true	0.4765	true	3	17	81.3173				N	N
+F2	ZAM13C	Y45F10D.4	UNKNOWN	SYBR	None	23.7326	23.7243	0.0117				true	0.4765	true	3	17	82.7982				N	N
+F3	ZAM14A	Y45F10D.4	UNKNOWN	SYBR	None	24.3925	24.3009	0.1295				true	0.4765	true	3	18	81.6998				N	N
+F4	ZAM14A	Y45F10D.4	UNKNOWN	SYBR	None	24.2093	24.3009	0.1295				true	0.4765	true	3	17	83.1691				N	N
+F5	ZAM14B	Y45F10D.4	UNKNOWN	SYBR	None	24.0139	23.9892	0.0348				true	0.4765	true	3	17	83.3435				N	N
+F6	ZAM14B	Y45F10D.4	UNKNOWN	SYBR	None	23.9646	23.9892	0.0348				true	0.4765	true	3	17	82.1581				N	N
+F7	ZAM14C	Y45F10D.4	UNKNOWN	SYBR	None	23.8699	23.7223	0.2087				true	0.4765	true	3	17	82.3595				N	N
+F8	ZAM14C	Y45F10D.4	UNKNOWN	SYBR	None	23.5747	23.7223	0.2087				true	0.4765	true	3	17	83.8246				N	N
+F9	ZAM17A	Y45F10D.4	UNKNOWN	SYBR	None	23.5065	23.5557	0.0697				true	0.4765	true	3	17	82.7158				N	N
+F10	ZAM17A	Y45F10D.4	UNKNOWN	SYBR	None	23.605	23.5557	0.0697				true	0.4765	true	3	17	82.8589				N	N
+F11																					N	N
+F12																					N	N
+G1	ZAM17B	Y45F10D.4	UNKNOWN	SYBR	None	24.1328	23.9634	0.2396				true	0.4765	true	3	17	81.3256				N	N
+G2	ZAM17B	Y45F10D.4	UNKNOWN	SYBR	None	23.794	23.9634	0.2396				true	0.4765	true	3	17	82.7899				N	N
+G3	ZAM17C	Y45F10D.4	UNKNOWN	SYBR	None	23.765	23.7856	0.0291				true	0.4765	true	3	17	83.0344				N	N
+G4	ZAM17C	Y45F10D.4	UNKNOWN	SYBR	None	23.8061	23.7856	0.0291				true	0.4765	true	3	17	81.8345				N	N
+G5																					N	N
+G6																					N	N
+G7		OSM-9	NTC	SYBR	None	Undetermined						true	0.2541	true	3	39	61.2562				N	N
+G8		TAX-4	NTC	SYBR	None	Undetermined						true	0.1533	true	3	39	61.38				N	N
+G9		OCR-1/2a	NTC	SYBR	None	Undetermined						true	0.0086	true	3	39	61.6186				N	N
+G10		Y45F10D.4	NTC	SYBR	None	Undetermined						true	0.4765	true	3	39	61.745				N	N
+G11																					N	N
+G12																					N	N
+H1																					N	N
+H2																					N	N
+H3																					N	N
+H4																					N	N
+H5																					N	N
+H6																					N	N
+H7																					N	N
+H8																					N	N
+H9																					N	N
+H10																					N	N
+H11																					N	N
+H12																					N	N

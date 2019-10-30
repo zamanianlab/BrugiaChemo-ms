@@ -1,0 +1,107 @@
+---
+title: ""
+output: 
+  html_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(kableExtra)
+library(here)
+library(janitor)
+library(gridExtra)
+here()
+
+```
+
+```{r barplot, echo = FALSE, message = FALSE, warning = FALSE, fig.width = 6, fig.height = 3, fig.align="center"}
+
+results <- read_delim(str_glue(here("data", "qpcr_results.txt")),
+                      col_names = TRUE, 
+                      delim = "\t", 
+                      skip = 8) %>%
+  clean_names() %>%
+  rename(ct = 7, ct_mean = 8, ct_sd = 9, automatic_ct_threshold = 13, ct_threshold = 14, ) %>%
+  filter(!is.na(sample_name))
+
+ct_df <- select(results, sample_name, target_name, ct) %>%
+  # filter(ct != "Undetermined") %>%
+  mutate(ct = as.numeric(ct)) %>%
+  group_by(sample_name, target_name) %>%
+  summarise(Tech.Mean.Ct = mean(ct))
+
+control_ct <- filter(ct_df, target_name == "Y45F10D.4") %>%
+  select(-target_name, control_ct = Tech.Mean.Ct) 
+
+dct <- filter(ct_df, target_name != "Y45F10D.4") %>%
+  replace_na(list(Tech.Mean.Ct = 40)) %>%
+  left_join(., control_ct) %>%
+  rename(test_ct = Tech.Mean.Ct) %>%
+  mutate(dct = test_ct - control_ct) %>%
+  select(sample_name, target_name, dct) %>%
+  ungroup() 
+
+control_dct <- filter(dct, sample_name %in% c("CX10", "PR678")) %>%
+  select(-sample_name, target_name, control_dct = dct)
+
+ddct <- filter(dct, !sample_name %in% c("N2", "CX10", "PR678")) %>%
+  rename(test_dct = dct) %>%
+  left_join(., control_dct) %>%
+  mutate(ddct = test_dct - control_dct) %>%
+  mutate(strain = c(rep("ZAM13", 3), rep("ZAM14", 3), rep("ZAM17", 6)),
+         line = c(rep(c("A", "B", "C"), 2), "A", "A", "B", "B", "C", "C"))
+
+ddct_plot <- ggplot(ddct, aes(x = line, y = -ddct)) +
+  geom_col() +
+  facet_grid(cols = vars(strain, target_name), space = "free", scales = "free",
+             labeller = as_labeller(c(`ZAM13` = "osm-9(ky10);\nosm-9p::bm-osm-9", 
+                                      `ZAM14` = "tax-4(p678);\ntax-4p::bm-tax-4",
+                                      `ZAM17` = "osm-9(ky10);\nosm-9p::bm-osm-9;\nosm-9p::bm-ocr-1/2a",
+                                      `OSM-9` = "bm-osm-9",
+                                      `TAX-4` = "bm-tax-4",
+                                      `OCR-1/2a` = "bm-ocr-1/2a"))) +
+  labs(x = "", y = expression(-Delta*Delta*C[T]), title = " ") +
+  theme_minimal(base_size = 16, base_family = "Helvetica") +
+  theme(
+    plot.title = element_text(size = 11, colour = "gray29", face = "bold", hjust = 0.5),
+    axis.text.x = element_text(angle = 45, hjust = 1, face = "bold", size = 10),
+    axis.text.y = element_text(face = "bold", size = 9),
+    axis.title.x = element_text(angle = 90, vjust = 0.5, size = 0),
+    axis.title.y = element_text(face = "bold", angle = 90, size = 12),
+    strip.text.x = element_text(face = "bold", size = 9),
+    axis.ticks = element_line(size = 0.25),
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.background = element_blank(),
+    axis.line = element_line(size = 0.75, colour = "black"),
+    legend.position = "none") +
+  NULL
+ddct_plot
+```
+
+```{r table, echo = FALSE, message = FALSE, warning = FALSE}
+table <- pivot_wider(ungroup(ct_df), names_from = "target_name", values_from = "Tech.Mean.Ct") %>%
+  arrange(factor(sample_name, levels = c("N2", "CX10", "ZAM13A", "ZAM13B", "ZAM13C", "ZAM17A", "ZAM17B", "ZAM17C", "PR678", "ZAM14A", "ZAM14B", "ZAM14C"))) %>%
+  select(Genotype = sample_name, Y45F10D.4, `bm-osm-9` = `OSM-9`, `bm-tax-4` = `TAX-4`, `bm-ocr-1/2a` = `OCR-1/2a`) %>%
+  mutate(Genotype = c("N2", "osm-9(ky10)", "", "", "", "", "", "",
+                      "tax-4(p678)", "", "", "")) %>%
+  mutate(`Y45F10D.4` = as.character(round(x = `Y45F10D.4`, digits = 2))) %>%
+  mutate(`bm-osm-9` = c("ND", "ND", "23.88", "24.44", "23.47", "29.19", "26.91", "27.51", "", "", "", "")) %>%
+  mutate(`bm-tax-4` = c("ND", "", "", "", "", "", "", "", "ND", "26.98", "34.38", "26.13")) %>%
+  mutate(`bm-ocr-1/2a` = c("ND", "ND", "", "", "", "37.20", "34.30", "33.90", "", "", "", ""))
+
+knit_table <- kable(table, align = "lcccc") %>%
+  add_header_above(c(" ", "Target" = 4)) %>%
+  kable_styling(bootstrap_options = "condensed", font_size = 11, full_width = F, position = "center") %>%
+  column_spec(1, bold = T, border_right = T) %>%
+  # row_spec(1, bold = T, color = "white", background = "#D7261E") %>%
+  pack_rows("osm-9(ky10);\nosm-9p::bm-osm-9", 3, 5) %>%
+  pack_rows("osm-9(ky10);\nosm-9p::bm-osm-9;\nosm-9p::bm-ocr-1/2a", 6, 8) %>%
+  pack_rows("tax-4(p678);\ntax-4p::bm-tax-4", 10, 12) %>%
+  footnote(general = "ND = Not Detected")
+knit_table
+# grid.arrange(ddct_plot, knit_table, ncol = 2)
+```
+
