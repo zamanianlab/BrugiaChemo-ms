@@ -5,8 +5,8 @@ account: wheelern
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1080549
-bundleId: 2392896
+bundleId: 2393559
 url: https://wheelern.shinyapps.io/ChemoR/
-when: 1567804561.2851
+when: 1567825636.83055
 asMultiple: FALSE
 asStatic: FALSE

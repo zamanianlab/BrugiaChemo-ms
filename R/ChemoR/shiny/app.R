@@ -13,7 +13,15 @@ conflicted::conflict_prefer("filter", "dplyr")
 
 type <- readRDS("type.data")
 
-full <- read_csv("full_chemor.csv")
+full <- read_csv("family_assignment.csv")
+
+fasta <- read_delim("all_chemor.fa", delim = "\t", col_names = c("Species", "Sequence")) %>%
+  separate(Species, c("Species", "Transcript_ID"), sep = "-") %>%
+  mutate(Species = str_remove(Species, ">")) %>%
+  select(-Species)
+
+full <- left_join(full, fasta) %>%
+  filter(!is.na(Sequence))
 
 trimmed_full <- group_by(full, Full) %>%
   sample_n(15, replace = TRUE)
@@ -222,7 +230,8 @@ server <- function(input, output) {
     })
     
     output$table <- renderTable({
-      filter(trimmed_full, Full == input$species)
+      select(trimmed_full, -Species, Species = Full, Transcript_ID, Superfamily, Family, Sequence) %>%
+        filter(Species == input$species)
     })
     
     output$download <- downloadHandler(
@@ -231,8 +240,9 @@ server <- function(input, output) {
       },
       
       content = function(file) {
-        # write.csv(filter(full, Full == input$species), file, row.names = FALSE)
-        write_csv(filter(full, Full == input$species), file)
+        out <- select(full, -Species, Species = Full, Transcript_ID, Superfamily, Family, Sequence) %>%
+          filter(Species == input$species)
+        write_csv(out, file)
       },
       
       contentType = "csv"
