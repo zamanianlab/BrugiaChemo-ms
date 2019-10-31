@@ -188,7 +188,7 @@ rnaseq_plot <-
             fontface = "bold",
             size = 4) +
   scale_fill_gradient(low = "white", high = "black", name = "Log2(TPM)") 
-rnaseq_plot
+# rnaseq_plot
 
 # following rows --> head/tail RNA-seq
 rnaseq <- read_csv(here("data", "RNAseq.data.csv"), col_names = TRUE)
@@ -274,8 +274,8 @@ rectangles <- select(all.chemor, Number, Species, Length, Chunk.Stop) %>%
   mutate(xmin = 0)
   
 # host labels
-host_labels <- tibble(Label = c("Vector Stage", "Human Stage", "Vector Stage"),
-                      y = c(0.65, 0.45, 0.095),
+host_labels <- tibble(Label = c("Human Stage", "Vector Stage", "Human Stage"),
+                      y = c(0.65, 0.4, 0.095),
                       Number = c(3, 3, 3),
                       x = c(9800000, 9800000, 9800000))
 
@@ -286,7 +286,7 @@ species_labels <- tibble(Label = c("C. elegans", "B. malayi"),
 
 final_plot <- ht_plot +
   geom_hline(yintercept = 0.5455, color = "grey", size = 0.5, linetype = 2) +
-  geom_hline(yintercept = 0.3545, color = "grey", size = 0.5, linetype = 2) +
+  geom_hline(yintercept = 0.2545, color = "grey", size = 0.5, linetype = 2) +
   geom_rect(data = rectangles,
             aes(xmin = xmin / 1000000, xmax = xmax / 1000000),
             ymin = -0.25, ymax = 0.75, color = "black", fill = NA, size = 0.5) +
@@ -316,7 +316,7 @@ final_plot <- ht_plot +
     legend.text = element_text(face = "bold", size = 10),
     legend.title = element_text(face = "bold", size = 12)) +
   NULL
-# final_plot
+final_plot
 
 save_plot(here("plots", "Fig2.pdf"), final_plot, base_height = 6, base_width = 12)
 
