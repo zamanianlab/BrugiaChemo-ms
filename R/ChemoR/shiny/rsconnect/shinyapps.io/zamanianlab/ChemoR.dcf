@@ -1,0 +1,12 @@
+name: ChemoR
+title: ChemoR
+username:
+account: zamanianlab
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 1421118
+bundleId: 2563751
+url: https://zamanianlab.shinyapps.io/ChemoR/
+when: 1572898366.00286
+asMultiple: FALSE
+asStatic: FALSE
