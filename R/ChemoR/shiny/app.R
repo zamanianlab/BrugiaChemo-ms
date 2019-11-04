@@ -4,12 +4,9 @@ library(chroma)
 library(conflicted)
 library(shinyWidgets)
 library(shiny)
-library(ggtips)
 
 conflict_prefer("scale_color_viridis_d", "ggplot2")
-conflicted::conflict_prefer("filter", "dplyr")
-
-# setwd("~/GitHub/my_website/content/post/ChemoR/")
+conflicted::conflict_prefer("filter", "dplyr") 
 
 type <- readRDS("type.data")
 
