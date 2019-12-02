@@ -14,7 +14,7 @@ here()
 
 # Import Data -------------------------------------------------------------
 
-tidy.data <- readRDS("~/Box/ZamanianLab/Data/Chemotaxis/Bpahangi/Nicotinamide/plates/NAM.chemotaxis.tidy.data") %>%
+tidy.data <- readRDS(here("data", "NAM.chemotaxis.tidy.data")) %>%
   mutate(CI = (T_n - C_n) / (T_n + C_n + M_n + O_n)) %>%
   mutate(CI2 = (T_n - C_n) / (T_n + C_n)) %>%
   mutate(CI3 = (T_n - C_n) / (T_n + C_n + O_n)) %>%
@@ -52,22 +52,25 @@ move.plot <- ggplot(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahan
   NULL
 move.plot
 
-save_plot(here("plots", "Fig4B_raw.pdf"), move.plot, base_width = 3)
+# save_plot(here("plots", "Fig4B_raw.pdf"), move.plot, base_width = 3)
 
 FBS_mean <- mean(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n > 2 & Group == "Untreated" & Treatment == "FBS")$CI3)
+NAM_FBS_mean <- mean(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n > 2 & Group == "Nicotinamide" & Treatment == "FBS")$CI3)
 NaCl_mean <- mean(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n > 2 & Group == "Untreated" & Treatment == "NaCl")$CI3)
+NAM_NaCl_mean <- mean(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n > 2 & Group == "Nicotinamide" & Treatment == "NaCl")$CI3)
 MB_mean <- mean(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n > 2 & Group == "Untreated" & Treatment == "3-methyl-1-butanol")$CI3)
-means <- data.frame(
-  Treatment = c("FBS", "NaCl", "3-methyl-1-butanol"),
-  CI3 = c(FBS_mean, NaCl_mean, MB_mean),
-  Group = c("Untreated", "Untreated", "Untreated")
+NAM_MB_mean <- mean(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n > 2 & Group == "Nicotinamide" & Treatment == "3-methyl-1-butanol")$CI3)
+means <- tibble(
+  Treatment = factor(x = rep(c("FBS", "NaCl", "3-methyl-1-butanol"), 2), levels = c("FBS", "NaCl", "3-methyl-1-butanol")),
+  CI3 = c(FBS_mean, NaCl_mean, MB_mean, NAM_FBS_mean, NAM_NaCl_mean, NAM_MB_mean),
+  Group = c(rep("Untreated", 3), rep("Nicotinamide", 3))
 )
 
 # chemotaxis index of fresh worms
 fresh.ci.plot <- ggplot(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n > 2), aes(x = Group, y = CI3)) +
   geom_violin(alpha = 0.6, color = "black", size = 0.75, fill = "grey90") +
   geom_beeswarm(color = "royalblue2", size = 2, alpha = 0.6, groupOnX = TRUE, cex = 3.5) +
-  geom_text(data = means, mapping = aes(x = Group, y = 1.15, label = paste0("Mean CI: ", round(CI3, digits = 2))), size = 3.5) +
+  geom_text(data = means, mapping = aes(x = Group, y = 1.15, label = paste0("CI= ", round(CI3, digits = 2))), size = 3.5) +
   geom_hline(aes(yintercept = 0), linetype = "dashed", colour = "grey37", size = 0.5) +
   stat_summary(fun.data = "mean_cl_normal", fun.args = list(mult = 1), color = "red", shape = 18, alpha = 0.5, size = 1) +
   stat_compare_means(comparisons = comparisons, method = "t.test", label = "p.signif", label.x = 1.5, label.y = 1.3) +
