@@ -1,6 +1,0 @@
-chr - ce1 CeI 1 15072434 chr1
-chr - ce2 CeII 1 15279421 chr2
-chr - ce3 CeIII 1 13783801 chr3
-chr - ce4 CeIV 1 17493829 chr4
-chr - ce5 CeV 1 20924180 chr5
-chr - ceX CeX 1 17718942 chrx

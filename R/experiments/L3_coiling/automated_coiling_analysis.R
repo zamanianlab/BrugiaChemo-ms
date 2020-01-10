@@ -7,7 +7,8 @@ library(Hmisc)
 library(here)
 
 conflict_prefer("filter", "dplyr")
-
+conflict_prefer("summarize", "dplyr")
+conflict_prefer("here", "here")
 
 # Import data -------------------------------------------------------------
 
@@ -37,7 +38,7 @@ tidy_data <- function(experiment) {
     mutate(Well = paste0(row, col)) %>%
     select(-row, -col) %>%
     separate(Treatment, c("Drug", "Dose", "Rep"), sep = "_", remove = FALSE) %>%
-    dplyr::filter(Drug != "NA") %>%
+    filter(Drug != "NA") %>%
     mutate(Replicate = experiment[1])
 
   data <- read.csv(experiment[3], header = TRUE, sep = ",") %>%
@@ -49,28 +50,19 @@ tidy_data <- function(experiment) {
 
 tidy.data <- apply(experiments, 1, tidy_data) %>%
   bind_rows() %>%
-  select(Well, Hour, Treatment, Drug, Dose, Replicate, Tech.Rep = Rep, everything(), Motility = Normalized.Motility)
-
-# remove outliers
-motility.quantile <- quantile(tidy.data$Motility, probs = c(.25, .75))
-trimmed.data <- filter(tidy.data, Motility > motility.quantile[1] - 1.5 * IQR(tidy.data$Motility), Motility < motility.quantile[2] + 1.5 * IQR(tidy.data$Motility))
-
-total.quantile <- quantile(tidy.data$Total.Motility, probs = c(.25, .75))
-trimmed.data <- filter(trimmed.data, Total.Motility > total.quantile[1] - 1.5 * IQR(tidy.data$Total.Motility), Total.Motility < total.quantile[2] + 1.5 * IQR(tidy.data$Total.Motility))
-
-norm_quantile <- quantile(tidy.data$Normalization.Factor, probs = c(.25, .75))
-trimmed.data <- filter(trimmed.data, Normalization.Factor > norm_quantile[1] - 1.5 * IQR(tidy.data$Normalization.Factor), Normalization.Factor < norm_quantile[2] + 1.5 * IQR(tidy.data$Normalization.Factor))
+  select(Well, Hour, Treatment, Drug, Dose, Replicate, Tech.Rep = Rep, everything(), Motility = Normalized.Motility) %>%
+  filter(Hour %in% c("24hr", "48hr"))
 
 # summary
-summary <- group_by(trimmed.data, Replicate, Hour, Drug, Dose) %>%
+summary <- group_by(tidy.data, Replicate, Hour, Drug, Dose) %>%
   summarise(Mean = mean(Motility))
 
-total.summary <- group_by(trimmed.data, Replicate, Hour, Drug, Dose) %>%
+total.summary <- group_by(tidy.data, Replicate, Hour, Drug, Dose) %>%
   summarise(Mean = mean(Total.Motility))
 
 # control summary
 control.summary <- ungroup(summary) %>%
-  dplyr::filter(Drug == "CON") %>%
+  filter(Drug == "CON") %>%
   select(-Drug, -Dose, Control.Mean = Mean)
 
 control.total.summary <- ungroup(total.summary) %>%
@@ -78,7 +70,7 @@ control.total.summary <- ungroup(total.summary) %>%
   select(-Drug, -Dose, Control.Mean = Mean)
 
 # add control to data for normalization and normalize to control
-trimmed.data <- left_join(trimmed.data, control.summary) %>%
+tidy.data <- left_join(tidy.data, control.summary) %>%
   mutate(Normalized.Motility = Motility / Control.Mean) %>%
   pivot_longer(cols = Total.Motility:Normalized.Motility, names_to = "Measure", values_to = "Value")
 
@@ -88,23 +80,65 @@ lookup <- data.frame(
   DEC = c(0.01, 1000, 100, 10, 1, 0.1)
 )
 
-trimmed.data <- left_join(trimmed.data, lookup) %>%
-  # mutate(DEC = as.factor(DEC)) %>%
+tidy.data <- left_join(tidy.data, lookup) %>%
   select(Well, Hour, -Treatment, Drug, Dose, Replicate, DEC, Measure, Value)
 
-comparisons <- list(c("0.01", "0.1"), c("0.01", "1"), c("0.01", "10"), c("0.01", "100"), c("0.01", "1000"))
+summary_stats <- filter(tidy.data, Measure == "Total.Motility") %>%
+  group_by(DEC, Hour) %>%
+  summarize(Mean = mean(Value), SE = sd(Value)/sqrt(n()))
 
-all.plot <- ggplot(filter(trimmed.data, Hour %in% c("24hr", "48hr"), Measure == "Normalized.Motility"), aes(x = as.character(DEC), y = Value)) +
-  # geom_beeswarm(aes(color = Replicate)) +
-  stat_summary(fun.data = "mean_cl_normal", fun.args = list(mult = 1), color = "red", shape = 18, alpha = 0.75, size = 0.5) +
-  stat_compare_means(comparisons = comparisons, 
-                     method = "t.test", 
-                     label = "p.signif") +
+### 24 hr stats
+
+aov.24 <- aov(data = filter(tidy.data, Measure == "Total.Motility", Hour == "24hr"),
+              formula = Value ~ as.factor(DEC))
+summary(aov.24)
+# one-sided t-test with Holm's adjustment
+pairwise.t.test(pluck(filter(tidy.data, Measure == "Total.Motility", Hour == "24hr"), "Value"),
+                pluck(filter(tidy.data, Measure == "Total.Motility", Hour == "24hr"), "DEC"),
+                alternative = "greater",
+                p.adjust.method = "none")
+
+# ns: p > 0.05
+# *: p <= 0.05
+# **: p <= 0.01
+# ***: p <= 0.001
+# ****: p <= 0.0001
+
+significance <- tribble(~Hour, ~DEC, ~Value, ~label,
+                        "24hr", "0.1", 8e7, "ns",
+                        "24hr", "1", 8e7, "ns",
+                        "24hr", "10", 8e7, "*",
+                        "24hr", "100", 8e7, "**",
+                        "24hr", "1000", 8e7, "**")
+
+### 48 hr stats
+
+aov.48 <- aov(data = filter(tidy.data, Measure == "Total.Motility", Hour == "48hr"),
+              formula = Value ~ as.factor(DEC))
+summary(aov.48)
+# one-sided t-test with Holm's adjustment
+pairwise.t.test(pluck(filter(tidy.data, Measure == "Total.Motility", Hour == "48hr"), "Value"),
+                pluck(filter(tidy.data, Measure == "Total.Motility", Hour == "48hr"), "DEC"),
+                alternative = "greater",
+                p.adjust.method = "none")
+
+significance <- bind_rows(significance, tribble(~Hour, ~DEC, ~Value, ~label,
+                                                "48hr", "0.1", 8e7, "ns",
+                                                "48hr", "1", 8e7, "*",
+                                                "48hr", "10", 8e7, "**",
+                                                "48hr", "100", 8e7, "**",
+                                                "48hr", "1000", 8e7, "***"))
+
+final.plot <- ggplot(filter(tidy.data, Measure == "Total.Motility"), aes(x = as.factor(DEC), y = Value / 1e7)) + # y scale is arbitrary, divide units by 1e7
+  geom_pointrange(data = summary_stats, 
+                  aes(x = as.factor(DEC), y = Mean / 1e7, ymin = (Mean - SE) / 1e7, ymax = (Mean + SE) / 1e7),
+                  color = "red", shape = 18, alpha = 0.5, size = 1) +
+  geom_text(data = significance, aes(label = label)) +
   scale_x_discrete(limits = c("0.01", "0.1", "1", "10", "100", "1000"),
                    labels = c("Control", "0.1", "1", "10", "100", "1000")) +
-  # scale_y_continuous(limits = c(-1, 3.5), breaks = seq(0, 3, 1)) +
+  scale_y_continuous(limits = c(0, 8)) +
   facet_grid(rows = vars(Hour)) +
-  labs(x = "NAM (µM)", y = expression(bold(paste("log"[2], "(Mean Movement Units) + 1")))) +
+  labs(x = "NAM (µM)", y = "Mean Motility Units") +
   theme_minimal(base_size = 16, base_family = "Helvetica") +
   theme(
     axis.text.x = element_text(face = "bold", size = 10, angle = 45, vjust = .5),
@@ -116,14 +150,11 @@ all.plot <- ggplot(filter(trimmed.data, Hour %in% c("24hr", "48hr"), Measure == 
     panel.grid.major = element_blank(),
     panel.background = element_blank(),
     axis.line = element_line(size = 0.75, colour = "black"),
+    axis.ticks.y = element_line(size = 0.5),
     legend.position = "none"
   ) +
   NULL
-all.plot
+final.plot
 
-aov <- aov(Value ~ as.factor(DEC), data = filter(trimmed.data, Hour == "48hr", Measure == "Total.Motility"))
-TukeyHSD(aov)
-
-
-save_plot(here("plots", "Fig5D.pdf"), all.plot, base_width = 3, base_height = 6)
+save_plot(here("plots", "Fig5D.pdf"), final.plot, base_width = 3, base_height = 6)
 

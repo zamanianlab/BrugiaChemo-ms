@@ -1,11 +1,6 @@
 library(tidyverse)
 library(cowplot)
 library(conflicted)
-library(magrittr)
-library(lubridate)
-library(ggbeeswarm)
-library(ggpubr)
-library(ggrepel)
 library(Hmisc)
 library(here)
 
@@ -15,26 +10,26 @@ conflict_prefer("here", "here")
 
 # Import and tidy data ----------------------------------------------------
 
-results <- read_delim(here("data", "results.txt"), col_names = TRUE, delim = "\t") %>%
+results <- read_delim(here("data", "osm9", "results.txt"), col_names = TRUE, delim = "\t") %>%
   filter(!is.na(`Sample Name`)) %>%
   mutate(Replicate = c(rep(c(rep.int(1, 6), rep(2, 6), rep(3, 6)), 3)))
 
-amplification_data <- read_delim(here("data", "amplification_data.txt"), col_names = TRUE, delim = "\t", col_types = "cicdd") %>%
+amplification_data <- read_delim(here("data", "osm9", "amplification_data.txt"), col_names = TRUE, delim = "\t", col_types = "cicdd") %>%
   filter(!is.na(`Target Name`)) %>%
   mutate(log.dRn = log10(dRn)) %>%
   pivot_longer(cols = Rn:log.dRn, names_to = "Measurement", values_to = "Values")
 
-melt_region_temperature_data <- read_delim(here("data", "melt_region_temperature_data.txt"), col_names = TRUE, delim = "\t") %>%
+melt_region_temperature_data <- read_delim(here("data", "osm9", "melt_region_temperature_data.txt"), col_names = TRUE, delim = "\t") %>%
   pivot_longer(cols = contains("Reading"), names_to = "Reading", values_to = "Temperature") %>%
   mutate(Reading = str_replace(Reading, "Reading ", "")) %>%
   mutate(Reading = as.integer(Reading))
 
-melt_region_derivative_data <- read_delim(here("data", "melt_region_derivative_data.txt"), col_names = TRUE, delim = "\t") %>%
+melt_region_derivative_data <- read_delim(here("data", "osm9", "melt_region_derivative_data.txt"), col_names = TRUE, delim = "\t") %>%
   pivot_longer(cols = contains("Reading"), names_to = "Reading", values_to = "Derivative") %>%
   mutate(Reading = str_replace(Reading, "Reading ", "")) %>%
   mutate(Reading = as.integer(Reading)) 
 
-melt_region_normalized_data <- read_delim(here("data", "melt_region_normalized_data.txt"), col_names = TRUE, delim = "\t") %>%
+melt_region_normalized_data <- read_delim(here("data", "osm9", "melt_region_normalized_data.txt"), col_names = TRUE, delim = "\t") %>%
   pivot_longer(cols = contains("Reading"), names_to = "Reading", values_to = "Value") %>%
   mutate(Reading = str_replace(Reading, "Reading ", "")) %>%
   mutate(Reading = as.integer(Reading)) %>%

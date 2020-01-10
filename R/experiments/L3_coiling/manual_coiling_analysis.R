@@ -1,18 +1,12 @@
 library(tidyverse)
-library(magrittr)
-library(ggbeeswarm)
 library(Hmisc)
 library(cowplot)
 library(here)
-library(ggpubr)
 library(conflicted)
-library(magick)
 
 conflict_prefer("here", "here")
 conflict_prefer("filter", "dplyr")
 conflict_prefer("select", "dplyr")
-
-here()
 
 # get all experiments and create data frame of experiment metadata
 experiments <- tibble(File = list.files(pattern = "key.csv$", recursive = TRUE)) %>%
@@ -65,25 +59,72 @@ control.summary <- ungroup(summary) %>%
   select(-Drug, -Dose, Control.Score = Mean)
 
 # add control to data for normalization and normalize to control
-tidy.data %<>% left_join(., control.summary) %>%
+tidy.data <- left_join(tidy.data, control.summary) %>%
   mutate(Normalized.Score = Score / Control.Score) %>%
   mutate(Dose = as.factor(Dose))
 
-
 # Plotting ----------------------------------------------------------------
 
-comparisons <- list(c("0.01", "0.1"), c("0.01", "1"), c("0.01", "10"), c("0.01", "100"), c("0.01", "1000"))
+summary_stats <- tidy.data %>%
+  group_by(DEC, Hours) %>%
+  summarize(Mean = mean(Score), SE = sd(Score)/sqrt(n()))
 
-plot <- ggplot(tidy.data, aes(x = as.character(DEC), y = Score, group = DEC)) + 
-  stat_summary(fun.data = "mean_cl_normal", fun.args = list(mult = 1), color = "red", shape = 18, alpha = 0.75, size = 0.5) +
-  stat_compare_means(comparisons = comparisons, method = "t.test", label = "p.signif") +
+### 24 hr stats
+
+aov.24 <- aov(data = filter(tidy.data, Hours == "24hr"),
+              formula = Score ~ as.factor(DEC))
+summary(aov.24)
+# one-sided t-test with Holm's adjustment
+pairwise.t.test(pluck(filter(tidy.data, Hours == "24hr"), "Score"),
+                pluck(filter(tidy.data, Hours == "24hr"), "DEC"),
+                alternative = "greater",
+                p.adjust.method = "none")
+
+# ns: p > 0.05
+# *: p <= 0.05
+# **: p <= 0.01
+# ***: p <= 0.001
+# ****: p <= 0.0001
+
+significance <- tribble(~Hours, ~DEC, ~Score, ~label,
+                        "24hr", "0.1", 5, "***",
+                        "24hr", "1", 5, "****",
+                        "24hr", "10", 5, "****",
+                        "24hr", "100", 5, "****",
+                        "24hr", "1000", 5, "****")
+
+### 48 hr stats
+
+aov.48 <- aov(data = filter(tidy.data, Hours == "48hr"),
+              formula = Score ~ as.factor(DEC))
+summary(aov.48)
+# one-sided t-test with Holm's adjustment
+pairwise.t.test(pluck(filter(tidy.data, Hours == "48hr"), "Score"),
+                pluck(filter(tidy.data, Hours == "48hr"), "DEC"),
+                alternative = "greater",
+                p.adjust.method = "none")
+
+significance <- bind_rows(significance, tribble(~Hours, ~DEC, ~Score, ~label,
+                                                "48hr", "0.1", 5, "ns",
+                                                "48hr", "1", 5, "**",
+                                                "48hr", "10", 5, "****",
+                                                "48hr", "100", 5, "****",
+                                                "48hr", "1000", 5, "****"))
+
+
+
+final.plot <- ggplot(tidy.data, aes(x = as.character(DEC), y = Score, group = DEC)) + 
+  geom_pointrange(data = summary_stats, 
+                  aes(x = as.factor(DEC), y = Mean, ymin = Mean - SE, ymax = Mean + SE),
+                  color = "red", shape = 18, alpha = 0.5, size = 1) +
+  geom_text(data = significance, aes(label = label)) +
   scale_x_discrete(limits = c("0.01", "0.1", "1", "10", "100", "1000"), labels = c("Control", "0.1", "1", "10", "100", "1000")) +
   # scale_x_log10(
   #   limits = c(0.0035, 3003),
   #   breaks = c(0.005, 0.01, 0.1, 1, 10, 100, 1000),
   #   labels = c("", "Control", "0.1", "1", "10", "100", "1000")
   # ) +
-  scale_y_continuous(limits = c(0, 8), breaks = c(0, 1, 2, 3, 4, 5)) +
+  scale_y_continuous(limits = c(0, 5.1), breaks = c(0, 1, 2, 3, 4, 5)) +
   facet_grid(rows = vars(Hours)) +
   labs(x = "NAM (µM)", y = "Coiling Score") +
   theme_minimal(base_size = 16, base_family = "Helvetica") +
@@ -100,6 +141,6 @@ plot <- ggplot(tidy.data, aes(x = as.character(DEC), y = Score, group = DEC)) +
     legend.position = "none"
   ) +
   NULL
-plot
+final.plot
 
-save_plot(here("plots", "Fig5C.pdf"), plot, base_width = 3, base_height = 6)
+save_plot(here("plots", "Fig5C.pdf"), final.plot, base_width = 3, base_height = 6)

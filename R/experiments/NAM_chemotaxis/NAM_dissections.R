@@ -302,4 +302,4 @@ scatter.plot <- ggplot(scatter.data, aes(x = Total, y = Count / Total, color = C
   NULL
 scatter.plot
 
-save_plot(here("plots", "S5_Figure.pdf"), scatter.plot, base_width = 5)
+save_plot(here("plots", "S6_Figure.pdf"), scatter.plot, base_width = 5)
