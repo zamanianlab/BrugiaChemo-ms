@@ -24,7 +24,7 @@ tidy_data <- left_join(tidy_data, start_motility) %>%
 
 # Plot --------------------------------------------------------------------
 
-final.plot <- ggplot(tidy_data, aes(x = Step, y = log2(Normalized.Motility))) +
+final.plot <- ggplot(tidy_data, aes(x = Step, y = Normalized.Motility)) +
   geom_point() +
   geom_line(aes(group = interaction(Replicate, Date))) +
   scale_x_discrete(labels = c( "37C°", "Room Temp.", "37C°")) +
