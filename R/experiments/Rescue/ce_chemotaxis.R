@@ -1,80 +1,144 @@
 library(tidyverse)
 library(conflicted)
-library(magrittr)
 library(ggbeeswarm)
-library(Hmisc)
 library(cowplot)
-library(lubridate)
 library(here)
-library(ggpubr)
 
 conflict_prefer("filter", "dplyr")
-conflict_prefer("here", "here")
-here()
+conflict_prefer("get_legend", "cowplot")
 
+# Import and tidy ---------------------------------------------------------
 
-# Date Tidying ------------------------------------------------------------
-
-tidy.data <- read_csv(here("data", "data.csv"), col_names = TRUE) %>%
-  mutate(CI = (Cue_N - Control_N) / Total) %>%
-  select(Date, Strain, Cue, Control, Outside, Notes, everything()) %>%
-  pivot_longer(Cue_N:CI, names_to = "Region", values_to = "Value") %>%
+tidy_data <- readRDS(here("data", "ce.chemotaxis.tidy.data")) %>%
+  bind_rows() %>%
   mutate(Date = factor(Date))
 
 # Plotting ----------------------------------------------------------------
 
-osm9.comparisons <- list(c("N2", "CX10"), c("N2", "ZAM13"), c("CX10", "ZAM13"))
+genes <- tribble(~Strain, ~Element, ~Start, ~Stop,
+                 "N2", NA, 0, 0,
+                 "CX10", NA, 0, 0,
+                 "ZAM18", "cel-osm-9p", 3.5, 4.5,
+                 "ZAM18", "cel-osm-9", 4.5, 5.5,
+                 "ZAM18", "cel-unc-54", 5.5, 6.5,
+                 "ZAM13", "cel-osm-9p", 3.5, 4.5,
+                 "ZAM13", "bma-osm-9", 4.5, 5.5,
+                 "ZAM13", "cel-unc-54", 5.5, 6.5,
+                 "ZAM17", "cel-osm-9p", 3.5, 4.5,
+                 "ZAM17", "bma-osm-9", 4.5, 5.5,
+                 "ZAM17", "cel-unc-54", 5.5, 6.5,
+                 "ZAM17", "cel-osm-9p", 0, 1,
+                 "ZAM17", "bma-ocr-1/2a", 1, 2,
+                 "ZAM17", "cel-unc-54", 2, 3,
+                 "ZAM24", "cel-osm-9p", 3.5, 4.5,
+                 "ZAM24", "cel-osm-9", 4.5, 5.5,
+                 "ZAM24", "cel-osm-9", 5.5, 6.5,
+                 "ZAM22", "cel-osm-9p", 3.5, 4.5,
+                 "ZAM22", "bma-osm-9", 4.5, 5.5,
+                 "ZAM22", "cel-osm-9", 5.5, 6.5
+)
 
-osm9.plot <- ggplot(dplyr::filter(tidy.data, Cue == "Diacetyl", Region == "CI", Notes == "10 cm CTX"), aes(x = Strain, y = Value)) +
-  geom_violin(alpha = 0.6, color = "black", size = 0.75, fill = "grey90") +
-  geom_beeswarm(size = 3.25, alpha = 0.6, groupOnX = TRUE, cex = 3.5) +
+model <- ggplot(filter(genes, !is.na(Element))) +
+  geom_tile(aes(x = Start, y = Strain, fill = Element), width = 1, height = 0.3, color = "black", size = 0.3, alpha = 0.75) +
+  annotate("text", x = 2.75, y = 3, label = "+") +
+  scale_y_discrete(limits = rev(c("N2", "CX10", "ZAM18", "ZAM13", "ZAM17", "ZAM24", "ZAM22"))) +
+  scale_fill_manual(limits = c("cel-osm-9p", "cel-osm-9", "bma-osm-9", "bma-ocr-1/2a", "cel-unc-54"), 
+                    values = c("grey", "steelblue", "red", "darkgreen", "purple")) +
+  theme_minimal() +
+  theme(panel.grid = element_blank(),
+        legend.position = "bottom",
+        legend.title = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text = element_blank()) +
+  NULL
+# model
+
+pairwise.t.test(pluck(filter(tidy_data, Cue == "Diacetyl", Region == "CI", Notes == "10 cm CTX"), "Value"),
+                pluck(filter(tidy_data, Cue == "Diacetyl", Region == "CI", Notes == "10 cm CTX"), "Strain"))
+
+osm9.significance <- tribble(~Strain, ~Value, ~label,
+                        "N2", 1, "****",
+                        "ZAM13", 1, "ns",
+                        "ZAM17", 1, "ns",
+                        "ZAM18", 1, "ns",
+                        "ZAM22", 1, "ns",
+                        "ZAM24", 1, "ns")
+
+# ns: p > 0.05
+# *: p <= 0.05
+# **: p <= 0.01
+# ***: p <= 0.001
+# ****: p <= 0.0001
+
+osm9.plot <- ggplot(filter(tidy_data, Cue == "Diacetyl", Region == "CI", Notes == "10 cm CTX"), aes(x = Strain, y = Value)) +
+  geom_boxplot() +
+  geom_beeswarm(size = 1.5, alpha = 0.6, groupOnX = TRUE, cex = 2) +
+  geom_text(data = osm9.significance, aes(x = Strain, y = Value, label = label)) +
   geom_hline(aes(yintercept = 0), linetype = "dashed", colour = "grey37", size = 0.5) +
-  scale_x_discrete(limits = c("N2", "CX10", "ZAM13"), labels = c("N2", "osm-9(ky10)", "osm-9(ky10);\n osm-9p::bm-osm-9")) +
+  scale_x_discrete(limits = rev(c("N2", "CX10", "ZAM18", "ZAM13", "ZAM17", "ZAM24", "ZAM22")), labels = rev(c("N2", "osm-9(ky10)", "", "",  "", "", ""))) +
   facet_grid(. ~ Cue, scales = "free_x") +
-  stat_summary(fun.data = "mean_cl_normal", fun.args = list(mult = 1), color = "red", shape = 18, alpha = 0.5, size = 1.5) +
-  stat_compare_means(comparisons = osm9.comparisons, method = "t.test", label = "p.signif", label.y = c(1.05, 1.2, 1.35)) +
-  scale_y_continuous(limits = c(-0.6, 1.4), breaks = c(-0.5, -0.25, 0, 0.25, 0.5, 0.75, 1)) +
+  scale_y_continuous(limits = c(-0.6, 1), breaks = c(-0.5, -0.25, 0, 0.25, 0.5, 0.75, 1)) +
   theme_minimal(base_size = 16, base_family = "Helvetica") +
-  theme(axis.text.x = element_text(face = "bold.italic", size = 10, angle = 45, vjust = .5),
-        axis.text.y = element_text(face = "bold", size = 9),
-        axis.title.x  = element_text(angle = 90, vjust = 0.5, size = 0), 
-        axis.title.y  = element_text(face = "bold", angle=90, size=12),
-        strip.text.x = element_text(face = "bold", size = 12),
-        panel.grid.minor = element_blank(), 
+  theme(axis.text.x = element_text(face = "plain", size = 10),
+        axis.text.y = element_text(face = "italic", size = 10),
+        axis.title.x  = element_text(face = "bold", size = 12),
+        axis.title.y  = element_blank(),
+        strip.text.x = element_blank(),
+        panel.grid.minor = element_blank(),
         panel.grid.major = element_blank(),
         panel.background = element_blank(),
         axis.line = element_line(size = 0.75, colour = "black"),
         legend.position = "none") +
   labs(x = "Strain", y = "Chemotaxis Index") +
+  coord_flip() +
   NULL
 osm9.plot
 
-save_plot(here("plots", "Fig8A_raw.pdf"), osm9.plot, base_width = 4, base_height = 5)
+legend <- get_legend(model)
 
-tax4.comparisons <- list(c("N2", "PR678"), c("N2", "ZAM14"), c("PR678", "ZAM14"))
+osm <- plot_grid(model + theme(legend.position = "none", plot.margin = margin(r = -70, l = 10)), osm9.plot, axis = "tb", align = "h", rel_widths = c(0.15, 1))
+final.osm <- plot_grid(osm, legend, nrow = 2, rel_heights = c(1, 0.1))
 
-tax4.plot <- ggplot(dplyr::filter(tidy.data, Cue == "Isoamyl alcohol", Region == "CI", Notes == "10 cm CTX"), aes(x = Strain, y = Value)) +
-  geom_violin(alpha = 0.6, color = "black", size = 0.75, fill = "grey90") +
-  geom_beeswarm(size = 3.25, alpha = 0.6, groupOnX = TRUE, cex = 3.5) +
-  geom_hline(aes(yintercept = 0), linetype = "dashed", colour = "grey37", size = 0.5) +
-  scale_x_discrete(limits = c("N2", "PR678", "ZAM14"), labels = c("N2", "tax-4(p678)", "tax-4(p678);\n tax-4p::bm-tax-4")) +
-  scale_color_viridis_d() +
+save_plot(here("plots", "Fig8A_raw.pdf"), final.osm, base_height = 6, base_width = 8)
+
+pairwise.t.test(pluck(filter(tidy_data, Cue == "Isoamyl alcohol", Region == "CI", Notes == "10 cm CTX"), "Value"),
+                pluck(filter(tidy_data, Cue == "Isoamyl alcohol", Region == "CI", Notes == "10 cm CTX"), "Strain"),
+                p.adjust.method = "none")
+
+tax4.significance <- tribble(~Strain, ~Value, ~label,
+                        "N2", 1.1, "****",
+                        "ZAM14", 1.1, "*",
+                        "ZAM21", 1.1, "****")
+
+# ns: p > 0.05
+# *: p <= 0.05
+# **: p <= 0.01
+# ***: p <= 0.001
+# ****: p <= 0.0001
+
+tax4.plot <- ggplot(filter(tidy_data, Cue == "Isoamyl alcohol", Region == "CI", Notes == "10 cm CTX"), aes(x = Strain, y = Value)) +
+  geom_boxplot() +
+  geom_beeswarm(size = 2.5, alpha = 0.6, groupOnX = TRUE, cex = 2) +
+  geom_text(data = tax4.significance, aes(x = Strain, y = Value, label = label)) +
+  scale_x_discrete(limits = rev(c("N2", "PR678", "ZAM21", "ZAM14")), labels = rev(c("N2", "tax-4(p678)", "tax-4(p678); tax-4p::ce-tax-4", "tax-4p::bm-tax-4"))) +
   facet_grid(. ~ Cue, scales = "free_x") +
-  stat_summary(fun.data = "mean_cl_normal", fun.args = list(mult = 1), color = "red", shape = 18, alpha = 0.5, size = 1.5) +
-  stat_compare_means(comparisons = tax4.comparisons, method = "t.test", label = "p.signif", label.y = c(1.05, 1.2, 1.35)) +
-  scale_y_continuous(limits = c(-0.6, 1.4), breaks = c(-0.5, -0.25, 0, 0.25, 0.5, 0.75, 1)) +
+  scale_y_continuous(limits = c(0, 1.1), breaks = c(0, 0.25, 0.5, 0.75, 1)) +
   theme_minimal(base_size = 16, base_family = "Helvetica") +
-  theme(axis.text.x = element_text(face = "bold.italic", size = 10, angle = 45, vjust = .5),
-        axis.text.y = element_text(face = "bold", size = 9),
-        axis.title.x  = element_text(angle = 90, vjust = 0.5, size = 0), 
-        axis.title.y  = element_text(face = "bold", angle=90, size=12),
-        strip.text.x = element_text(face = "bold", size = 12),
-        panel.grid.minor = element_blank(), 
+  theme(axis.text.x = element_text(face = "plain", size = 10),
+        axis.text.y = element_text(face = "italic", size = 10),
+        axis.title.x  = element_text(face = "bold", size = 12),
+        axis.title.y  = element_blank(),
+        strip.text.x = element_blank(),
+        panel.grid.minor = element_blank(),
         panel.grid.major = element_blank(),
         panel.background = element_blank(),
-        axis.line = element_line(size = 0.75, colour = "black")) +
-  labs(x = "Strain", y = "Chemotaxis Index", color = "Experiment Date") +
+        axis.line = element_line(size = 0.75, colour = "black"),
+        legend.position = "none") +
+  labs(x = "Strain", y = "Chemotaxis Index") +
+  coord_flip() +
   NULL
 tax4.plot
 
-save_plot(here("plots", "Fig8B_raw.pdf"), tax4.plot, base_width = 4, base_height = 5)
+save_plot(here("plots", "Fig9.pdf"), tax4.plot, base_height = 6, base_width = 8)
+

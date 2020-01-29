@@ -5,6 +5,9 @@ library(cowplot)
 
 conflicted::conflict_prefer("filter", "dplyr")
 
+
+# Import and tidy ---------------------------------------------------------
+
 tidy_data <- readRDS(here("data", "coiling_reversal.data")) %>%
   rename(Treatment = Well) %>%
   separate(Treatment, c("Stage", "Temperature", "Step", "Serum", "Replicate"), "_") %>%
@@ -16,13 +19,15 @@ start_motility <- filter(tidy_data, Step == "A") %>%
   select(-Step, -Temperature)
 
 tidy_data <- left_join(tidy_data, start_motility) %>%
-  mutate(Control.Normalized = Normalized.Motility / A.Value) %>%
-  filter(Step != "A")
+  mutate(Control.Normalized = Normalized.Motility / A.Value)
 
-final.plot <- ggplot(tidy_data, aes(x = Step, y = Control.Normalized * 100)) +
+
+# Plot --------------------------------------------------------------------
+
+final.plot <- ggplot(tidy_data, aes(x = Step, y = log2(Normalized.Motility))) +
   geom_point() +
   geom_line(aes(group = interaction(Replicate, Date))) +
-  scale_x_discrete(labels = c("Room Temp.", "37C°")) +
+  scale_x_discrete(labels = c( "37C°", "Room Temp.", "37C°")) +
   theme_minimal(base_size = 16, base_family = "Helvetica") +
   theme(axis.text.x = element_text(face="bold", size=10, angle = 45, vjust = .5),
         axis.text.y = element_text(face="bold", size=9),
@@ -34,7 +39,7 @@ final.plot <- ggplot(tidy_data, aes(x = Step, y = Control.Normalized * 100)) +
         panel.background = element_blank(),
         legend.position = "none",
         axis.line = element_line(size = 0.75, colour = "black")) +
-  labs(y = "Percent Change") +
+  labs(y = "Mean Motility Units") +
   NULL
 final.plot
 
