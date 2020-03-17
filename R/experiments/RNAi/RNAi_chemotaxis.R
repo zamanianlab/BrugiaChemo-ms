@@ -27,8 +27,10 @@ tidy.data[is.nan(tidy.data)] <- 0
 
 comparisons <- list(c("lacZ", "tax-4"), c("lacZ", "osm-9"))
 
-dot.plot <- ggplot(dplyr::filter(tidy.data, T_n + C_n > 2), aes(x = dsRNA, y = CI3)) + 
-  geom_dotplot(binaxis = "y", stackdir = "center", alpha = 0.8, dotsize = 0.7) +
+dot.plot <- ggplot(dplyr::filter(tidy.data, T_n + C_n + O_n >= 5), aes(x = dsRNA, y = CI3)) + 
+  geom_violin(alpha = 0.6, color = "black", size = 0.7, fill = "grey90") +
+  geom_beeswarm(color = "black", size = 2, alpha = 0.6, groupOnX = TRUE, cex = 2) +
+  # geom_dotplot(binaxis = "y", stackdir = "center", alpha = 0.8, dotsize = 0.7) +
   stat_summary(fun.data = "mean_cl_normal", fun.args = list(mult = 1), color = "red", shape = 18, alpha = 0.5, size = 1) +
   # stat_summary(fun.y = mean, geom = "point", color = "red", shape = 18, size = 5) +
   # geom_violin(alpha = 0.6, color = "black", size = 0.75, fill = "grey90") +
@@ -57,8 +59,10 @@ dot.plot
 
 save_plot(here("plots", "Fig7B_raw.pdf"), dot.plot, base_width = 5)
 
-move.plot <- ggplot(dplyr::filter(tidy.data, T_n + C_n > 2), aes(x = dsRNA, y = 1 - Mf)) + 
-  geom_dotplot(binaxis = "y", stackdir = "center", alpha = 0.8, dotsize = 0.7) +
+move.plot <- ggplot(dplyr::filter(tidy.data, T_n + C_n + O_n >= 5), aes(x = dsRNA, y = 1 - Mf)) + 
+  geom_violin(alpha = 0.6, color = "black", size = 0.7, fill = "grey90") +
+  geom_beeswarm(color = "black", size = 2, alpha = 0.6, groupOnX = TRUE, cex = 2) +
+  # geom_dotplot(binaxis = "y", stackdir = "center", alpha = 0.8, dotsize = 0.7) +
   # stat_summary(fun.y = mean, geom = "point", color = "red", shape = 18, size = 5) +
   # geom_violin(alpha = 0.6, color = "black", size = 0.75, fill = "grey90") +
   # geom_beeswarm(aes(color = as.factor(Date)), size = 3.25, alpha = 0.6, groupOnX = TRUE, cex = 1.5) +

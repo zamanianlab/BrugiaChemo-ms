@@ -1,6 +1,5 @@
 library(tidyverse)
 library(conflicted)
-library(magrittr)
 library(ggbeeswarm)
 library(Hmisc)
 library(cowplot)
@@ -54,12 +53,12 @@ move.plot
 
 # save_plot(here("plots", "Fig4B_raw.pdf"), move.plot, base_width = 3)
 
-FBS_mean <- mean(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n > 2 & Group == "Untreated" & Treatment == "FBS")$CI3)
-NAM_FBS_mean <- mean(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n > 2 & Group == "Nicotinamide" & Treatment == "FBS")$CI3)
-NaCl_mean <- mean(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n > 2 & Group == "Untreated" & Treatment == "NaCl")$CI3)
-NAM_NaCl_mean <- mean(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n > 2 & Group == "Nicotinamide" & Treatment == "NaCl")$CI3)
-MB_mean <- mean(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n > 2 & Group == "Untreated" & Treatment == "3-methyl-1-butanol")$CI3)
-NAM_MB_mean <- mean(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n > 2 & Group == "Nicotinamide" & Treatment == "3-methyl-1-butanol")$CI3)
+FBS_mean <- mean(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n + O_n >= 5 & Group == "Untreated" & Treatment == "FBS")$CI3)
+NAM_FBS_mean <- mean(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n + O_n >= 5 & Group == "Nicotinamide" & Treatment == "FBS")$CI3)
+NaCl_mean <- mean(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n + O_n >= 5 & Group == "Untreated" & Treatment == "NaCl")$CI3)
+NAM_NaCl_mean <- mean(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n + O_n >= 5 & Group == "Nicotinamide" & Treatment == "NaCl")$CI3)
+MB_mean <- mean(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n + O_n >= 5 & Group == "Untreated" & Treatment == "3-methyl-1-butanol")$CI3)
+NAM_MB_mean <- mean(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n + O_n >= 5 & Group == "Nicotinamide" & Treatment == "3-methyl-1-butanol")$CI3)
 means <- tibble(
   Treatment = factor(x = rep(c("FBS", "NaCl", "3-methyl-1-butanol"), 2), levels = c("FBS", "NaCl", "3-methyl-1-butanol")),
   CI3 = c(FBS_mean, NaCl_mean, MB_mean, NAM_FBS_mean, NAM_NaCl_mean, NAM_MB_mean),
@@ -67,7 +66,7 @@ means <- tibble(
 )
 
 # chemotaxis index of fresh worms
-fresh.ci.plot <- ggplot(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n > 2), aes(x = Group, y = CI3)) +
+fresh.ci.plot <- ggplot(dplyr::filter(tidy.data, Age == "Fresh" & Species == "Bpahangi" & T_n + C_n + O_n >= 5), aes(x = Group, y = CI3)) +
   geom_violin(alpha = 0.6, color = "black", size = 0.75, fill = "grey90") +
   geom_beeswarm(color = "royalblue2", size = 2, alpha = 0.6, groupOnX = TRUE, cex = 3.5) +
   geom_text(data = means, mapping = aes(x = Group, y = 1.15, label = paste0("CI= ", round(CI3, digits = 2))), size = 3.5) +
@@ -123,7 +122,7 @@ old.move.plot <- ggplot(dplyr::filter(tidy.data, Age == "Old" & Species == "Bpah
   NULL
 old.move.plot
 
-save_plot(here("plots", "Fig4D_right.pdf"), old.move.plot, base_width = 2)
+# save_plot(here("plots", "Fig4D_right.pdf"), old.move.plot, base_width = 2)
 
 # chemotaxis index of old worms
 FBS_mean <- mean(filter(tidy.data, Age == "Old" & Species == "Bpahangi" & Group == "Untreated" & Treatment == "FBS")$CI3, na.rm = TRUE)
@@ -135,7 +134,7 @@ old.ci.plot <- ggplot(dplyr::filter(tidy.data, Age == "Old" & Species == "Bpahan
   geom_hline(aes(yintercept = 0), linetype = "dashed", colour = "grey37", size = 0.5) +
   stat_summary(fun.data = "mean_cl_normal", fun.args = list(mult = 1), color = "red", shape = 18, alpha = 0.5, size = 1) +
   scale_y_continuous(limits = c(-1, 1.2), breaks = c(-1, -0.75, -0.5, -0.25, 0.0, 0.25, 0.5, 0.75, 1)) +
-  labs(title = "1 DPE", x = "", y = "Chemotaxis Indexi (CI)") +
+  labs(title = "1 DPE", x = "", y = "Chemotaxis Index (CI)") +
   theme_minimal(base_size = 16, base_family = "Helvetica") +
   theme(
     plot.title = element_text(size = 11, colour = "gray29", face = "bold", hjust = 0.5),

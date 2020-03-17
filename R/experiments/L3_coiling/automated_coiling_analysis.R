@@ -92,7 +92,7 @@ summary_stats <- filter(tidy.data, Measure == "Total.Motility") %>%
 aov.24 <- aov(data = filter(tidy.data, Measure == "Total.Motility", Hour == "24hr"),
               formula = Value ~ as.factor(DEC))
 summary(aov.24)
-# one-sided t-test with Holm's adjustment
+# one-sided t-test
 pairwise.t.test(pluck(filter(tidy.data, Measure == "Total.Motility", Hour == "24hr"), "Value"),
                 pluck(filter(tidy.data, Measure == "Total.Motility", Hour == "24hr"), "DEC"),
                 alternative = "greater",
@@ -116,7 +116,7 @@ significance <- tribble(~Hour, ~DEC, ~Value, ~label,
 aov.48 <- aov(data = filter(tidy.data, Measure == "Total.Motility", Hour == "48hr"),
               formula = Value ~ as.factor(DEC))
 summary(aov.48)
-# one-sided t-test with Holm's adjustment
+# one-sided t-test
 pairwise.t.test(pluck(filter(tidy.data, Measure == "Total.Motility", Hour == "48hr"), "Value"),
                 pluck(filter(tidy.data, Measure == "Total.Motility", Hour == "48hr"), "DEC"),
                 alternative = "greater",

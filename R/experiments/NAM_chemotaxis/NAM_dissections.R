@@ -82,12 +82,24 @@ dr.plot
 save_plot(here("plots", "Fig6A_raw.pdf"), dr.plot, base_width = 4)
 
 # feeding of selected concentrations
-comparisons <- list(c("None", "5 mM"), c("None", "25 mM"), c("5 mM", "25 mM"))
+aov.feed <- aov(lm(Proportion.Fed ~ Group,
+                   data = feeding.choice))
+TukeyHSD(aov.feed)
+
+significance <- tribble(~Group, ~Proportion.Fed, ~label,
+                        "5 mM", 110, "**",
+                        "25 mM", 110, "*")
+
+# ns: p > 0.05
+# *: p <= 0.05
+# **: p <= 0.01
+# ***: p <= 0.001
+# ****: p <= 0.0001
 
 feeding.plot <- ggplot(feeding.choice, aes(x = Group, y = Proportion.Fed, color = Group)) +
   geom_boxplot() +
   geom_point(alpha = 0.7) +
-  stat_compare_means(comparisons = comparisons, method = "t.test", label = "p.signif") +
+  geom_text(data = significance, aes(label = label), color = "black") +
   scale_y_continuous(breaks = c(70, 80, 90, 100)) +
   scale_x_discrete(limits = c("None", "5 mM", "25 mM"), labels = c("0", "5", "25")) +
   scale_color_manual(values = c("black", "firebrick1", "firebrick4")) +
@@ -154,9 +166,8 @@ density.plot <- ggplot(total.data, aes(x = Total, y = Concentration)) +
   geom_text(data = tukey.df, aes(y = Concentration), x = 25, label = "p < 0.005", vjust = -5) +
   scale_color_manual(values = c("firebrick4", "firebrick1", "black")) +
   scale_fill_manual(values = c("firebrick4", "firebrick1", "black")) +
-  # stat_compare_means(comparisons = comparisons, method = "t.test", label = "p.signif") +
-  ggridges::scale_discrete_manual(aesthetics = "point_shape", values = c(21, 21, 21)) +
-  ggridges::scale_discrete_manual(aesthetics = "point_fill", values = c("firebrick4", "firebrick1", "black")) +
+  scale_discrete_manual(aesthetics = "point_shape", values = c(21, 21, 21)) +
+  scale_discrete_manual(aesthetics = "point_fill", values = c("firebrick4", "firebrick1", "black")) +
   scale_x_continuous(expand = c(0.01, 0)) + 
   scale_y_discrete(expand = c(0.01, 0), breaks = c("None", "5 mM", "25 mM")) +
   theme_minimal(base_size = 16, base_family = "Helvetica") +
@@ -212,14 +223,44 @@ save_plot(here("plots", "Fig6E_raw.pdf"), bar.plot, base_width = 4)
 # proportion of worms in each tissue
 trimmed.data %<>% mutate(Tissue = fct_relevel(Tissue, "Head", "Thorax", "Abdomen"))
 
+fit_lm <- function(df) {
+  aov <- aov(lm(Proportion ~ Concentration, data = df))
+  TukeyHSD(aov)
+}
+
+stat.trimmed.data <- group_by(trimmed.data, Tissue) %>%
+  group_nest() %>%
+  mutate(model = map(data, fit_lm),
+         tidied = map(model, broom::tidy)) %>%
+  unnest(tidied) %>%
+  select(-data, -model) %>%
+  filter(term != "(Intercept)") %>%
+  mutate(label = case_when(
+    adj.p.value > 0.05 ~ "ns",
+    adj.p.value <= 0.05 ~ "*",
+    adj.p.value <= 0.01 ~ "**",
+    adj.p.value <= 0.001 ~ "***",
+    adj.p.value <= 0.0001 ~ "****",
+  )) %>%
+  mutate(Proportion = 1.1) %>%
+  separate(comparison, sep = "-", into = c("Control", "Concentration")) %>%
+  filter(Control == "None") %>%
+  select(-Control)
+
+# ns: p > 0.05
+# *: p <= 0.05
+# **: p <= 0.01
+# ***: p <= 0.001
+# ****: p <= 0.0001
+
 dot.plot <- ggplot(trimmed.data, aes(x = Concentration, y = Proportion, color = Tissue)) +
   geom_violin(alpha = 0.6, color = "black", size = 0.75, fill = "grey90") +
   geom_beeswarm(size = 1, alpha = 0.6, groupOnX = TRUE, cex = 1.5) +
+  geom_text(data = stat.trimmed.data, aes(label = label), color = "black") +
   scale_color_manual(values = c("Head" = "#CB891D", "Thorax" = "#4C7E14", "Abdomen" = "#407CC3")) +
   facet_grid(. ~ Tissue) +
   # stat_summary(fun.y = "mean", geom = "point", color = "red", shape = 18, alpha = 0.5, size = 5) +
   stat_summary(fun.data = "mean_cl_normal", fun.args = list(mult = 1), color = "red", shape = 18, alpha = 0.5, size = 1) +
-  stat_compare_means(comparisons = list(c("None", "5 mM"), c("None", "25 mM")), method = "t.test", label = "p.signif", label.y = c(1.1, 1.2, 1.3)) +
   scale_x_discrete(limits = c("None", "5 mM", "25 mM"), labels = c("0", "5", "25")) +
   scale_y_continuous(limits = c(0, 1.25), breaks = c(0, 0.5, 1)) +
   theme_minimal(base_size = 16, base_family = "Helvetica") +
