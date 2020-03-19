@@ -158,10 +158,10 @@ type <- left_join(dedup.p, life.history) %>%
   left_join(., n50, by = "Full")
 
 rect <- as.data.frame(unique(type$Type)) %>%
-  mutate(fill = seq(1, 7, 1)) %>%
+  mutate(fill = seq(1, 8, 1)) %>%
   rename(Type = 1)
 
-gradient <- matrix(viridis_colors(8), nrow = 50, ncol = length(viridis_colors(8)), byrow = TRUE)
+gradient <- matrix(viridis::viridis(8), nrow = 50, ncol = length(viridis::viridis(8)), byrow = TRUE)
 
 pos <- position_jitter(width = 0.25, seed = 1)
 
@@ -274,7 +274,7 @@ type.plot <- ggplot(type, aes(x = Type)) +
 
 # saveRDS(type.plot, here("data", "type.plot"))
 
-save_plot(here("plots", "Fig1C_raw.pdf"), type.plot, base_width = 14, base_height = 10)
+# save_plot(here("plots", "Fig1C_raw.pdf"), type.plot, base_width = 14, base_height = 10)
 
 n50_rho_test <- cor.test(type$N50, log2(type$Total), data = type, method = "spearman")
 n50_estimate <- n50_rho_test$estimate
@@ -308,17 +308,17 @@ n50.plot <- ggplot(type, aes(x = scales::rescale(N50, c(0, 1)))) +
         legend.title = element_text(face = "bold", size = 12),
         legend.text = element_text(size = 10)) +
   NULL
-n50.plot
+# n50.plot
 
-save_plot(here("plots", "S2_Figure.pdf"), n50.plot, base_width = 10, base_height = 6)
+# save_plot(here("plots", "S2_Figure.pdf"), n50.plot, base_width = 10, base_height = 6)
 
 # Export family assignments provided from the tree and BLAST --------------
 
-df4 <- left_join(df, species_info) %>%
+df4 <- left_join(dedup, species_info) %>%
   left_join(., chemo_families) %>%
   select(-Clade, -Species) %>%
   rename(Species = Full) %>%
-  filter(!grepl("pep", Family)) %>%
+  # filter(!grepl("pep", Family)) %>%
   select(Transcript_ID, Species, Family, Superfamily) %>%
   separate(Transcript_ID, into = c("Transcript_ID", "TEMP"), sep = "-", remove = FALSE, extra = "drop") %>%
   select(-TEMP)

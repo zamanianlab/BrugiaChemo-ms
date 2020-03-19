@@ -59,12 +59,12 @@ ddct <- filter(dct, !sample_name %in% c("N2", "CX10", "PR678")) %>%
 ddct_plot <- ggplot(ddct, aes(x = line, y = -ddct)) +
   geom_col() +
   facet_grid(cols = vars(strain, target_name), space = "free", scales = "free",
-             labeller = as_labeller(c(`ZAM13` = "osm-9(ky10);\nosm-9p::bm-osm-9", 
-                                      `ZAM14` = "tax-4(p678);\ntax-4p::bm-tax-4",
-                                      `ZAM17` = "osm-9(ky10);\nosm-9p::bm-osm-9;\nosm-9p::bm-ocr-1/2a",
-                                      `OSM-9` = "bm-osm-9",
-                                      `TAX-4` = "bm-tax-4",
-                                      `OCR-1/2a` = "bm-ocr-1/2a"))) +
+             labeller = as_labeller(c(`ZAM13` = "osm-9(ky10);\nosm-9p::bma-osm-9",
+                                      `ZAM17` = "osm-9(ky10);\nosm-9p::bma-osm-9\nosm-9p::bma-ocr-1/2a",
+                                      `ZAM14` = "tax-4(p678);\ntax-4p::bma-tax-4",
+                                      `OSM-9` = "bma-osm-9",
+                                      `OCR-1/2a` = "bma-ocr-1/2a",
+                                      `TAX-4` = "bma-tax-4"))) +
   labs(x = "", y = expression(-Delta*Delta*C[T]), title = " ") +
   theme_minimal(base_size = 16, base_family = "Helvetica") +
   theme(
@@ -87,13 +87,12 @@ ddct_plot
 ```{r table, echo = FALSE, message = FALSE, warning = FALSE}
 table <- pivot_wider(ungroup(ct_df), names_from = "target_name", values_from = "Tech.Mean.Ct") %>%
   arrange(factor(sample_name, levels = c("N2", "CX10", "ZAM13A", "ZAM13B", "ZAM13C", "ZAM17A", "ZAM17B", "ZAM17C", "PR678", "ZAM14A", "ZAM14B", "ZAM14C"))) %>%
-  select(Genotype = sample_name, Y45F10D.4, `bm-osm-9` = `OSM-9`, `bm-tax-4` = `TAX-4`, `bm-ocr-1/2a` = `OCR-1/2a`) %>%
-  mutate(Genotype = c("N2", "osm-9(ky10)", "", "", "", "", "", "",
-                      "tax-4(p678)", "", "", "")) %>%
+  select(Genotype = sample_name, Y45F10D.4, `bma-osm-9` = `OSM-9`, `bma-ocr-1/2a` = `OCR-1/2a`, `bma-tax-4` = `TAX-4`) %>%
+  mutate(Genotype = c("N2", "osm-9(ky10)", "", "", "", "", "", "", "tax-4(p678)", "", "", "")) %>%
   mutate(`Y45F10D.4` = as.character(round(x = `Y45F10D.4`, digits = 2))) %>%
-  mutate(`bm-osm-9` = c("ND", "ND", "23.88", "24.44", "23.47", "29.19", "26.91", "27.51", "", "", "", "")) %>%
-  mutate(`bm-tax-4` = c("ND", "", "", "", "", "", "", "", "ND", "26.98", "34.38", "26.13")) %>%
-  mutate(`bm-ocr-1/2a` = c("ND", "ND", "", "", "", "37.20", "34.30", "33.90", "", "", "", ""))
+  mutate(`bma-osm-9` = c("ND", "ND", "23.88", "24.44", "23.47", "29.19", "26.91", "27.51", "", "", "", "")) %>%
+  mutate(`bma-tax-4` = c("ND", "", "", "", "", "", "", "", "ND", "26.98", "34.38", "26.13")) %>%
+  mutate(`bma-ocr-1/2a` = c("ND", "ND", "", "", "", "37.20", "34.30", "33.90",  "", "", "", ""))
 
 knit_table <- kable(table, align = "lcccc") %>%
   add_header_above(c(" ", "Target" = 4)) %>%

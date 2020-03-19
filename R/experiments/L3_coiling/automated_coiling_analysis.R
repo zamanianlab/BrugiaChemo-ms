@@ -95,7 +95,7 @@ summary(aov.24)
 # one-sided t-test
 pairwise.t.test(pluck(filter(tidy.data, Measure == "Total.Motility", Hour == "24hr"), "Value"),
                 pluck(filter(tidy.data, Measure == "Total.Motility", Hour == "24hr"), "DEC"),
-                alternative = "greater",
+                # alternative = "greater",
                 p.adjust.method = "none")
 
 # ns: p > 0.05
