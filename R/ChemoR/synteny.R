@@ -85,6 +85,7 @@ chromosome_plot <- ggplot() +
 
 # get a list of chromosomes and calculate chunks so that each gene will have equidistant area and the heatmap will span the entire chromosome/ideogram
 chromosomes <- all.chemor %>%
+  filter(!is.na(Superfamily)) %>%
   group_by(Chromosome) %>%
   mutate(n = n()) %>%
   distinct(Chromosome, .keep_all = TRUE) %>%
@@ -96,7 +97,7 @@ chromosomes <- all.chemor %>%
   select(Chromosome, Chunk, Chromosome.Length)
 
 all.chemor <- all.chemor %>%
-  # select(Species, Order, Chromosome, Number, Start, Stop, Superfamily) %>%
+  filter(!is.na(Superfamily)) %>%
   arrange(Chromosome, Start) %>%
   left_join(., chromosomes, by = "Chromosome") %>%
   mutate(Chunk = floor(Chunk)) %>%
@@ -121,7 +122,7 @@ superfamily_plot <- chromosome_plot +
                    y = Species.Order + 0.1,
                    yend = Species.Order - 0.025),
                size = 0.35) +
-  geom_rect(data = filter(all.chemor, Species == "caenorhabditis_elegans"),
+  geom_rect(data = filter(all.chemor, Species == "caenorhabditis_elegans", !is.na(Superfamily)),
             aes(xmin = Chunk.Start / 1000000, 
                 xmax = Chunk.Stop / 1000000, 
                 ymin = Species.Order - 0.025, 
