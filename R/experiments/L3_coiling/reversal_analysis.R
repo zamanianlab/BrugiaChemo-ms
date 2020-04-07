@@ -27,7 +27,7 @@ tidy_data <- left_join(tidy_data, start_motility) %>%
 final.plot <- ggplot(tidy_data, aes(x = Step, y = Normalized.Motility)) +
   geom_point() +
   geom_line(aes(group = interaction(Replicate, Date))) +
-  scale_x_discrete(labels = c( "37C°", "Room Temp.", "37C°")) +
+  scale_x_discrete(labels = c( "37°C", "Room Temp.", "37°C")) +
   theme_minimal(base_size = 16, base_family = "Helvetica") +
   theme(axis.text.x = element_text(face="bold", size=10, angle = 45, vjust = .5),
         axis.text.y = element_text(face="bold", size=9),
