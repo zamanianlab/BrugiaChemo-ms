@@ -1,5 +1,5 @@
 # BrugiaChemo-ms
-This repository contains all the Bash, Python, and R scripts necessary to reproduce the data published in Wheeler et al. 2019.
+This repository contains all the Bash, Python, and R scripts necessary to reproduce the figures published in Wheeler et al. 2020.
 
 ## Description of scripts in `bash/`:
 
@@ -35,7 +35,7 @@ This directory contains a subdirectory for each gene family (chemoreceptors, CNG
 
 ## Description of files in `auxillary/`:
 
-**CNG, ChemoR, and TRP**: includes all seed sequences and alignment used for gene identification and annotation.
+**CNG, ChemoR, and TRP**: includes all seed sequences and alignments used for gene identification and annotation.
 
 **pfam_HMMs**: includes hidden Markov models curated by Pfam.
 
