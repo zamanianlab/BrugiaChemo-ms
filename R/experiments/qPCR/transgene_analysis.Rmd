@@ -16,6 +16,7 @@ library(kableExtra)
 library(here)
 library(janitor)
 library(gridExtra)
+library(gt)
 here()
 
 ```
@@ -59,12 +60,12 @@ ddct <- filter(dct, !sample_name %in% c("N2", "CX10", "PR678")) %>%
 ddct_plot <- ggplot(ddct, aes(x = line, y = -ddct)) +
   geom_col() +
   facet_grid(cols = vars(strain, target_name), space = "free", scales = "free",
-             labeller = as_labeller(c(`ZAM13` = "osm-9(ky10);\nosm-9p::bma-osm-9",
-                                      `ZAM17` = "osm-9(ky10);\nosm-9p::bma-osm-9\nosm-9p::bma-ocr-1/2a",
-                                      `ZAM14` = "tax-4(p678);\ntax-4p::bma-tax-4",
-                                      `OSM-9` = "bma-osm-9",
-                                      `OCR-1/2a` = "bma-ocr-1/2a",
-                                      `TAX-4` = "bma-tax-4"))) +
+             labeller = as_labeller(c(`ZAM13` = "osm-9(ky10);\nosm-9p::Bma-osm-9",
+                                      `ZAM17` = "osm-9(ky10);\nosm-9p::Bma-osm-9\nosm-9p::Bma-ocr-1/2a",
+                                      `ZAM14` = "tax-4(p678);\ntax-4p::Bma-tax-4",
+                                      `OSM-9` = "Bma-osm-9",
+                                      `OCR-1/2a` = "Bma-ocr-1/2a",
+                                      `TAX-4` = "Bma-tax-4"))) +
   labs(x = "", y = expression(-Delta*Delta*C[T]), title = " ") +
   theme_minimal(base_size = 16, base_family = "Helvetica") +
   theme(
@@ -73,7 +74,7 @@ ddct_plot <- ggplot(ddct, aes(x = line, y = -ddct)) +
     axis.text.y = element_text(face = "bold", size = 9),
     axis.title.x = element_text(angle = 90, vjust = 0.5, size = 0),
     axis.title.y = element_text(face = "bold", angle = 90, size = 12),
-    strip.text.x = element_text(face = "bold", size = 9),
+    strip.text.x = element_text(face = "bold.italic", size = 8),
     axis.ticks = element_line(size = 0.25),
     panel.grid.minor = element_blank(),
     panel.grid.major = element_blank(),
@@ -84,26 +85,103 @@ ddct_plot <- ggplot(ddct, aes(x = line, y = -ddct)) +
 ddct_plot
 ```
 
-```{r table, echo = FALSE, message = FALSE, warning = FALSE}
+
+```{r table_prep, echo = FALSE, message = FALSE, warning = FALSE}
+
 table <- pivot_wider(ungroup(ct_df), names_from = "target_name", values_from = "Tech.Mean.Ct") %>%
   arrange(factor(sample_name, levels = c("N2", "CX10", "ZAM13A", "ZAM13B", "ZAM13C", "ZAM17A", "ZAM17B", "ZAM17C", "PR678", "ZAM14A", "ZAM14B", "ZAM14C"))) %>%
-  select(Genotype = sample_name, Y45F10D.4, `bma-osm-9` = `OSM-9`, `bma-ocr-1/2a` = `OCR-1/2a`, `bma-tax-4` = `TAX-4`) %>%
-  mutate(Genotype = c("N2", "osm-9(ky10)", "", "", "", "", "", "", "tax-4(p678)", "", "", "")) %>%
-  mutate(`Y45F10D.4` = as.character(round(x = `Y45F10D.4`, digits = 2))) %>%
-  mutate(`bma-osm-9` = c("ND", "ND", "23.88", "24.44", "23.47", "29.19", "26.91", "27.51", "", "", "", "")) %>%
-  mutate(`bma-tax-4` = c("ND", "", "", "", "", "", "", "", "ND", "26.98", "34.38", "26.13")) %>%
-  mutate(`bma-ocr-1/2a` = c("ND", "ND", "", "", "", "37.20", "34.30", "33.90",  "", "", "", ""))
+  select(Genotype = sample_name, Y45F10D.4, `Bma-osm-9` = `OSM-9`, `Bma-ocr-1/2a` = `OCR-1/2a`, `Bma-tax-4` = `TAX-4`)# %>%
+  # mutate(Genotype = c("N2", "osm-9(ky10)", "", "", "", "", "", "", "tax-4(p678)", "", "", "")) %>%
+  # mutate(`Y45F10D.4` = as.character(round(x = `Y45F10D.4`, digits = 2))) %>%
+  # mutate(`bma-osm-9` = c("ND", "ND", "23.88", "24.44", "23.47", "29.19", "26.91", "27.51", "", "", "", "")) %>%
+  # mutate(`bma-tax-4` = c("ND", "", "", "", "", "", "", "", "ND", "26.98", "34.38", "26.13")) %>%
+  # mutate(`bma-ocr-1/2a` = c("ND", "ND", "", "", "", "37.20", "34.30", "33.90",  "", "", "", ""))
 
-knit_table <- kable(table, align = "lcccc") %>%
-  add_header_above(c(" ", "Target" = 4)) %>%
-  kable_styling(bootstrap_options = "condensed", font_size = 11, full_width = F, position = "center") %>%
-  column_spec(1, bold = T, border_right = T) %>%
-  # row_spec(1, bold = T, color = "white", background = "#D7261E") %>%
-  pack_rows("osm-9(ky10);\nosm-9p::bm-osm-9", 3, 5) %>%
-  pack_rows("osm-9(ky10);\nosm-9p::bm-osm-9;\nosm-9p::bm-ocr-1/2a", 6, 8) %>%
-  pack_rows("tax-4(p678);\ntax-4p::bm-tax-4", 10, 12) %>%
-  footnote(general = "ND = Not Detected")
-knit_table
-# grid.arrange(ddct_plot, knit_table, ncol = 2)
 ```
+
+```{r gt, echo = FALSE, message = FALSE, warning = FALSE}
+
+gt_table <- table %>%
+  mutate(Strain = Genotype) %>%
+  mutate(`Y45F10D.4` = as.character(round(x = `Y45F10D.4`, digits = 2))) %>%
+  mutate(`Bma-osm-9` = c("ND", "ND", "23.88", "24.44", "23.47", "29.19", "26.91", "27.51", "", "", "", "")) %>%
+  mutate(`Bma-tax-4` = c("ND", "", "", "", "", "", "", "", "ND", "26.98", "34.38", "26.13")) %>%
+  mutate(`Bma-ocr-1/2a` = c("ND", "ND", "", "", "", "37.20", "34.30", "33.90",  "", "", "", "")) %>%
+  mutate(Genotype = case_when(
+    Strain %in% c("N2", "CX10", "PR678") ~ "Controls",
+    # Strain == "CX10" ~ "osm-9(ky10)",
+    # Strain == "PR678" ~ "tax-4(p678)",
+    str_detect(Strain, "ZAM13") == TRUE ~ "osm-9(ky10); osm-9p::Bma-osm-9",
+    str_detect(Strain, "ZAM17") == TRUE ~ "osm-9(ky10); osm-9p::Bma-osm-9; osm-9p::Bma-ocr-1/2a",
+    str_detect(Strain, "ZAM14") == TRUE ~ "tax-4(p678); tax-4p::Bma-tax-4"
+  )) %>%
+  mutate(Line = case_when(
+    str_detect(Strain, "[0-9]A") == TRUE ~ "A",
+    str_detect(Strain, "[0-9]B") == TRUE ~ "B",
+    str_detect(Strain, "[0-9]C") == TRUE ~ "C",
+    Strain == "N2" ~ "N2",
+    Strain == "CX10" ~ "osm-9(ky10)",
+    Strain == "PR678" ~ "tax-4(p678)"
+  )) %>%
+  select(-Strain)
+
+gt_table %>% gt(rowname_col = "Line", groupname_col = "Genotype") %>%
+  tab_header(
+    title = md("**Raw C<sub>T</sub> values for Transgenes**")
+  ) %>%
+  tab_stubhead(label = md("**Strains**")) %>%
+  tab_spanner(label = md("**Target**"), columns = vars(Y45F10D.4, `Bma-osm-9`, `Bma-ocr-1/2a`, `Bma-tax-4`)) %>%
+  cols_label(
+    `Y45F10D.4` = md("***Y45F10D.4***"),
+    `Bma-osm-9` = md("***Bma-osm-9***"),
+    `Bma-ocr-1/2a` = md("***Bma-ocr-1/2a***"),
+    `Bma-tax-4` = md("***Bma-tax-4***"),
+  ) %>%
+  tab_style(
+    style = cell_text(style = "italic"),
+    locations = cells_row_groups(groups = c("osm-9(ky10); osm-9p::Bma-osm-9",
+                                            "osm-9(ky10); osm-9p::Bma-osm-9; osm-9p::Bma-ocr-1/2a",
+                                            "tax-4(p678); tax-4p::Bma-tax-4"))
+    ) %>%
+  tab_style(
+    style = cell_text(weight = "bold"),
+    locations = cells_row_groups(groups = c("Controls",
+                                            "osm-9(ky10); osm-9p::Bma-osm-9",
+                                            "osm-9(ky10); osm-9p::Bma-osm-9; osm-9p::Bma-ocr-1/2a",
+                                            "tax-4(p678); tax-4p::Bma-tax-4"))
+    ) %>%
+  tab_style(
+    style = cell_text(style = "italic"),
+    locations = cells_body(
+      columns = vars(Line),
+      rows = Line == "osm-9(ky10)"
+      )
+    ) %>%
+  tab_source_note(md("*Note*: ND = Not Detected"))
+
+```
+
+
+<!-- ```{r table, echo = FALSE, message = FALSE, warning = FALSE} -->
+<!-- table <- pivot_wider(ungroup(ct_df), names_from = "target_name", values_from = "Tech.Mean.Ct") %>% -->
+<!--   arrange(factor(sample_name, levels = c("N2", "CX10", "ZAM13A", "ZAM13B", "ZAM13C", "ZAM17A", "ZAM17B", "ZAM17C", "PR678", "ZAM14A", "ZAM14B", "ZAM14C"))) %>% -->
+<!--   select(Genotype = sample_name, Y45F10D.4, `bma-osm-9` = `OSM-9`, `bma-ocr-1/2a` = `OCR-1/2a`, `bma-tax-4` = `TAX-4`) %>% -->
+<!--   mutate(Genotype = c("N2", "osm-9(ky10)", "", "", "", "", "", "", "tax-4(p678)", "", "", "")) %>% -->
+<!--   mutate(`Y45F10D.4` = as.character(round(x = `Y45F10D.4`, digits = 2))) %>% -->
+<!--   mutate(`bma-osm-9` = c("ND", "ND", "23.88", "24.44", "23.47", "29.19", "26.91", "27.51", "", "", "", "")) %>% -->
+<!--   mutate(`bma-tax-4` = c("ND", "", "", "", "", "", "", "", "ND", "26.98", "34.38", "26.13")) %>% -->
+<!--   mutate(`bma-ocr-1/2a` = c("ND", "ND", "", "", "", "37.20", "34.30", "33.90",  "", "", "", "")) -->
+
+<!-- knit_table <- kable(table, align = "lcccc") %>% -->
+<!--   add_header_above(c(" ", "Target" = 4)) %>% -->
+<!--   kable_styling(bootstrap_options = "condensed", font_size = 11, full_width = F, position = "center") %>% -->
+<!--   column_spec(1, bold = T, border_right = T) %>% -->
+<!--   # row_spec(1, bold = T, color = "white", background = "#D7261E") %>% -->
+<!--   pack_rows("osm-9(ky10);\nosm-9p::bm-osm-9", 3, 5) %>% -->
+<!--   pack_rows("osm-9(ky10);\nosm-9p::bm-osm-9;\nosm-9p::bm-ocr-1/2a", 6, 8) %>% -->
+<!--   pack_rows("tax-4(p678);\ntax-4p::bm-tax-4", 10, 12) %>% -->
+<!--   footnote(general = "ND = Not Detected") -->
+<!-- knit_table -->
+<!-- # grid.arrange(ddct_plot, knit_table, ncol = 2) -->
+<!-- ``` -->
 

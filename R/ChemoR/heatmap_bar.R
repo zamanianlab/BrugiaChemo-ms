@@ -274,7 +274,7 @@ type.plot <- ggplot(type, aes(x = Type)) +
 
 # saveRDS(type.plot, here("data", "type.plot"))
 
-# save_plot(here("plots", "Fig1C_raw.pdf"), type.plot, base_width = 14, base_height = 10)
+save_plot(here("plots", "Fig1D_raw.pdf"), type.plot, base_width = 11, base_height = 5.5)
 
 n50_rho_test <- cor.test(type$N50, log2(type$Total), data = type, method = "spearman")
 n50_estimate <- n50_rho_test$estimate
