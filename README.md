@@ -21,6 +21,8 @@ local_dir="${GIT_DATA}"/"${proj}"
 
 For this repo to be cloned/forked and reproduced properly, the local variables `GIT_DATA` and `GIT_PATH` will need to be defined according to the user's organization.
 
+**NOTE:** All bash scripts use GNU Coreutils. If using a Mac, you will need to install these via Homebrew. If a command isn't working try preceding the command with a 'g' (e.g. `ggrep` instead of `grep`).
+
 **CNG_analysis.sh**: Bash script of all command line programs and parameters used for cyclic-nucleotide gated channel gene identification and annotation.
 
 **ChemoR_analysis.sh**: Bash script of all command line programs and parameters used for chemoreceptor (GPCR) gene identification and annotation.
