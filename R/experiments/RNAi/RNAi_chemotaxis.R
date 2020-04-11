@@ -69,7 +69,7 @@ move.plot <- ggplot(dplyr::filter(tidy.data, T_n + C_n + O_n >= 5), aes(x = dsRN
   stat_summary(fun.data = "mean_cl_normal", fun.args = list(mult = 1), color = "red", shape = 18, alpha = 0.5, size = 1) +
   stat_compare_means(comparisons = comparisons, method = "t.test", label = "p.signif") +
   # scale_x_discrete(limits = c("lacZ-9", "tax-4-9", "tax-4-10", "osm-9-10"), labels = c("lacZ 9 DPI", "tax-4 9 DPI", "tax-4 10 DPI", "osm-9 10 DPI")) +
-  scale_y_continuous(breaks = c(0.0, 0.25, 0.5, 0.75, 1)) +
+  scale_y_continuous(breaks = c(0.0, 0.25, 0.5, 0.75, 1), limits = c(0, 1)) +
   scale_colour_manual(values = c("royalblue2","royalblue3","steelblue4", "steelblue3", "steelblue2","steelblue1")) +
   ylab("Fraction leaving center") + xlab("") +
   theme_minimal(base_size = 16, base_family = "Helvetica") +
@@ -87,5 +87,7 @@ move.plot <- ggplot(dplyr::filter(tidy.data, T_n + C_n + O_n >= 5), aes(x = dsRN
   labs(color = "Trial", x = "Target, Injection Date", y = "Fraction Leaving Center") +
   NULL
 move.plot
+
+saveRDS(move.plot, "/Users/nic/Box/ZamanianLab/Manuscripts/2019-ChemoR/v5_PBIOrevisions/Figs/Fig7/move.plot", )
 
 save_plot(here("plots", "Fig7C_raw.pdf"), move.plot, base_width = 5)
